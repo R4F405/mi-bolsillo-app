@@ -17,12 +17,9 @@
 
 ---
 
-## Flujo de Usuario: Pantalla Principal / Dashboard
+## Flujo: Pantalla Principal / Dashboard
 
 1. **Acceso a la Pantalla:** Al abrir la aplicación, la Pantalla Principal / Dashboard se carga automáticamente.
-
-
-
 2. **Información y Controles Visibles por Defecto (para el periodo actual):**
 * A. Selector de Periodo:
     * Ubicado en la parte superior de la pantalla.
@@ -58,3 +55,37 @@
     * En el espacio destinado al Gráfico y la Lista de Transacciones Recientes, se mostrará un mensaje amigable indicando la ausencia de datos y, posiblemente, una invitación a registrar la primera transacción (ej. "Aún no tienes movimientos este mes. ¡Haz clic en '+' para añadir uno!").
 * Cargando Datos:
     * Durante los momentos en que la aplicación está recuperando y procesando los datos para mostrar (ej. al cambiar de periodo o al iniciar la app), se mostrará un indicador de progreso visual (ej. un círculo giratorio o una barra de carga sutil) para informar al usuario que la operación está en curso.
+
+---
+
+## Flujo: Pantalla "Historial de Transacciones"
+
+1. **Acceso a la Pantalla:** El usuario pulsa el botón/enlace "Ver historial completo" (o similar) desde la Pantalla Principal / Dashboard.
+2. **Información y Controles Visibles al Cargar la Pantalla:**
+* A. Barra Superior:
+    * A la izquierda: Un botón de "Atrás" (icono de flecha <-) para volver a la Pantalla Principal / Dashboard.
+    * Centro: El título de la pantalla (ej. "Historial de Movimientos" o "Mis Transacciones").
+* B. Controles de Filtro:
+    * Ubicados preferentemente debajo de la barra superior, de forma accesible.
+    * Filtro por Tipo: Un control de tipo seleccionable para seleccionar entre "Todos", "Ingresos" o "Gastos".
+    * Filtro por Categoría: Un control de tipo desplegable para seleccionar una categoría específica (o "Todas las categorías").
+* C. Lista Completa de Transacciones:
+    * Ocupa la mayor parte de la pantalla y es "scrollable" verticalmente.
+    * Las transacciones se ordenan cronológicamente, con la más reciente apareciendo primero.
+    * Cada Fila/Ítem de Transacción muestra de forma concisa:
+        - Un indicador visual del color de la categoría asociada.
+        - La Fecha de la transacción.
+        - El Monto de la transacción (distinguiendo claramente ingresos de gastos, ej. mediante color o signo +/-).
+        - (La descripción y el nombre explícito de la categoría no se muestran en esta vista de lista, se verán al acceder al detalle/edición).
+3. **Interacciones del Usuario en esta Pantalla:**
+* Acceder a Detalles y Editar Transacción:
+    * El usuario pulsa sobre cualquier parte de una fila de transacción.
+    * El sistema navega a la pantalla de "Editar Transacción". Esta pantalla es la misma que se utiliza para "Nueva Transacción", pero se precarga con todos los detalles de la transacción seleccionada (incluyendo nombre de categoría, descripción, monto y fecha) y los campos son editables. El botón de confirmación indicará una acción de guardado de cambios.
+* Aplicar Filtros:
+    * Al seleccionar una opción en el seleccionable de "Filtro por Tipo" o desplegable "Filtro por Categoría", la lista de transacciones se actualiza instantáneamente para mostrar solo aquellas que cumplen con los criterios de filtro seleccionados.
+* Hacer Scroll:
+    * El usuario se desplaza verticalmente para navegar a través de toda su lista de transacciones.
+4. **Casos Especiales y Estados de la Pantalla:**
+* Estado Vacío (Sin Transacciones que Coincidan):
+    * Si no hay transacciones registradas que coincidan con los filtros aplicados (o si el historial general está vacío).
+    * Se mostrará un mensaje de texto amigable y centrado en el área de la lista (ej. "No hay transacciones para mostrar." o "Ningún movimiento coincide con tu selección.").
