@@ -9,11 +9,11 @@
     * Usuario introduce Monto.
     * Usuario selecciona/confirma Fecha (usando selector de fecha).
     * Usuario pulsa un campo/botón "Categoría" que lleva a la Pantalla "Selección de Categoría". Selecciona una categoría y vuelve.
-    * (Opcional) Usuario introduce Descripción.
+    * Usuario introduce Concepto.
     * Botón "Confirmar Transacción" (o texto dinámico "Confirmar Gasto" / "Confirmar Ingreso").
 4.  **Acción del Usuario:** Pulsa "Confirmar Transacción".
 5.  **Procesamiento:** Validación de datos. Si hay errores, muestra mensaje en la misma pantalla. Si es correcto, guarda la transacción.
-6.  **Feedback y Siguiente Paso:** Muestra mensaje de confirmación breve (Toast/Snackbar). Permanece en la pantalla "Nueva Transacción" con campos de entrada limpios (Monto, Descripción). El Tipo y la Categoría podrían mantenerse preseleccionados de la última entrada para agilizar registros consecutivos.
+6.  **Feedback y Siguiente Paso:** Muestra mensaje de confirmación breve (Toast/Snackbar). Permanece en la pantalla "Nueva Transacción" con campos de entrada limpios (Monto, Concepto). El Tipo y la Categoría podrían mantenerse preseleccionados de la última entrada para agilizar registros consecutivos.
 
 ---
 
@@ -74,13 +74,14 @@
     * Las transacciones se ordenan cronológicamente, con la más reciente apareciendo primero.
     * Cada Fila/Ítem de Transacción muestra de forma concisa:
         - Un indicador visual del color de la categoría asociada.
+        - El "Concepto" de la transacción (una breve descripción o nombre que el usuario asignó).
         - La Fecha de la transacción.
-        - El Monto de la transacción (distinguiendo claramente ingresos de gastos, ej. mediante color o signo +/-).
-        - (La descripción y el nombre explícito de la categoría no se muestran en esta vista de lista, se verán al acceder al detalle/edición).
+        - El Monto de la transacción (distinguiendo claramente ingresos de gastos, ej. signo +/-).
+    * (La descripción y el nombre explícito de la categoría no se muestran en esta vista de lista, se verán al acceder al detalle/edición).
 3. **Interacciones del Usuario en esta Pantalla:**
 * Acceder a Detalles y Editar Transacción:
     * El usuario pulsa sobre cualquier parte de una fila de transacción.
-    * El sistema navega a la pantalla de "Editar Transacción". Esta pantalla es la misma que se utiliza para "Nueva Transacción", pero se precarga con todos los detalles de la transacción seleccionada (incluyendo nombre de categoría, descripción, monto y fecha) y los campos son editables. El botón de confirmación indicará una acción de guardado de cambios.
+    * El sistema navega a la pantalla de "Editar Transacción". Esta pantalla es la misma que se utiliza para "Nueva Transacción", pero se precarga con todos los detalles de la transacción seleccionada (incluyendo nombre de categoría, concepto, monto y fecha) y los campos son editables. El botón de confirmación indicará una acción de guardado de cambios.
 * Aplicar Filtros:
     * Al seleccionar una opción en el seleccionable de "Filtro por Tipo" o desplegable "Filtro por Categoría", la lista de transacciones se actualiza instantáneamente para mostrar solo aquellas que cumplen con los criterios de filtro seleccionados.
 * Hacer Scroll:
