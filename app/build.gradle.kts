@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)               // ESTA LÍNEA para aplicar el plugin KSP
+
 }
 
 android {
@@ -42,7 +44,13 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.room.common.jvm)
+
+    // Dependencias de Room (AÑADE/MODIFICA ESTAS LÍNEAS)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler) // Usa ksp para el procesador de anotaciones de Room
+    implementation(libs.androidx.room.ktx)   // Para extensiones Kotlin y soporte de Coroutines
+
+    // Dependencias de Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
