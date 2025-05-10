@@ -1,30 +1,28 @@
-# mi_bolsillo_app
+# Mi Bolsillo App
 
-**mi_bolsillo_app** es una aplicación móvil para Android que permite a los usuarios llevar un control sencillo y visual de sus finanzas personales, registrando ingresos y gastos, categorizándolos y visualizando su balance mensual.
-
----
-
-## Funcionalidades principales
-
-### MVP (Producto Mínimo Viable)
-- Registrar gastos e ingresos de forma rápida, indicando monto, fecha y categoría.
-- Visualizar una lista cronológica de transacciones recientes.
-- Editar y eliminar transacciones existentes.
-- Uso de categorías predefinidas para organizar los movimientos.
-- Crear, editar y eliminar categorías personalizadas.
-- Visualización básica: desglose de gastos mensuales por categoría (gráfico circular o de barras).
-- Resumen de ingresos, gastos y balance mensual.
-- Interfaz moderna y fluida basada en **Jetpack Compose**.
-- Persistencia local de datos usando Room.
-- Inyección de dependencias con **Hilt**.
-
-### Funcionalidades planeadas para el futuro
-- Establecer presupuestos mensuales por categoría.
-- Visualizar el progreso del gasto frente al presupuesto asignado.
-- Sincronización o backup en la nube.
-- Exportación de datos (CSV, PDF).
-- Notificaciones inteligentes (por ejemplo, alertas de sobrepaso de presupuesto).
-- Integración con APIs bancarias.
-- Personalización avanzada de la interfaz y widgets.
+**Mi Bolsillo App** is an Android mobile application that allows users to easily and visually track their personal finances by recording income and expenses, categorizing them, and viewing their monthly balance.
 
 ---
+
+## Key Features
+
+### MVP (Minimum Viable Product)
+- Record income and expenses quickly, specifying the amount, date, and category.
+- View a chronological list of recent transactions.
+- Edit and delete existing transactions.
+- Organize transactions using predefined categories.
+- Create, edit, and delete custom categories.
+- Visualize a basic monthly expense breakdown by category (pie chart or bar chart).
+- Access a summary of income, expenses, and monthly balance.
+- Modern and fluid user interface built with **Jetpack Compose**.
+- Local data storage via the Room persistence library.
+- Dependency injection managed by **Hilt**.
+
+### Planned Future Features
+- Set monthly budgets by category.
+- Track spending progress against allocated budgets.
+- Enable cloud synchronization or backup.
+- Allow data export (CSV, PDF).
+- Provide smart notifications (e.g., alerts for exceeding budget).
+- Integrate with banking APIs.
+- Offer advanced interface and widget customization.
