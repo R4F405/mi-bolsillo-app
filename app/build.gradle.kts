@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.compose.compiler)
 
 }
 
@@ -18,6 +19,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        compose = true // Habilita Jetpack Compose
     }
 
     buildTypes {
@@ -62,4 +67,20 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Jetpack Compose - BOM (Bill of Materials)
+    implementation(platform(libs.androidx.compose.bom)) // Importante: 'platform'
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+
+    // Integración de Compose con Activity y ViewModel/Lifecycle
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose) // Para hiltViewModel() y viewModel() en Composables
+    implementation(libs.androidx.lifecycle.runtime.compose)   // Para collectAsStateWithLifecycle()
+
+    // Herramientas de Compose (solo para depuración, no para release builds)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    // debugImplementation(libs.androidx.compose.ui.test.manifest) // Para tests de UI con Compose
 }
