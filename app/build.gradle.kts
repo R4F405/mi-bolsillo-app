@@ -55,6 +55,9 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler) // Usa ksp para el compilador de Hilt
 
+    // Lifecycle ViewModel KTX (para viewModelScope)
+    implementation(libs.androidx.lifecycle.viewmodelktx)
+
     // Dependencias de Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
