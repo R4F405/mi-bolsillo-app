@@ -22,7 +22,7 @@ import com.rafa.mi_bolsillo_app.ui.theme.AppTextPrimary // Para el color del tex
 @Composable
 fun CategoryPieChart(
     expensesByCategory: List<ExpenseByCategory>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier // Este modifier vendrá de DashboardScreen
 ) {
     val context = LocalContext.current
     // Color para el texto de los valores y etiquetas del gráfico
@@ -93,8 +93,6 @@ fun CategoryPieChart(
             pieChart.invalidate()
         },
         modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(1.6f) // Más ancho que alto
     )
 }
 

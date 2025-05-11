@@ -131,7 +131,7 @@ fun DashboardScreen(
 
                 // Gráfico de Gastos
                 Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(50.dp)) //Bajar el grafico
+                Spacer(modifier = Modifier.height(15.dp)) //Bajar el grafico
                 
                 if (uiState.expensesByCategory.isNotEmpty()) {
                     Box(
@@ -149,7 +149,7 @@ fun DashboardScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(120.dp)
+                            .height(160.dp)
                             .padding(vertical = 4.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -157,7 +157,7 @@ fun DashboardScreen(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
                 // Movimientos Recientes
                 Text("Movimientos Recientes", style = MaterialTheme.typography.titleMedium)
