@@ -28,6 +28,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState // Para el scroll
 import androidx.compose.foundation.verticalScroll // Para el scroll
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Cambiado para consistencia de auto-mirroring
+import androidx.compose.material.icons.automirrored.filled.ArrowForward // Cambiado para consistencia
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,12 +46,29 @@ fun DashboardScreen(
             TopAppBar(
                 title = { Text("Mi Bolsillo") },
                 actions = {
-                    Text(uiState.monthName, modifier = Modifier.padding(horizontal = 16.dp))
+                    // Selector de Mes/Año
+                    IconButton(onClick = { viewModel.selectPreviousMonth() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, // Icono para mes anterior
+                            contentDescription = "Mes anterior"
+                        )
+                    }
+                    Text(
+                        text = uiState.monthName, // Se actualizará desde el ViewModel
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium) // Estilo para el texto del mes
+                    )
+                    IconButton(onClick = { viewModel.selectNextMonth() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward, // Icono para mes siguiente
+                            contentDescription = "Mes siguiente"
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary // Color de los iconos de acción
                 )
             )
         },

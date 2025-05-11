@@ -36,14 +36,13 @@ data class DashboardUiState(
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository // <-- INYECTA CategoryRepository
+    private val categoryRepository: CategoryRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
-
-    private var currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    private var currentMonth = Calendar.getInstance().get(Calendar.MONTH) // 0-11
+    private var currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)
+    private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH) // 0-11
 
     init {
         loadDashboardData()
@@ -55,7 +54,6 @@ class DashboardViewModel @Inject constructor(
         calendar.set(year, month, 1, 0, 0, 0)
         calendar.set(Calendar.MILLISECOND, 0)
         val startDate = calendar.timeInMillis
-
         calendar.set(year, month, calendar.getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59)
         calendar.set(Calendar.MILLISECOND, 999)
         val endDate = calendar.timeInMillis
@@ -65,7 +63,7 @@ class DashboardViewModel @Inject constructor(
     private fun getMonthYearString(year: Int, month: Int): String {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1)
-        val sdf = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale.getDefault()) // Cambiado a MMMM yyyy
         return sdf.format(calendar.time).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
@@ -75,8 +73,7 @@ class DashboardViewModel @Inject constructor(
             val (startDate, endDate) = getCurrentMonthDateRange(currentYear, currentMonth)
             val monthName = getMonthYearString(currentYear, currentMonth)
 
-            // Necesitamos todas las categorías para mapear las transacciones recientes
-            val allCategories = categoryRepository.getAllCategories().first() // Obtiene la lista actual de categorías
+            val allCategories = categoryRepository.getAllCategories().first()
             val categoriesMap = allCategories.associateBy { it.id }
 
             combine(
@@ -84,13 +81,13 @@ class DashboardViewModel @Inject constructor(
                 transactionRepository.getTotalExpensesBetweenDates(startDate, endDate).map { it ?: 0.0 },
                 transactionRepository.getTransactionsBetweenDates(startDate, endDate)
                     .map { transactions ->
-                        transactions.take(3).map { transaction -> // Mapea a TransactionUiItem
+                        transactions.take(3).map { transaction ->
                             val category = categoriesMap[transaction.categoryId]
                             TransactionUiItem(
                                 id = transaction.id,
                                 amount = transaction.amount,
                                 date = transaction.date,
-                                concepto = transaction.description, // Mapea description a concepto
+                                concepto = transaction.description,
                                 categoryName = category?.name ?: "Sin Categoría",
                                 categoryColorHex = category?.colorHex ?: "#808080",
                                 transactionType = transaction.transactionType
@@ -100,10 +97,11 @@ class DashboardViewModel @Inject constructor(
                 transactionRepository.getExpensesByCategoryInRange(startDate, endDate)
             ) { income, expenses, recents, expensesByCategoryData ->
                 val calculatedBalance = income - expenses
-                _uiState.value = DashboardUiState(
+                // Actualiza el uiState con el nuevo monthName
+                _uiState.value = _uiState.value.copy( // Usamos copy para mantener otros estados si los hubiera
                     selectedYear = currentYear,
                     selectedMonth = currentMonth,
-                    monthName = monthName,
+                    monthName = monthName, // <-- Asegúrate que esto se actualiza
                     totalIncome = income,
                     totalExpenses = expenses,
                     balance = calculatedBalance,
@@ -113,5 +111,21 @@ class DashboardViewModel @Inject constructor(
             }.collect {}
         }
     }
-    // TODO: Implementar selectPreviousMonth, selectNextMonth
+    fun selectNextMonth() {
+        val calendar = Calendar.getInstance()
+        calendar.set(currentYear, currentMonth, 1)
+        calendar.add(Calendar.MONTH, 1)
+        currentYear = calendar.get(Calendar.YEAR)
+        currentMonth = calendar.get(Calendar.MONTH)
+        loadDashboardData() // Recarga los datos para el nuevo mes/año
+    }
+
+    fun selectPreviousMonth() {
+        val calendar = Calendar.getInstance()
+        calendar.set(currentYear, currentMonth, 1)
+        calendar.add(Calendar.MONTH, -1)
+        currentYear = calendar.get(Calendar.YEAR)
+        currentMonth = calendar.get(Calendar.MONTH)
+        loadDashboardData() // Recarga los datos para el nuevo mes/año
+    }
 }
