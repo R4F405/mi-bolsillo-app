@@ -106,14 +106,23 @@ fun DashboardScreen(
 
             // Sección Gráfico (Placeholder)
             Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp) // Altura para el gráfico
-                    .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Aquí irá el Pie Chart (MPAndroidChart próximamente)")
+            // Aquí reemplazamos el Box placeholder con nuestro gráfico
+            if (uiState.expensesByCategory.isNotEmpty()) {
+                CategoryPieChart(
+                    expensesByCategory = uiState.expensesByCategory,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            } else {
+                // Mantenemos un placeholder si no hay datos para el gráfico
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("No hay datos de gastos para mostrar en el gráfico.")
+                }
             }
             Spacer(modifier = Modifier.height(24.dp))
 

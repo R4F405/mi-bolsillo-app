@@ -89,4 +89,7 @@ dependencies {
     // Herramientas de Compose (solo para depuración, no para release builds)
     debugImplementation(libs.androidx.compose.ui.tooling)
     // debugImplementation(libs.androidx.compose.ui.test.manifest) // Para tests de UI con Compose
+
+    // MPAndroidChart
+    implementation(libs.mpandroidchart)
 }
