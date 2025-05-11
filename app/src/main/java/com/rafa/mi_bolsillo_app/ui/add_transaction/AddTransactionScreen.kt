@@ -9,13 +9,31 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.*
+// Importante: ExposedDropdownMenuDefaults y ExposedDropdownMenuBox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults // Para colores del TextField deshabilitado
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color // Para Color.Transparent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,16 +49,15 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class) // Necesario para TopAppBar, Scaffold y ExposedDropdownMenuBox
 @Composable
 fun AddTransactionScreen(
     navController: NavController,
-    transactionId: Long, // Recibido desde la navegación, -1L para nueva transacción
+    transactionId: Long,
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val isEditMode = transactionId != -1L
 
-    // Estados para los campos del formulario (manejados localmente en el Composable)
     var concepto by rememberSaveable { mutableStateOf("") }
     var amount by rememberSaveable { mutableStateOf("") }
 
@@ -58,17 +75,13 @@ fun AddTransactionScreen(
     var amountError by rememberSaveable { mutableStateOf<String?>(null) }
     var categoryError by rememberSaveable { mutableStateOf<String?>(null) }
 
-    // Observar la transacción que se está editando desde el ViewModel
     val transactionToEdit by viewModel.transactionToEdit.collectAsStateWithLifecycle()
 
-    // Efecto para cargar la transacción si estamos en modo edición,
-    // o para limpiar el estado si es una nueva transacción.
     LaunchedEffect(key1 = transactionId) {
         if (isEditMode) {
             viewModel.loadTransactionForEditing(transactionId)
         } else {
-            viewModel.clearEditingTransaction() // Limpia el estado en el VM
-            // Resetea los campos del formulario para "Nueva Transacción"
+            viewModel.clearEditingTransaction()
             concepto = ""
             amount = ""
             selectedDateMillis = System.currentTimeMillis()
@@ -79,21 +92,17 @@ fun AddTransactionScreen(
         }
     }
 
-    // Efecto para rellenar el formulario cuando transactionToEdit cambia (en modo edición)
-    // y cuando las categorías están disponibles (para encontrar el objeto Category)
     LaunchedEffect(key1 = transactionToEdit, key2 = categoriesFromVm, key3 = isEditMode) {
         if (isEditMode && transactionToEdit != null) {
             val tx = transactionToEdit!!
-            concepto = tx.description ?: "" // La entidad usa 'description'
+            concepto = tx.description ?: ""
             amount = tx.amount.toString()
             selectedDateMillis = tx.date
             selectedTransactionType = tx.transactionType
-            // Busca el objeto Category completo basado en el categoryId de la transacción
             selectedCategory = categoriesFromVm.find { it.id == tx.categoryId }
         }
     }
 
-    // Efecto para limpiar el estado del ViewModel cuando el Composable se va
     DisposableEffect(Unit) {
         onDispose {
             viewModel.clearEditingTransaction()
@@ -125,7 +134,6 @@ fun AddTransactionScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Selector de Tipo (Ingreso/Gasto)
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center) {
                 TransactionType.values().forEach { type ->
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 8.dp).clickable { selectedTransactionType = type }) {
@@ -140,24 +148,86 @@ fun AddTransactionScreen(
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedTextField(value = amount, onValueChange = { amount = it; amountError = null }, label = { Text("Monto") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.fillMaxWidth(), isError = amountError != null, supportingText = { if (amountError != null) Text(amountError!!) })
             Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(value = dateFormatter.format(selectedDateMillis), onValueChange = {}, label = { Text("Fecha") }, readOnly = true, trailingIcon = { Icon(Icons.Filled.DateRange, "Seleccionar fecha") }, modifier = Modifier.fillMaxWidth().clickable { showDatePicker = true })
+
+            // --- CAMBIO: Selector de Fecha Mejorado ---
+            Text( // Label encima del campo
+                text = "Fecha",
+                style = MaterialTheme.typography.labelLarge, // O el estilo que prefieras para el label
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = { showDatePicker = true })
+            ) {
+                OutlinedTextField(
+                    value = dateFormatter.format(selectedDateMillis),
+                    onValueChange = {}, // No es editable por texto
+                    //label = { Text("Fecha") }, // Label ahora está encima
+                    readOnly = true,
+                    enabled = false, // Importante: deshabilita interacciones directas con el TextField
+                    trailingIcon = { Icon(Icons.Filled.DateRange, contentDescription = "Seleccionar fecha") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors( // Colores para que parezca activo aunque esté disabled
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant, // No se usa si el label está fuera
+                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant // Si usaras placeholder
+                    )
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
 
-            Box(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = selectedCategory?.name ?: "Seleccionar categoría",
-                    onValueChange = { /* No editable */ }, label = { Text("Categoría") }, readOnly = true,
-                    trailingIcon = { Icon(Icons.Filled.ArrowDropDown, "Abrir categorías") },
-                    modifier = Modifier.fillMaxWidth().clickable {
-                        if (categoriesFromVm.isNotEmpty()) categoryMenuExpanded = true else categoryError = "No hay categorías"
-                    },
-                    isError = categoryError != null, supportingText = { if (categoryError != null) Text(categoryError!!) }
-                )
-                DropdownMenu(expanded = categoryMenuExpanded, onDismissRequest = { categoryMenuExpanded = false }, modifier = Modifier.fillMaxWidth(0.9f)) {
-                    if (categoriesFromVm.isEmpty()) {
-                        DropdownMenuItem(text = { Text("No hay categorías") }, onClick = { categoryMenuExpanded = false }, enabled = false)
+            // --- CAMBIO: Selector de Categoría Mejorado con ExposedDropdownMenuBox ---
+            ExposedDropdownMenuBox(
+                expanded = categoryMenuExpanded,
+                onExpandedChange = {
+                    if (categoriesFromVm.isNotEmpty()) {
+                        categoryMenuExpanded = !categoryMenuExpanded
                     } else {
-                        categoriesFromVm.forEach { category -> DropdownMenuItem(text = { Text(category.name) }, onClick = { selectedCategory = category; categoryMenuExpanded = false; categoryError = null }) }
+                        categoryError = "No hay categorías disponibles"
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = selectedCategory?.name ?: "", // Valor actual o vacío
+                    onValueChange = { /* No editable por texto */ },
+                    label = { Text("Categoría") },
+                    placeholder = { Text("Seleccionar categoría") }, // Se muestra si value está vacío
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryMenuExpanded) },
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(), // Colores estándar de Material3 para esto
+                    modifier = Modifier
+                        .menuAnchor() // Necesario para ExposedDropdownMenuBox
+                        .fillMaxWidth(),
+                    isError = categoryError != null,
+                    supportingText = { if (categoryError != null) Text(categoryError!!) }
+                )
+                ExposedDropdownMenu(
+                    expanded = categoryMenuExpanded,
+                    onDismissRequest = { categoryMenuExpanded = false },
+                    // modifier = Modifier.fillMaxWidth() // Para que el menú tome el ancho del campo
+                ) {
+                    if (categoriesFromVm.isEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("No hay categorías para seleccionar") },
+                            onClick = { categoryMenuExpanded = false },
+                            enabled = false
+                        )
+                    } else {
+                        categoriesFromVm.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category.name) },
+                                onClick = {
+                                    selectedCategory = category
+                                    categoryMenuExpanded = false
+                                    categoryError = null
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -174,24 +244,11 @@ fun AddTransactionScreen(
 
                     if (isValid && amountDouble != null && selectedCategory != null) {
                         if (isEditMode) {
-                            viewModel.updateTransaction(
-                                transactionId = transactionId, // El ID original de la transacción que se está editando
-                                amount = amountDouble,
-                                date = selectedDateMillis,
-                                concepto = concepto.takeIf { it.isNotBlank() },
-                                categoryId = selectedCategory!!.id,
-                                type = selectedTransactionType
-                            )
+                            viewModel.updateTransaction(transactionId = transactionId, amount = amountDouble, date = selectedDateMillis, concepto = concepto.takeIf { it.isNotBlank() }, categoryId = selectedCategory!!.id, type = selectedTransactionType)
                         } else {
-                            viewModel.addTransaction(
-                                amount = amountDouble,
-                                date = selectedDateMillis,
-                                concepto = concepto.takeIf { it.isNotBlank() },
-                                categoryId = selectedCategory!!.id,
-                                type = selectedTransactionType
-                            )
+                            viewModel.addTransaction(amount = amountDouble, date = selectedDateMillis, concepto = concepto.takeIf { it.isNotBlank() }, categoryId = selectedCategory!!.id, type = selectedTransactionType)
                         }
-                        navController.popBackStack() // Volver a la pantalla anterior
+                        navController.popBackStack()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -215,21 +272,17 @@ fun AddTransactionScreen(
             cal.get(Calendar.MONTH),
             cal.get(Calendar.DAY_OF_MONTH)
         ).apply {
-            // Opcional: Limitar fechas si es necesario (ej. setMaxDate)
-            setOnDismissListener { showDatePicker = false } // Asegura que showDatePicker se ponga a false si se cancela
+            setOnDismissListener { showDatePicker = false }
             show()
         }
     }
 }
 
-// Preview (simplificado, necesitaría mocks para ViewModel y NavController para ser más útil)
 @Preview(showBackground = true)
 @Composable
 fun AddTransactionScreenNewPreview() {
     MiBolsilloAppTheme {
         Surface {
-            // Para un preview de "nueva transacción", transactionId sería -1L
-            // Se necesitaría un NavController y ViewModel mockeados para un preview completo.
             Text("Preview de AddTransactionScreen (Modo Nueva)")
         }
     }
