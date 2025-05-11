@@ -125,11 +125,15 @@ fun DashboardScreen(
                     modifier = Modifier.padding(top = 8.dp)
                 )
             } else {
-                // Usamos una Column simple ya que son pocos items (take(5) en ViewModel)
-                // Si fueran muchos, LazyColumn sería mejor aquí también.
                 Column(modifier = Modifier.padding(top = 8.dp)) {
                     uiState.recentTransactions.forEach { transactionItem ->
-                        TransactionRowItem(transactionItem = transactionItem)
+                        TransactionRowItem(
+                            transactionItem = transactionItem,
+                            onItemClick = { // <-- AÑADE ESTA LAMBDA
+                                // Navegar a la pantalla de edición pasando el ID
+                                navController.navigate("${AppScreens.AddTransactionScreen.route}?transactionId=${transactionItem.id}")
+                            }
+                        )
                         // Divider() // Opcional
                     }
                 }

@@ -28,16 +28,23 @@ import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.ui.theme.AppExpense // Asumiendo que definiste estos en Color.kt
 import com.rafa.mi_bolsillo_app.ui.theme.AppIncome   // Asumiendo que definiste estos en Color.kt
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
+import androidx.compose.foundation.clickable
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+
 @Composable
-fun TransactionRowItem(transactionItem: TransactionUiItem, modifier: Modifier = Modifier) {
+fun TransactionRowItem(
+    transactionItem: TransactionUiItem,
+    onItemClick: () -> Unit, // Nuevo callback para el clic
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .clickable { onItemClick() }, // <--- HACER LA TARJETA CLICABLE
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -121,9 +128,10 @@ fun TransactionRowItemPreview() {
                 date = System.currentTimeMillis(),
                 concepto  = "Compra semanal supermercado",
                 categoryName = "Comida",
-                categoryColorHex = "#FFC107", // Amarillo para comida
+                categoryColorHex = "#FFC107",
                 transactionType = TransactionType.EXPENSE
-            )
+            ),
+            onItemClick = {} // Añadir lambda vacía para el preview
         )
     }
 }
@@ -137,11 +145,12 @@ fun TransactionRowItemIncomePreview() {
                 id = 1,
                 amount = 1500.0,
                 date = System.currentTimeMillis(),
-                concepto  = "Salario Mayo",
+                concepto = "Salario Mayo",
                 categoryName = "Salario",
-                categoryColorHex = "#009688", // Verde azulado para salario
+                categoryColorHex = "#009688",
                 transactionType = TransactionType.INCOME
-            )
+            ),
+            onItemClick = {} // Añadir lambda vacía para el preview
         )
     }
 }

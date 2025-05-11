@@ -1,6 +1,5 @@
 package com.rafa.mi_bolsillo_app.ui.transactions
 
-import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,10 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Icono de flecha atrás
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton // Para el botón de navegación
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -24,71 +23,79 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import kotlinx.coroutines.launch
-import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
+import androidx.navigation.NavController // Necesario para la navegación
+import com.rafa.mi_bolsillo_app.navigation.AppScreens // Para las rutas
+import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem // Asegúrate que el import es a ui.model
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionListScreen(
-    navController: NavController,
+    navController: NavController, // Ya lo teníamos para la navegación
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val transactionsUiItems by viewModel.transactionsUiItems.collectAsStateWithLifecycle()
 
-    // Estado para controlar la visibilidad del ModalBottomSheet
-    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
-    // Estado para el ModalBottomSheet
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true // Para que solo sea expandido o oculto
-    )
-    val scope = rememberCoroutineScope() // Coroutine scope para lanzar operaciones del sheet
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mis Transacciones") },
+                title = { Text("Historial de Transacciones") }, // Título actualizado
+                navigationIcon = { // Icono para volver atrás
+                    IconButton(onClick = { navController.navigateUp() }) { // O navController.popBackStack()
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver al Dashboard"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        },
+        }
+        // Eliminamos el FloatingActionButton de aquí si el principal está en el Dashboard
+        // floatingActionButton = { ... }
     ) { innerPadding ->
 
-        Box(modifier = Modifier.padding(innerPadding)) { // Usamos Box para que el contenido principal y el sheet no se solapen de forma inesperada
+        Box(modifier = Modifier.padding(innerPadding)) {
             if (transactionsUiItems.isEmpty()) {
                 EmptyState(modifier = Modifier.fillMaxSize())
             } else {
                 TransactionList(
                     transactions = transactionsUiItems,
+                    onTransactionClick = { transactionId ->
+                        // Navegar a la pantalla de edición/creación pasando el ID
+                        // Usaremos la misma pantalla AddTransactionScreen pero con un ID
+                        navController.navigate("${AppScreens.AddTransactionScreen.route}?transactionId=$transactionId")
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
             }
         }
+        // El ModalBottomSheet para añadir transacciones se eliminó de aquí
     }
 }
 
 @Composable
 fun TransactionList(
     transactions: List<TransactionUiItem>,
+    onTransactionClick: (Long) -> Unit, // Callback para el clic en un ítem
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        // Ahora 'transactionItem' aquí será del tipo ui.model.TransactionUiItem
         items(transactions, key = { it.id }) { transactionItem ->
-            TransactionRowItem(transactionItem = transactionItem)
+            TransactionRowItem(
+                transactionItem = transactionItem,
+                onItemClick = { onTransactionClick(transactionItem.id) } // Pasar el ID
+            )
         }
     }
 }
+
 
 @Composable
 fun EmptyState(modifier: Modifier = Modifier) {
