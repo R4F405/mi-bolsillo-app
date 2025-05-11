@@ -3,6 +3,8 @@ package com.rafa.mi_bolsillo_app.ui.transactions
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,16 +25,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class) // Para TopAppBar y Scaffold
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionListScreen(
-    viewModel: TransactionViewModel = hiltViewModel(),
-    onAddTransactionClick: () -> Unit = {} // Callback para cuando se pulse el FAB
+    viewModel: TransactionViewModel = hiltViewModel()
 ) {
-    // Recolectamos el estado de transactionsUiItems del ViewModel.
-    // collectAsStateWithLifecycle se encarga de observar el Flow de forma segura respecto al ciclo de vida del Composable.
     val transactionsUiItems by viewModel.transactionsUiItems.collectAsStateWithLifecycle()
+
+    // Estado para controlar la visibilidad del ModalBottomSheet
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+    // Estado para el ModalBottomSheet
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true // Para que solo sea expandido o oculto
+    )
+    val scope = rememberCoroutineScope() // Coroutine scope para lanzar operaciones del sheet
 
     Scaffold(
         topBar = {
@@ -45,19 +59,47 @@ fun TransactionListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddTransactionClick) {
+            FloatingActionButton(onClick = {
+                scope.launch {
+                    showBottomSheet = true // Mostrar el BottomSheet
+                }
+            }) {
                 Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
             }
         }
-    ) { innerPadding -> // innerPadding es proporcionado por Scaffold para evitar solapamientos
+    ) { innerPadding ->
 
-        if (transactionsUiItems.isEmpty()) {
-            EmptyState(modifier = Modifier.padding(innerPadding))
-        } else {
-            TransactionList(
-                transactions = transactionsUiItems,
-                modifier = Modifier.padding(innerPadding)
-            )
+        Box(modifier = Modifier.padding(innerPadding)) { // Usamos Box para que el contenido principal y el sheet no se solapen de forma inesperada
+            if (transactionsUiItems.isEmpty()) {
+                EmptyState(modifier = Modifier.fillMaxSize())
+            } else {
+                TransactionList(
+                    transactions = transactionsUiItems,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+
+        // Definir el ModalBottomSheet
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false // Ocultar cuando se descarte
+                },
+                sheetState = sheetState,
+                // windowInsets = WindowInsets(0) // para que no se ajuste a los insets del teclado si quieres controlarlo manualmente
+            ) {
+                // El contenido del BottomSheet irá aquí.
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .height(300.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Formulario para Añadir Transacción (Próximamente)")
+                }
+            }
         }
     }
 }

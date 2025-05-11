@@ -22,12 +22,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // Aquí llamamos a la pantalla principal de transacciones
-                    TransactionListScreen(
-                        onAddTransactionClick = {
-                            // Lógica para navegar/mostrar pantalla de añadir transacción
-                            println("FAB Clicado: Añadir transacción")
-                        }
-                    )
+                    TransactionListScreen()
                 }
             }
         }
