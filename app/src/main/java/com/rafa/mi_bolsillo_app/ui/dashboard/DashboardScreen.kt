@@ -127,15 +127,14 @@ fun DashboardScreen(
                 )
             } else {
                 Column(modifier = Modifier.padding(top = 8.dp)) {
-                    uiState.recentTransactions.forEach { transactionItem ->
+                    uiState.recentTransactions.forEach { transactionItem -> // transactionItem es TransactionUiItem
                         TransactionRowItem(
                             transactionItem = transactionItem,
-                            onItemClick = { // <-- AÑADE ESTA LAMBDA
-                                // Navegar a la pantalla de edición pasando el ID
-                                navController.navigate("${AppScreens.AddTransactionScreen.route}?transactionId=${transactionItem.id}")
+                            onItemClick = {
+                                // CORRECCIÓN: Usar la función createRoute
+                                navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
                             }
                         )
-                        // Divider() // Opcional
                     }
                 }
             }
