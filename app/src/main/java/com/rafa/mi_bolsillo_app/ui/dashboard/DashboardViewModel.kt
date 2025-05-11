@@ -84,7 +84,7 @@ class DashboardViewModel @Inject constructor(
                 transactionRepository.getTotalExpensesBetweenDates(startDate, endDate).map { it ?: 0.0 },
                 transactionRepository.getTransactionsBetweenDates(startDate, endDate)
                     .map { transactions ->
-                        transactions.take(5).map { transaction -> // Mapea a TransactionUiItem
+                        transactions.take(3).map { transaction -> // Mapea a TransactionUiItem
                             val category = categoriesMap[transaction.categoryId]
                             TransactionUiItem(
                                 id = transaction.id,
