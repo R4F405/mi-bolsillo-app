@@ -59,15 +59,6 @@ fun TransactionListScreen(
                 )
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                scope.launch {
-                    showBottomSheet = true // Mostrar el BottomSheet
-                }
-            }) {
-                Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
-            }
-        }
     ) { innerPadding ->
 
         Box(modifier = Modifier.padding(innerPadding)) { // Usamos Box para que el contenido principal y el sheet no se solapen de forma inesperada
@@ -77,28 +68,6 @@ fun TransactionListScreen(
                 TransactionList(
                     transactions = transactionsUiItems,
                     modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
-
-        // Definir el ModalBottomSheet
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet = false
-                },
-                sheetState = sheetState,
-            ) {
-                AddTransactionSheetContent(
-                    viewModel = viewModel,
-                    onTransactionAdded = {
-                        // Acción a realizar después de añadir la transacción y cerrar el sheet
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                showBottomSheet = false
-                            }
-                        }
-                    }
                 )
             }
         }

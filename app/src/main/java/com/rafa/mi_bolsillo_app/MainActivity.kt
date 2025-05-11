@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.rafa.mi_bolsillo_app.ui.dashboard.DashboardScreen // <-- IMPORTA DashboardScreen
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen
+import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,7 +52,9 @@ class MainActivity : ComponentActivity() {
                                 Text("Pantalla Añadir Transacción (Próximamente)")
                             }
                         }
-                        // ... otras rutas futuras ...
+                        composable(route = AppScreens.AddTransactionScreen.route) {
+                            AddTransactionScreen(navController = navController)
+                        }
                     }
                 }
             }
