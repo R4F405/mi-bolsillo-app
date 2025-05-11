@@ -60,6 +60,9 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler) // Usa ksp para el compilador de Hilt
 
+    // Hilt Navigation Compose (para hiltViewModel())
+    implementation(libs.androidx.hilt.navigation.compose)
+
     // Lifecycle ViewModel KTX (para viewModelScope)
     implementation(libs.androidx.lifecycle.viewmodelktx)
 
