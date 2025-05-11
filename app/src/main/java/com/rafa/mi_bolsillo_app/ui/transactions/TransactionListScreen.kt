@@ -84,21 +84,21 @@ fun TransactionListScreen(
         if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    showBottomSheet = false // Ocultar cuando se descarte
+                    showBottomSheet = false
                 },
                 sheetState = sheetState,
-                // windowInsets = WindowInsets(0) // para que no se ajuste a los insets del teclado si quieres controlarlo manualmente
             ) {
-                // El contenido del BottomSheet irá aquí.
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(300.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Formulario para Añadir Transacción (Próximamente)")
-                }
+                AddTransactionSheetContent(
+                    viewModel = viewModel,
+                    onTransactionAdded = {
+                        // Acción a realizar después de añadir la transacción y cerrar el sheet
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                showBottomSheet = false
+                            }
+                        }
+                    }
+                )
             }
         }
     }
