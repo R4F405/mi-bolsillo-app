@@ -24,6 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import com.rafa.mi_bolsillo_app.ui.dashboard.DashboardScreen // <-- IMPORTA DashboardScreen
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen
 import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
+import androidx.navigation.NavType                     // <-- AÑADE IMPORT
+import androidx.navigation.navArgument               // <-- AÑADE IMPORT
+import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -41,20 +44,29 @@ class MainActivity : ComponentActivity() {
                         startDestination = AppScreens.DashboardScreen.route
                     ) {
                         composable(route = AppScreens.DashboardScreen.route) {
-                            DashboardScreen(navController = navController) // <-- USA EL REAL
+                            DashboardScreen(navController = navController)
                         }
                         composable(route = AppScreens.TransactionHistoryScreen.route) {
                             TransactionListScreen(navController = navController)
                         }
-                        composable(route = AppScreens.AddTransactionScreen.route) {
-                            // Placeholder para la pantalla de añadir transacción
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text("Pantalla Añadir Transacción (Próximamente)")
-                            }
+
+                        // Configuración para AddTransactionScreen con argumento opcional
+                        composable(
+                            route = AppScreens.AddTransactionScreen.route, // La ruta base con el placeholder
+                            arguments = listOf(
+                                navArgument("transactionId") {
+                                    type = NavType.LongType
+                                    defaultValue = -1L // Valor por defecto para "nueva transacción"
+                                }
+                            )
+                        ) { navBackStackEntry ->
+                            val transactionId = navBackStackEntry.arguments?.getLong("transactionId") ?: -1L
+                            AddTransactionScreen(
+                                navController = navController,
+                                transactionId = transactionId // Pasamos el ID a la pantalla
+                            )
                         }
-                        composable(route = AppScreens.AddTransactionScreen.route) {
-                            AddTransactionScreen(navController = navController)
-                        }
+                        // ... otras rutas futuras ...
                     }
                 }
             }

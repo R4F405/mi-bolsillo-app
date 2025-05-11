@@ -27,15 +27,18 @@ import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionViewModel // Reutilizaremos TransactionViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class) // Si usas componentes experimentales de M3
 @Composable
 fun AddTransactionScreen(
     navController: NavController,
-    viewModel: TransactionViewModel = hiltViewModel() // Reutilizamos el ViewModel
+    transactionId: Long,
+    viewModel: TransactionViewModel = hiltViewModel() // O un AddTransactionViewModel dedicado
 ) {
     var concepto by rememberSaveable { mutableStateOf("") }
     var amount by rememberSaveable { mutableStateOf("") }
@@ -201,10 +204,7 @@ fun AddTransactionScreen(
 @Composable
 fun AddTransactionScreenPreview() {
     MiBolsilloAppTheme {
-        // Para un preview completo, necesitarías mockear NavController y ViewModel
-        // o crear un Composable wrapper que no los necesite directamente para el preview.
-        Surface {
-            Text("Preview de AddTransactionScreen (simplificado)")
-        }
+         // Necesitarías un NavController de prueba y un transactionId de ejemplo
+         AddTransactionScreen(navController = rememberNavController(), transactionId = -1L)
     }
 }

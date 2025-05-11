@@ -57,7 +57,8 @@ fun DashboardScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate(AppScreens.AddTransactionScreen.route)
+                // Navegamos a la ruta base, transactionId tomará el valor por defecto (-1L)
+                navController.navigate(AppScreens.AddTransactionScreen.createRoute(null))
             }) {
                 Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
             }

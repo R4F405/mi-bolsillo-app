@@ -64,10 +64,9 @@ fun TransactionListScreen(
             } else {
                 TransactionList(
                     transactions = transactionsUiItems,
-                    onTransactionClick = { transactionId ->
-                        // Navegar a la pantalla de edición/creación pasando el ID
-                        // Usaremos la misma pantalla AddTransactionScreen pero con un ID
-                        navController.navigate("${AppScreens.AddTransactionScreen.route}?transactionId=$transactionId")
+                    onTransactionClick = { transactionId -> // <<-- transactionId es el ID del ítem pulsado
+                        // USAREMOS LA FUNCIÓN createRoute PARA CONSTRUIR LA RUTA CORRECTAMENTE:
+                        navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionId))
                     },
                     modifier = Modifier.fillMaxSize()
                 )
