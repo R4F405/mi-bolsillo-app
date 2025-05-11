@@ -1,5 +1,6 @@
 package com.rafa.mi_bolsillo_app.ui.transactions
 
+import androidx.compose.foundation.isSystemInDarkTheme // ¡IMPORTANTE AÑADIR ESTE IMPORT!
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,32 +31,43 @@ import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem // Asegúrate que el 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionListScreen(
-    navController: NavController, // Ya lo teníamos para la navegación
+    navController: NavController,
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val transactionsUiItems by viewModel.transactionsUiItems.collectAsStateWithLifecycle()
+    val currentDarkTheme = isSystemInDarkTheme() // Detecta si el tema oscuro del sistema está activo
 
     Scaffold(
         topBar = {
+            // Determinar colores de la TopAppBar basados en el tema actual
+            val topAppBarContainerColor = if (currentDarkTheme) {
+                MaterialTheme.colorScheme.surface // Usar color de superficie para modo oscuro
+            } else {
+                MaterialTheme.colorScheme.primary // Usar color primario para modo claro
+            }
+            val topAppBarContentColor = if (currentDarkTheme) {
+                MaterialTheme.colorScheme.onSurface // Contenido sobre superficie para modo oscuro
+            } else {
+                MaterialTheme.colorScheme.onPrimary // Contenido sobre primario para modo claro
+            }
+
             TopAppBar(
-                title = { Text("Historial de Transacciones") }, // Título actualizado
-                navigationIcon = { // Icono para volver atrás
-                    IconButton(onClick = { navController.navigateUp() }) { // O navController.popBackStack()
+                title = { Text("Historial de Transacciones") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver al Dashboard"
+                            contentDescription = "Volver" // Cambiado para ser más genérico
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = topAppBarContainerColor,
+                    titleContentColor = topAppBarContentColor,
+                    navigationIconContentColor = topAppBarContentColor
                 )
             )
         }
-        // Eliminamos el FloatingActionButton de aquí si el principal está en el Dashboard
-        // floatingActionButton = { ... }
     ) { innerPadding ->
 
         Box(modifier = Modifier.padding(innerPadding)) {
@@ -64,32 +76,30 @@ fun TransactionListScreen(
             } else {
                 TransactionList(
                     transactions = transactionsUiItems,
-                    onTransactionClick = { transactionId -> // <<-- transactionId es el ID del ítem pulsado
-                        // USAREMOS LA FUNCIÓN createRoute PARA CONSTRUIR LA RUTA CORRECTAMENTE:
+                    onTransactionClick = { transactionId ->
                         navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionId))
                     },
                     modifier = Modifier.fillMaxSize()
                 )
             }
         }
-        // El ModalBottomSheet para añadir transacciones se eliminó de aquí
     }
 }
 
 @Composable
 fun TransactionList(
     transactions: List<TransactionUiItem>,
-    onTransactionClick: (Long) -> Unit, // Callback para el clic en un ítem
+    onTransactionClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(), // Asegura que LazyColumn llene el espacio disponible
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
         items(transactions, key = { it.id }) { transactionItem ->
             TransactionRowItem(
                 transactionItem = transactionItem,
-                onItemClick = { onTransactionClick(transactionItem.id) } // Pasar el ID
+                onItemClick = { onTransactionClick(transactionItem.id) }
             )
         }
     }
@@ -99,13 +109,13 @@ fun TransactionList(
 @Composable
 fun EmptyState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(), // Asegura que EmptyState llene el espacio disponible
         contentAlignment = Alignment.Center
     ) {
         Text(
             "No hay transacciones registradas.",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant // Buen color para texto secundario
         )
     }
 }

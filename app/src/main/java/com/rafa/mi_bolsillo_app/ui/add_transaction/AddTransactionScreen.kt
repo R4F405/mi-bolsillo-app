@@ -3,6 +3,7 @@ package com.rafa.mi_bolsillo_app.ui.add_transaction
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme // ¡IMPORTANTE AÑADIR ESTE IMPORT!
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 // Importante: ExposedDropdownMenuDefaults y ExposedDropdownMenuBox
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,12 +30,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.Button
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color // Para Color.Transparent
+import androidx.compose.ui.graphics.Color // Para Color.Transparent (no parece usarse directamente aquí)
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +45,7 @@ import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
-import com.rafa.mi_bolsillo_app.ui.transactions.TransactionViewModel
+import com.rafa.mi_bolsillo_app.ui.transactions.TransactionViewModel // Asumo que este es el ViewModel correcto
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -53,17 +54,18 @@ import java.util.Locale
 @Composable
 fun AddTransactionScreen(
     navController: NavController,
-    transactionId: Long,
+    transactionId: Long, // -1L para nueva transacción
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val isEditMode = transactionId != -1L
+    val currentDarkTheme = isSystemInDarkTheme() // Detecta si el tema oscuro del sistema está activo
 
     var concepto by rememberSaveable { mutableStateOf("") }
     var amount by rememberSaveable { mutableStateOf("") }
 
     val initialCalendar = Calendar.getInstance()
     var selectedDateMillis by rememberSaveable { mutableStateOf(initialCalendar.timeInMillis) }
-    val dateFormatter = remember { SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) }
+    val dateFormatter = remember { SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) } // Corregido el formato
     var showDatePicker by remember { mutableStateOf(false) }
 
     var selectedTransactionType by remember { mutableStateOf(TransactionType.EXPENSE) }
@@ -81,12 +83,12 @@ fun AddTransactionScreen(
         if (isEditMode) {
             viewModel.loadTransactionForEditing(transactionId)
         } else {
-            viewModel.clearEditingTransaction()
+            viewModel.clearEditingTransaction() // Asegura limpiar el estado al entrar en modo "nuevo"
             concepto = ""
             amount = ""
             selectedDateMillis = System.currentTimeMillis()
             selectedTransactionType = TransactionType.EXPENSE
-            selectedCategory = null
+            selectedCategory = null // Asegura que no haya categoría preseleccionada
             amountError = null
             categoryError = null
         }
@@ -96,13 +98,14 @@ fun AddTransactionScreen(
         if (isEditMode && transactionToEdit != null) {
             val tx = transactionToEdit!!
             concepto = tx.description ?: ""
-            amount = tx.amount.toString()
+            amount = tx.amount.toString() // Considerar formato si se usa BigDecimal
             selectedDateMillis = tx.date
             selectedTransactionType = tx.transactionType
+            // Asegura que la categoría exista en la lista actual antes de asignarla
             selectedCategory = categoriesFromVm.find { it.id == tx.categoryId }
         }
     }
-
+    // Limpiar la transacción de edición cuando el Composable se va
     DisposableEffect(Unit) {
         onDispose {
             viewModel.clearEditingTransaction()
@@ -111,6 +114,18 @@ fun AddTransactionScreen(
 
     Scaffold(
         topBar = {
+            // Determinar colores de la TopAppBar basados en el tema actual
+            val topAppBarContainerColor = if (currentDarkTheme) {
+                MaterialTheme.colorScheme.surface // Usar color de superficie para modo oscuro
+            } else {
+                MaterialTheme.colorScheme.primary // Usar color primario para modo claro
+            }
+            val topAppBarContentColor = if (currentDarkTheme) {
+                MaterialTheme.colorScheme.onSurface // Contenido sobre superficie para modo oscuro
+            } else {
+                MaterialTheme.colorScheme.onPrimary // Contenido sobre primario para modo claro
+            }
+
             TopAppBar(
                 title = { Text(if (isEditMode) "Editar Transacción" else "Nueva Transacción") },
                 navigationIcon = {
@@ -119,9 +134,9 @@ fun AddTransactionScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = topAppBarContainerColor,
+                    titleContentColor = topAppBarContentColor,
+                    navigationIconContentColor = topAppBarContentColor
                 )
             )
         }
@@ -134,27 +149,61 @@ fun AddTransactionScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 TransactionType.values().forEach { type ->
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 8.dp).clickable { selectedTransactionType = type }) {
-                        RadioButton(selected = (type == selectedTransactionType), onClick = { selectedTransactionType = type })
-                        Text(text = if (type == TransactionType.INCOME) "Ingreso" else "Gasto", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 4.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clickable { selectedTransactionType = type }
+                    ) {
+                        RadioButton(
+                            selected = (type == selectedTransactionType),
+                            onClick = { selectedTransactionType = type }
+                        )
+                        Text(
+                            text = if (type == TransactionType.INCOME) "Ingreso" else "Gasto",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
                     }
                 }
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-            OutlinedTextField(value = concepto, onValueChange = { concepto = it }, label = { Text("Concepto (Opcional)") }, singleLine = false, modifier = Modifier.fillMaxWidth(), maxLines = 3)
+            OutlinedTextField(
+                value = concepto,
+                onValueChange = { concepto = it },
+                label = { Text("Concepto (Opcional)") },
+                singleLine = false, // Permite múltiples líneas
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 3
+            )
             Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(value = amount, onValueChange = { amount = it; amountError = null }, label = { Text("Monto") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), singleLine = true, modifier = Modifier.fillMaxWidth(), isError = amountError != null, supportingText = { if (amountError != null) Text(amountError!!) })
+            OutlinedTextField(
+                value = amount,
+                onValueChange = { amount = it; amountError = null },
+                label = { Text("Monto") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                isError = amountError != null,
+                supportingText = { if (amountError != null) Text(amountError!!) }
+            )
             Spacer(modifier = Modifier.height(12.dp))
 
-            // --- CAMBIO: Selector de Fecha Mejorado ---
-            Text( // Label encima del campo
+            Text(
                 text = "Fecha",
-                style = MaterialTheme.typography.labelLarge, // O el estilo que prefieras para el label
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp)
             )
             Box(
                 modifier = Modifier
@@ -163,71 +212,60 @@ fun AddTransactionScreen(
             ) {
                 OutlinedTextField(
                     value = dateFormatter.format(selectedDateMillis),
-                    onValueChange = {}, // No es editable por texto
-                    //label = { Text("Fecha") }, // Label ahora está encima
+                    onValueChange = {},
                     readOnly = true,
-                    enabled = false, // Importante: deshabilita interacciones directas con el TextField
+                    enabled = false,
                     trailingIcon = { Icon(Icons.Filled.DateRange, contentDescription = "Seleccionar fecha") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors( // Colores para que parezca activo aunque esté disabled
+                    colors = OutlinedTextFieldDefaults.colors(
                         disabledTextColor = MaterialTheme.colorScheme.onSurface,
                         disabledBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant, // No se usa si el label está fuera
                         disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant // Si usaras placeholder
                     )
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            // --- CAMBIO: Selector de Categoría Mejorado con ExposedDropdownMenuBox ---
             ExposedDropdownMenuBox(
                 expanded = categoryMenuExpanded,
                 onExpandedChange = {
-                    if (categoriesFromVm.isNotEmpty()) {
+                    // Solo expandir si hay categorías, o si se quiere mostrar un mensaje dentro
+                    if (categoriesFromVm.isNotEmpty()) { // Evitar toggle si no hay categorías y ya se mostró error
                         categoryMenuExpanded = !categoryMenuExpanded
                     } else {
-                        categoryError = "No hay categorías disponibles"
+                        categoryError = "No hay categorías disponibles. Añade alguna primero."
+                        categoryMenuExpanded = false // No expandir si no hay nada que mostrar
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = selectedCategory?.name ?: "", // Valor actual o vacío
+                    value = selectedCategory?.name ?: "",
                     onValueChange = { /* No editable por texto */ },
                     label = { Text("Categoría") },
-                    placeholder = { Text("Seleccionar categoría") }, // Se muestra si value está vacío
+                    placeholder = { Text(if (categoriesFromVm.isEmpty()) "No hay categorías" else "Seleccionar categoría") },
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryMenuExpanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(), // Colores estándar de Material3 para esto
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                     modifier = Modifier
-                        .menuAnchor() // Necesario para ExposedDropdownMenuBox
+                        .menuAnchor()
                         .fillMaxWidth(),
                     isError = categoryError != null,
                     supportingText = { if (categoryError != null) Text(categoryError!!) }
                 )
                 ExposedDropdownMenu(
-                    expanded = categoryMenuExpanded,
+                    expanded = categoryMenuExpanded && categoriesFromVm.isNotEmpty(), // Solo mostrar si está expandido Y hay categorías
                     onDismissRequest = { categoryMenuExpanded = false },
-                    // modifier = Modifier.fillMaxWidth() // Para que el menú tome el ancho del campo
                 ) {
-                    if (categoriesFromVm.isEmpty()) {
+                    categoriesFromVm.forEach { category ->
                         DropdownMenuItem(
-                            text = { Text("No hay categorías para seleccionar") },
-                            onClick = { categoryMenuExpanded = false },
-                            enabled = false
+                            text = { Text(category.name) },
+                            onClick = {
+                                selectedCategory = category
+                                categoryMenuExpanded = false
+                                categoryError = null
+                            }
                         )
-                    } else {
-                        categoriesFromVm.forEach { category ->
-                            DropdownMenuItem(
-                                text = { Text(category.name) },
-                                onClick = {
-                                    selectedCategory = category
-                                    categoryMenuExpanded = false
-                                    categoryError = null
-                                }
-                            )
-                        }
                     }
                 }
             }
@@ -237,23 +275,47 @@ fun AddTransactionScreen(
                 onClick = {
                     val amountDouble = amount.toDoubleOrNull()
                     var isValid = true
-                    amountError = null; categoryError = null
+                    amountError = null; categoryError = null // Resetear errores
 
-                    if (amountDouble == null || amountDouble <= 0) { amountError = "Monto inválido"; isValid = false }
-                    if (selectedCategory == null) { categoryError = "Selecciona una categoría"; isValid = false }
+                    if (amountDouble == null || amountDouble <= 0) {
+                        amountError = "Monto inválido"
+                        isValid = false
+                    }
+                    if (selectedCategory == null) {
+                        categoryError = "Selecciona una categoría"
+                        isValid = false
+                    }
 
                     if (isValid && amountDouble != null && selectedCategory != null) {
-                        if (isEditMode) {
-                            viewModel.updateTransaction(transactionId = transactionId, amount = amountDouble, date = selectedDateMillis, concepto = concepto.takeIf { it.isNotBlank() }, categoryId = selectedCategory!!.id, type = selectedTransactionType)
+                        if (isEditMode && transactionId != -1L) { // Doble chequeo para editar
+                            viewModel.updateTransaction(
+                                transactionId = transactionId,
+                                amount = amountDouble,
+                                date = selectedDateMillis,
+                                concepto = concepto.trim().takeIf { it.isNotBlank() },
+                                categoryId = selectedCategory!!.id,
+                                type = selectedTransactionType
+                            )
                         } else {
-                            viewModel.addTransaction(amount = amountDouble, date = selectedDateMillis, concepto = concepto.takeIf { it.isNotBlank() }, categoryId = selectedCategory!!.id, type = selectedTransactionType)
+                            viewModel.addTransaction(
+                                amount = amountDouble,
+                                date = selectedDateMillis,
+                                concepto = concepto.trim().takeIf { it.isNotBlank() },
+                                categoryId = selectedCategory!!.id,
+                                type = selectedTransactionType
+                            )
                         }
                         navController.popBackStack()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 12.dp)
-            ) { Text(if (isEditMode) "Guardar Cambios" else "Confirmar Transacción", style = MaterialTheme.typography.labelLarge) }
+            ) {
+                Text(
+                    if (isEditMode) "Guardar Cambios" else "Confirmar Transacción",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
     }
 
@@ -266,24 +328,38 @@ fun AddTransactionScreen(
                 val newCal = Calendar.getInstance()
                 newCal.set(year, month, dayOfMonth)
                 selectedDateMillis = newCal.timeInMillis
-                showDatePicker = false
+                showDatePicker = false // Ocultar DatePickerDialog después de seleccionar
             },
             cal.get(Calendar.YEAR),
             cal.get(Calendar.MONTH),
             cal.get(Calendar.DAY_OF_MONTH)
         ).apply {
-            setOnDismissListener { showDatePicker = false }
+            setOnDismissListener { showDatePicker = false } // Asegurar que se oculte si se descarta
             show()
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Add Transaction Light")
 @Composable
-fun AddTransactionScreenNewPreview() {
-    MiBolsilloAppTheme {
-        Surface {
-            Text("Preview de AddTransactionScreen (Modo Nueva)")
+fun AddTransactionScreenNewPreviewLight() {
+    MiBolsilloAppTheme(darkTheme = false) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            // Simular NavController y ViewModel para la preview
+            val navController = NavController(LocalContext.current)
+            // Aquí necesitarías un mock/fake ViewModel si la preview lo requiere para estado inicial
+            AddTransactionScreen(navController = navController, transactionId = -1L)
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Add Transaction Dark")
+@Composable
+fun AddTransactionScreenNewPreviewDark() {
+    MiBolsilloAppTheme(darkTheme = true) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            val navController = NavController(LocalContext.current)
+            AddTransactionScreen(navController = navController, transactionId = -1L)
         }
     }
 }

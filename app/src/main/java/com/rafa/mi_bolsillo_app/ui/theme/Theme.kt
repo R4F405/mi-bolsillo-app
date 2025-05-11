@@ -111,7 +111,13 @@ fun MiBolsilloAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
+            val newStatusBarColor = if (darkTheme) {
+                colorScheme.surface.toArgb() // Usar color de superficie para la barra de estado en modo oscuro
+            } else {
+                colorScheme.primary.toArgb() // Mantener primario para modo claro
+            }
+            window.statusBarColor = newStatusBarColor // Aplicar el nuevo color
+
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
