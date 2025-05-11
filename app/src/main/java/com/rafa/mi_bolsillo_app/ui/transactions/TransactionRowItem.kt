@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.ui.theme.AppExpense // Asumiendo que definiste estos en Color.kt
 import com.rafa.mi_bolsillo_app.ui.theme.AppIncome   // Asumiendo que definiste estos en Color.kt
@@ -51,7 +52,7 @@ fun TransactionRowItem(transactionItem: TransactionUiItem, modifier: Modifier = 
                 Spacer(modifier = Modifier.size(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = transactionItem.description ?: transactionItem.categoryName,
+                        text = transactionItem.concepto ?: transactionItem.categoryName, // <-- LÍNEA CORREGIDA
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1
@@ -118,7 +119,7 @@ fun TransactionRowItemPreview() {
                 id = 1,
                 amount = 125.50,
                 date = System.currentTimeMillis(),
-                description = "Compra semanal supermercado",
+                concepto  = "Compra semanal supermercado",
                 categoryName = "Comida",
                 categoryColorHex = "#FFC107", // Amarillo para comida
                 transactionType = TransactionType.EXPENSE
@@ -136,7 +137,7 @@ fun TransactionRowItemIncomePreview() {
                 id = 1,
                 amount = 1500.0,
                 date = System.currentTimeMillis(),
-                description = "Salario Mayo",
+                concepto  = "Salario Mayo",
                 categoryName = "Salario",
                 categoryColorHex = "#009688", // Verde azulado para salario
                 transactionType = TransactionType.INCOME

@@ -7,6 +7,7 @@ import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
+import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,13 +82,14 @@ class TransactionViewModel @Inject constructor(
             transactionRepository.getAllTransactions()
                 .combine(_categories) { transactions, categories -> // Usamos el _categories ya poblado
                     val categoriesMap = categories.associateBy { it.id }
-                    transactions.map { transaction ->
+                    transactions.map { transaction -> // transaction es de tipo Transaction (tu entidad)
                         val category = categoriesMap[transaction.categoryId]
-                        TransactionUiItem(
+                        // Ahora creamos una instancia del TransactionUiItem importado desde ui.model
+                        TransactionUiItem( // Esto llamará al constructor de com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
                             id = transaction.id,
                             amount = transaction.amount,
                             date = transaction.date,
-                            description = transaction.description, // Sigue siendo 'description' en la entidad
+                            concepto = transaction.description, // El 'description' de la entidad se mapea a 'concepto' en el UI item
                             categoryName = category?.name ?: "Sin Categoría",
                             categoryColorHex = category?.colorHex ?: "#808080",
                             transactionType = transaction.transactionType

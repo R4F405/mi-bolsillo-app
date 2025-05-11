@@ -4,8 +4,6 @@ import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.launch
+import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,9 +114,9 @@ fun TransactionList(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
+        // Ahora 'transactionItem' aquí será del tipo ui.model.TransactionUiItem
         items(transactions, key = { it.id }) { transactionItem ->
             TransactionRowItem(transactionItem = transactionItem)
-            // Divider() // para añadir un divisor entre items
         }
     }
 }

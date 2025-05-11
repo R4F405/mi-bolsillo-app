@@ -3,10 +3,13 @@ package com.rafa.mi_bolsillo_app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,8 +17,12 @@ import androidx.navigation.compose.rememberNavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens // <-- IMPORTA TUS RUTAS
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen // Lo usaremos como historial
-
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.rafa.mi_bolsillo_app.ui.dashboard.DashboardScreen // <-- IMPORTA DashboardScreen
+import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -27,24 +34,24 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Configura el controlador de navegación
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = AppScreens.DashboardScreen.route // Empezamos en el Dashboard
+                        startDestination = AppScreens.DashboardScreen.route
                     ) {
                         composable(route = AppScreens.DashboardScreen.route) {
-                            // Aquí irá tu DashboardScreen Composable
-                            // Por ahora, un placeholder:
-                            // DashboardScreen(navController = navController)
-                            // Lo reemplazaremos por el TransactionListScreen temporalmente para probar la navegación
-                            TransactionListScreen(navController = navController) // Temporal, para ver que funciona
+                            DashboardScreen(navController = navController) // <-- USA EL REAL
                         }
                         composable(route = AppScreens.TransactionHistoryScreen.route) {
-                            // Nuestra TransactionListScreen actuará como el historial
                             TransactionListScreen(navController = navController)
                         }
-                        // Aquí podrías añadir más destinos, como una pantalla para añadir/editar transacciones
+                        composable(route = AppScreens.AddTransactionScreen.route) {
+                            // Placeholder para la pantalla de añadir transacción
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text("Pantalla Añadir Transacción (Próximamente)")
+                            }
+                        }
+                        // ... otras rutas futuras ...
                     }
                 }
             }
