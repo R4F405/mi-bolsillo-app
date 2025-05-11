@@ -1,5 +1,6 @@
 package com.rafa.mi_bolsillo_app.ui.transactions
 
+import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionListScreen(
+    navController: NavController,
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val transactionsUiItems by viewModel.transactionsUiItems.collectAsStateWithLifecycle()
