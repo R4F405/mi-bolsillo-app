@@ -140,6 +140,18 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    fun deleteTransaction(transactionId: Long) {
+        viewModelScope.launch {
+            if (transactionId != -1L) { // Asegurarse de que no sea el ID por defecto
+                val transactionToDelete = transactionRepository.getTransactionById(transactionId)
+                transactionToDelete?.let {
+                    transactionRepository.deleteTransaction(it)
+                    _transactionToEdit.value = null // Limpiar el estado de edición también
+                }
+            }
+        }
+    }
+
     // Nueva función para limpiar el estado de edición
     fun clearEditingTransaction() {
         _transactionToEdit.value = null

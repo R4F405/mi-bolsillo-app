@@ -49,6 +49,16 @@ import com.rafa.mi_bolsillo_app.ui.transactions.TransactionViewModel // Asumo qu
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.compose.material.icons.filled.Delete // Importar el icono de eliminar
+import androidx.compose.material3.AlertDialog // Ya lo tienes si lo pusiste en ConfirmationDialog
+import androidx.compose.material3.TextButton // Para los botones del diálogo (o usar el del ConfirmationDialog)
+import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog // Importar el diálogo
+import androidx.compose.material3.ButtonDefaults // Para colores del botón de eliminar
+import androidx.compose.material3.OutlinedButton // Para el botón de eliminar
+import androidx.compose.foundation.layout.Spacer // Asegúrate de tener este import
+import androidx.compose.foundation.layout.height // Asegúrate de tener este import
+import androidx.compose.material.icons.filled.Warning
+
 
 @OptIn(ExperimentalMaterial3Api::class) // Necesario para TopAppBar, Scaffold y ExposedDropdownMenuBox
 @Composable
@@ -79,6 +89,8 @@ fun AddTransactionScreen(
 
     val transactionToEdit by viewModel.transactionToEdit.collectAsStateWithLifecycle()
 
+    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = transactionId) {
         if (isEditMode) {
             viewModel.loadTransactionForEditing(transactionId)
@@ -105,6 +117,7 @@ fun AddTransactionScreen(
             selectedCategory = categoriesFromVm.find { it.id == tx.categoryId }
         }
     }
+
     // Limpiar la transacción de edición cuando el Composable se va
     DisposableEffect(Unit) {
         onDispose {
@@ -316,8 +329,49 @@ fun AddTransactionScreen(
                     style = MaterialTheme.typography.labelLarge
                 )
             }
+
+            //Boton eliminar solo si estamos en modo edición
+            if (isEditMode) {
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedButton(
+                    onClick = { showDeleteConfirmDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(vertical = 12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
+                    )
+                ) {
+                    Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = "Eliminar transacción",
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Eliminar Transacción", style = MaterialTheme.typography.labelLarge)
+                }
+            }
         }
     }
+
+    // Dialogo de confirmación de eliminación
+    ConfirmationDialog(
+        showDialog = showDeleteConfirmDialog,
+        onConfirm = {
+            if (transactionId != -1L) { // Doble chequeo por seguridad
+                viewModel.deleteTransaction(transactionId)
+            }
+            showDeleteConfirmDialog = false
+            navController.popBackStack()
+        },
+        onDismiss = { showDeleteConfirmDialog = false },
+        title = "Confirmar Eliminación",
+        message = "La transacción será eliminada permanentemente.\n¿Estás seguro de que quieres continuar?",
+        confirmButtonText = "Eliminar",
+        icon = Icons.Filled.Warning // Puedes usar otro icono si prefieres, o ninguno
+    )
 
     if (showDatePicker) {
         val context = LocalContext.current
