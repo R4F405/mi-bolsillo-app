@@ -27,6 +27,8 @@ import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
 import androidx.navigation.NavType                     // <-- AÑADE IMPORT
 import androidx.navigation.navArgument               // <-- AÑADE IMPORT
 import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
+import com.rafa.mi_bolsillo_app.ui.category_management.CategoryManagementScreen
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -49,24 +51,18 @@ class MainActivity : ComponentActivity() {
                         composable(route = AppScreens.TransactionHistoryScreen.route) {
                             TransactionListScreen(navController = navController)
                         }
-
-                        // Configuración para AddTransactionScreen con argumento opcional
                         composable(
-                            route = AppScreens.AddTransactionScreen.route, // La ruta base con el placeholder
-                            arguments = listOf(
-                                navArgument("transactionId") {
-                                    type = NavType.LongType
-                                    defaultValue = -1L // Valor por defecto para "nueva transacción"
-                                }
-                            )
+                            route = AppScreens.AddTransactionScreen.route,
+                            arguments = listOf(navArgument("transactionId") { type = NavType.LongType; defaultValue = -1L })
                         ) { navBackStackEntry ->
                             val transactionId = navBackStackEntry.arguments?.getLong("transactionId") ?: -1L
-                            AddTransactionScreen(
-                                navController = navController,
-                                transactionId = transactionId // Pasamos el ID a la pantalla
-                            )
+                            AddTransactionScreen(navController = navController, transactionId = transactionId)
                         }
-                        // ... otras rutas futuras ...
+                        // --- NUEVA RUTA PARA GESTIÓN DE CATEGORÍAS ---
+                        composable(route = AppScreens.CategoryManagementScreen.route) {
+                            CategoryManagementScreen(navController = navController)
+                        }
+                        // --- FIN NUEVA RUTA ---
                     }
                 }
             }

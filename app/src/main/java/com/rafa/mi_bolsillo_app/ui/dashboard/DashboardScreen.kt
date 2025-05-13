@@ -31,6 +31,7 @@ import com.rafa.mi_bolsillo_app.ui.theme.AppIncome // Asumiendo que existen en C
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem // Reutilizamos el Composable
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.compose.material.icons.filled.Settings // O cualquier otro icono que te guste
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,10 +63,7 @@ fun DashboardScreen(
                 actions = {
                     // Selector de Mes/Año
                     IconButton(onClick = { viewModel.selectPreviousMonth() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Mes anterior"
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Mes anterior")
                     }
                     Text(
                         text = uiState.monthName,
@@ -73,11 +71,19 @@ fun DashboardScreen(
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
                     )
                     IconButton(onClick = { viewModel.selectNextMonth() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, "Mes siguiente")
+                    }
+
+                    // --- BOTÓN PARA IR A GESTIÓN DE CATEGORÍAS ---
+                    IconButton(onClick = {
+                        navController.navigate(AppScreens.CategoryManagementScreen.route)
+                    }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Mes siguiente"
+                            imageVector = Icons.Filled.Settings, // O usa Icons.Filled.Category o el que prefieras
+                            contentDescription = "Gestionar Categorías"
                         )
                     }
+                    // --- FIN BOTÓN ---
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = topAppBarContainerColor,
