@@ -11,11 +11,20 @@ import com.rafa.mi_bolsillo_app.data.local.dao.TransactionDao
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
 
+/**
+ * Clase abstracta que representa la base de datos de la aplicación.
+ *
+ * Contiene dos tablas:
+ * - 'categories' para las categorías de transacciones.
+ * - 'transactions' para las transacciones en sí.
+ */
+
 @Database(
     entities = [Category::class, Transaction::class],
     version = 1,
-    exportSchema = false // Puedes ponerlo a true si quieres exportar el esquema para migraciones
+    exportSchema = false
 )
+
 @TypeConverters(TransactionTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 

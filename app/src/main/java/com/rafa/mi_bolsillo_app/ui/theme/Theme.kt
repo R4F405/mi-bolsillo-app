@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Definición de LightColorScheme usando tus colores mapeados
+// Definición de LightColorScheme usando los colores mapeados
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
@@ -44,7 +44,7 @@ private val LightColorScheme = lightColorScheme(
     outlineVariant = md_theme_light_outlineVariant,
 )
 
-// Definición de DarkColorScheme usando tus colores mapeados
+// Definición de DarkColorScheme usando los colores mapeados
 private val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
@@ -77,12 +77,13 @@ val MaterialTheme.customColors: CustomColors
     @Composable
     get() = CustomColors(
         income = AppIncome,
-        onIncome = AppTextOnPrimary, // Asumiendo texto blanco sobre color de ingreso
+        onIncome = AppTextOnPrimary,
         expense = AppExpense,
-        onExpense = AppTextOnPrimary, // Asumiendo texto blanco sobre color de gasto
-        accent = AppAccent // Haciendo tu AppAccent accesible
+        onExpense = AppTextOnPrimary,
+        accent = AppAccent // Haciendo AppAccent accesible
     )
 
+// Modelo de datos para los colores personalizados
 data class CustomColors(
     val income: Color,
     val onIncome: Color,
@@ -91,7 +92,7 @@ data class CustomColors(
     val accent: Color
 )
 
-
+// Composable para el tema personalizado
 @Composable
 fun MiBolsilloAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

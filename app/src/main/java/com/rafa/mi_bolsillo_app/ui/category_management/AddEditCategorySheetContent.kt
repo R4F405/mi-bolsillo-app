@@ -5,22 +5,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow // Para la fila de colores
-import androidx.compose.foundation.lazy.items // Para la fila de colores
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check // Para indicar el color seleccionado
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb // Para convertir Color a Int
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -28,6 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
+
+/**
+ * Composable para la pantalla de añadir o editar una categoría.
+ *
+ * Permite al usuario añadir o editar una categoría existente.
+ */
 
 // Lista de colores sugeridos
 val suggestedCategoryColors: List<Color> = listOf(
@@ -102,20 +108,18 @@ fun AddEditCategorySheetContent(
     modifier: Modifier = Modifier
 ) {
     var name by remember(categoryToEdit) { mutableStateOf(categoryToEdit?.name ?: "") }
-    // Ahora colorHex se inicializa con el primer color sugerido o el de la categoría a editar
     var selectedColorHex by remember(categoryToEdit) {
         mutableStateOf(categoryToEdit?.colorHex ?: suggestedCategoryColors.first().toHexString())
     }
     var iconName by remember(categoryToEdit) { mutableStateOf(categoryToEdit?.iconName ?: "ic_label") }
 
     var nameError by remember { mutableStateOf<String?>(null) }
-    // El error de color es menos probable ahora con un selector, pero lo mantenemos por si acaso
     var colorError by remember { mutableStateOf<String?>(null) }
-
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val title = if (categoryToEdit == null) "Nueva Categoría" else "Editar Categoría"
 
+    // Actualizar los campos con los valores de la categoría a editar
     LaunchedEffect(categoryToEdit) {
         name = categoryToEdit?.name ?: ""
         selectedColorHex = categoryToEdit?.colorHex ?: suggestedCategoryColors.first().toHexString()
@@ -137,6 +141,7 @@ fun AddEditCategorySheetContent(
         ) {
             Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 16.dp))
 
+            // --- NOMBRE DE LA CATEGORÍA ---
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it; nameError = null },
@@ -167,7 +172,6 @@ fun AddEditCategorySheetContent(
                     )
                 }
             }
-            // Mostrar el hexadecimal seleccionado (opcional, podría ser solo para debug o si el usuario quiere verlo)
             Text(
                 text = "Seleccionado: $selectedColorHex",
                 style = MaterialTheme.typography.bodySmall,
@@ -176,10 +180,10 @@ fun AddEditCategorySheetContent(
             if (colorError != null) {
                 Text(colorError!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
-            // --- FIN SELECTOR DE COLOR VISUAL ---
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // --- NOMBRE DEL ICONO ---
             OutlinedTextField(
                 value = iconName,
                 onValueChange = { iconName = it },
@@ -195,6 +199,7 @@ fun AddEditCategorySheetContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                // Botones de cancelar y guardar
                 TextButton(onClick = onDismiss) { Text("Cancelar") }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = {
@@ -203,9 +208,6 @@ fun AddEditCategorySheetContent(
                         nameError = "El nombre es obligatorio"
                         isValid = false
                     }
-                    // La validación del color hexadecimal es menos crítica ahora,
-                    // pero si se permite entrada manual, se mantendría.
-                    // Como ahora seleccionamos de una lista, `selectedColorHex` siempre será válido.
 
                     if (isValid) {
                         onSave(categoryToEdit?.id, name, selectedColorHex, iconName)
@@ -219,6 +221,7 @@ fun AddEditCategorySheetContent(
     }
 }
 
+// Composable para un item de la fila de colores
 @Composable
 fun ColorPickerItem(
     color: Color,
@@ -257,7 +260,7 @@ fun Color.luminance(): Float {
     return (0.2126f * red + 0.7152f * green + 0.0722f * blue)
 }
 
-
+// Vista previa
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable

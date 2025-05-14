@@ -8,5 +8,5 @@ sealed class AppScreens(val route: String) {
             if (transactionId != null && transactionId != -1L) "add_transaction_screen?transactionId=$transactionId"
             else "add_transaction_screen?transactionId=-1"
     }
-    object CategoryManagementScreen : AppScreens("category_management_screen") // <-- NUEVA PANTALLA
+    object CategoryManagementScreen : AppScreens("category_management_screen")
 }

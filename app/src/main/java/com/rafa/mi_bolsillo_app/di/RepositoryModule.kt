@@ -12,6 +12,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Módulo Dagger para proveer dependencias relacionadas con los repositorios.
+ *
+ * Incluye funciones para proveer instancias de CategoryRepository y TransactionRepository.
+ */
+
 @Module
 @InstallIn(SingletonComponent::class) // Decide el alcance de estas vinculaciones
 abstract class RepositoryModule { // Los módulos con @Binds DEBEN ser clases abstractas

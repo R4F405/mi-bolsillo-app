@@ -1,18 +1,13 @@
 package com.rafa.mi_bolsillo_app.ui.dashboard
 
-import androidx.compose.foundation.isSystemInDarkTheme // ¡IMPORTANTE AÑADIR ESTE IMPORT!
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState // Para el scroll
-import androidx.compose.foundation.verticalScroll // Para el scroll
-// imports no usados de lazy column eliminados para limpieza si no se usan en este archivo específico
-// import androidx.compose.foundation.lazy.LazyColumn
-// import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
-// import androidx.compose.material.icons.filled.ArrowBack // Reemplazado por automirrored
-// import androidx.compose.material.icons.filled.ArrowForward // Reemplazado por automirrored
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,14 +20,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
-import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem // Asumo que es para TransactionRowItem
-import com.rafa.mi_bolsillo_app.ui.theme.AppExpense // Asumiendo que existen en Color.kt
-import com.rafa.mi_bolsillo_app.ui.theme.AppIncome // Asumiendo que existen en Color.kt
-import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem // Reutilizamos el Composable
+import com.rafa.mi_bolsillo_app.ui.theme.AppExpense
+import com.rafa.mi_bolsillo_app.ui.theme.AppIncome
+import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem
 import java.text.NumberFormat
 import java.util.Locale
-import androidx.compose.material.icons.filled.Settings // O cualquier otro icono que te guste
+import androidx.compose.material.icons.filled.Settings
 
+/**
+ * Composable para la pantalla de Dashboard.
+ *
+ * Muestra el balance actual, ingresos y gastos, un gráfico de gastos y una lista de movimientos recientes.
+ *
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +58,7 @@ fun DashboardScreen(
                 MaterialTheme.colorScheme.onPrimary // Contenido sobre primario para modo claro
             }
 
+            // Configuración de la TopAppBar
             TopAppBar(
                 title = { Text("Mi Bolsillo") },
                 actions = {
@@ -74,31 +75,29 @@ fun DashboardScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowForward, "Mes siguiente")
                     }
 
-                    // --- BOTÓN PARA IR A GESTIÓN DE CATEGORÍAS ---
+                    // Botón para gestionar categorías
                     IconButton(onClick = {
                         navController.navigate(AppScreens.CategoryManagementScreen.route)
                     }) {
                         Icon(
-                            imageVector = Icons.Filled.Settings, // O usa Icons.Filled.Category o el que prefieras
+                            imageVector = Icons.Filled.Settings,
                             contentDescription = "Gestionar Categorías"
                         )
                     }
-                    // --- FIN BOTÓN ---
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = topAppBarContainerColor,
                     titleContentColor = topAppBarContentColor,
-                    actionIconContentColor = topAppBarContentColor // Aplicar también a los iconos de acción
+                    actionIconContentColor = topAppBarContentColor
                 )
             )
         },
+        // Configuración del FloatingActionButton (+)
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     navController.navigate(AppScreens.AddTransactionScreen.createRoute(null))
                 },
-                // Los colores del FAB se mantienen para que sea un acento en ambos temas
-                // (azul oscuro en tema claro, azul claro en tema oscuro)
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -116,7 +115,7 @@ fun DashboardScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp, bottom = 16.dp) // Añadido padding inferior también
+                    .padding(top = 16.dp, bottom = 16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
                 // Balance Actual
@@ -193,10 +192,9 @@ fun DashboardScreen(
                     Text(
                         "No hay movimientos recientes este mes.",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 80.dp) // Asegurar espacio si la lista está vacía
+                        modifier = Modifier.padding(bottom = 80.dp)
                     )
                 } else {
-                    // Usar Column en lugar de forEach directamente para mejor manejo del layout dentro de un Column scrolleable
                     Column {
                         uiState.recentTransactions.forEach { transactionItem ->
                             TransactionRowItem(
@@ -205,9 +203,9 @@ fun DashboardScreen(
                                     navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
                                 }
                             )
-                            // Divider(modifier = Modifier.padding(horizontal = 16.dp)) // Opcional: un divisor entre items
                         }
                     }
+
                     // Espacio para el botón fijo de abajo
                     Spacer(modifier = Modifier.height(80.dp))
                 }

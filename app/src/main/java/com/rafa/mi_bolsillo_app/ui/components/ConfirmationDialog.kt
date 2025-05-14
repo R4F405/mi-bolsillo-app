@@ -22,6 +22,7 @@ fun ConfirmationDialog(
     dismissButtonText: String = "Cancelar",
     icon: ImageVector? = Icons.Filled.Warning // Icono opcional
 ) {
+    // Composición del diálogo de confirmación
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -44,6 +45,7 @@ fun ConfirmationDialog(
     }
 }
 
+// Vista previa del diálogo de confirmación
 @Preview(showBackground = true)
 @Composable
 fun ConfirmationDialogPreview() {

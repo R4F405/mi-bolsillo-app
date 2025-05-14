@@ -3,7 +3,7 @@ package com.rafa.mi_bolsillo_app.ui.add_transaction
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme // ¡IMPORTANTE AÑADIR ESTE IMPORT!
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,9 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
-// Importante: ExposedDropdownMenuDefaults y ExposedDropdownMenuBox
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -23,7 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults // Para colores del TextField deshabilitado
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -34,7 +32,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color // Para Color.Transparent (no parece usarse directamente aquí)
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,20 +42,24 @@ import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
-import com.rafa.mi_bolsillo_app.ui.transactions.TransactionViewModel // Asumo que este es el ViewModel correcto
+import com.rafa.mi_bolsillo_app.ui.transactions.TransactionViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import androidx.compose.material.icons.filled.Delete // Importar el icono de eliminar
-import androidx.compose.material3.AlertDialog // Ya lo tienes si lo pusiste en ConfirmationDialog
-import androidx.compose.material3.TextButton // Para los botones del diálogo (o usar el del ConfirmationDialog)
-import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog // Importar el diálogo
-import androidx.compose.material3.ButtonDefaults // Para colores del botón de eliminar
-import androidx.compose.material3.OutlinedButton // Para el botón de eliminar
-import androidx.compose.foundation.layout.Spacer // Asegúrate de tener este import
-import androidx.compose.foundation.layout.height // Asegúrate de tener este import
+import androidx.compose.material.icons.filled.Delete
+import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.filled.Warning
 
+/**
+ * Composable para la pantalla de añadir o editar una transacción.
+ *
+ * Permite al usuario añadir o editar una transacción existente.
+ *
+ */
 
 @OptIn(ExperimentalMaterial3Api::class) // Necesario para TopAppBar, Scaffold y ExposedDropdownMenuBox
 @Composable
@@ -75,7 +76,7 @@ fun AddTransactionScreen(
 
     val initialCalendar = Calendar.getInstance()
     var selectedDateMillis by rememberSaveable { mutableStateOf(initialCalendar.timeInMillis) }
-    val dateFormatter = remember { SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) } // Corregido el formato
+    val dateFormatter = remember { SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()) }
     var showDatePicker by remember { mutableStateOf(false) }
 
     var selectedTransactionType by remember { mutableStateOf(TransactionType.EXPENSE) }
@@ -91,6 +92,7 @@ fun AddTransactionScreen(
 
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
+    // Cargar la transacción si estamos en modo edición
     LaunchedEffect(key1 = transactionId) {
         if (isEditMode) {
             viewModel.loadTransactionForEditing(transactionId)
@@ -106,11 +108,12 @@ fun AddTransactionScreen(
         }
     }
 
+    // Actualizar la transacción si es necesario
     LaunchedEffect(key1 = transactionToEdit, key2 = categoriesFromVm, key3 = isEditMode) {
         if (isEditMode && transactionToEdit != null) {
             val tx = transactionToEdit!!
             concepto = tx.description ?: ""
-            amount = tx.amount.toString() // Considerar formato si se usa BigDecimal
+            amount = tx.amount.toString()
             selectedDateMillis = tx.date
             selectedTransactionType = tx.transactionType
             // Asegura que la categoría exista en la lista actual antes de asignarla
@@ -129,16 +132,17 @@ fun AddTransactionScreen(
         topBar = {
             // Determinar colores de la TopAppBar basados en el tema actual
             val topAppBarContainerColor = if (currentDarkTheme) {
-                MaterialTheme.colorScheme.surface // Usar color de superficie para modo oscuro
+                MaterialTheme.colorScheme.surface
             } else {
-                MaterialTheme.colorScheme.primary // Usar color primario para modo claro
+                MaterialTheme.colorScheme.primary
             }
             val topAppBarContentColor = if (currentDarkTheme) {
-                MaterialTheme.colorScheme.onSurface // Contenido sobre superficie para modo oscuro
+                MaterialTheme.colorScheme.onSurface
             } else {
-                MaterialTheme.colorScheme.onPrimary // Contenido sobre primario para modo claro
+                MaterialTheme.colorScheme.onPrimary
             }
 
+            // Configurar la TopAppBar con el título correspondiente
             TopAppBar(
                 title = { Text(if (isEditMode) "Editar Transacción" else "Nueva Transacción") },
                 navigationIcon = {
@@ -153,6 +157,7 @@ fun AddTransactionScreen(
                 )
             )
         }
+        // Contenido principal de la pantalla
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -189,6 +194,7 @@ fun AddTransactionScreen(
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
+            // Campos de entrada para concepto
             OutlinedTextField(
                 value = concepto,
                 onValueChange = { concepto = it },
@@ -197,6 +203,7 @@ fun AddTransactionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 3
             )
+            // Campo de entrada para monto
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedTextField(
                 value = amount,
@@ -210,6 +217,7 @@ fun AddTransactionScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Campo de entrada para fecha
             Text(
                 text = "Fecha",
                 style = MaterialTheme.typography.labelLarge,
@@ -239,6 +247,7 @@ fun AddTransactionScreen(
             }
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Campo para categoría
             ExposedDropdownMenuBox(
                 expanded = categoryMenuExpanded,
                 onExpandedChange = {
@@ -284,6 +293,7 @@ fun AddTransactionScreen(
             }
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Botón para confirmar o guardar cambios
             Button(
                 onClick = {
                     val amountDouble = amount.toDoubleOrNull()
@@ -360,7 +370,7 @@ fun AddTransactionScreen(
     ConfirmationDialog(
         showDialog = showDeleteConfirmDialog,
         onConfirm = {
-            if (transactionId != -1L) { // Doble chequeo por seguridad
+            if (transactionId != -1L) {
                 viewModel.deleteTransaction(transactionId)
             }
             showDeleteConfirmDialog = false
@@ -370,9 +380,10 @@ fun AddTransactionScreen(
         title = "Confirmar Eliminación",
         message = "La transacción será eliminada permanentemente.\n¿Estás seguro de que quieres continuar?",
         confirmButtonText = "Eliminar",
-        icon = Icons.Filled.Warning // Puedes usar otro icono si prefieres, o ninguno
+        icon = Icons.Filled.Warning
     )
 
+    // Mostrar DatePicker si showDatePicker es true
     if (showDatePicker) {
         val context = LocalContext.current
         val cal = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
@@ -394,6 +405,7 @@ fun AddTransactionScreen(
     }
 }
 
+// Vista previa de la pantalla AddTransactionScreen
 @Preview(showBackground = true, name = "Add Transaction Light")
 @Composable
 fun AddTransactionScreenNewPreviewLight() {
@@ -407,6 +419,7 @@ fun AddTransactionScreenNewPreviewLight() {
     }
 }
 
+// Vista previa de la pantalla AddTransactionScreen en modo oscuro
 @Preview(showBackground = true, name = "Add Transaction Dark")
 @Composable
 fun AddTransactionScreenNewPreviewDark() {

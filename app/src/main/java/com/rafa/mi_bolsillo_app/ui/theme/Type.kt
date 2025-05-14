@@ -6,8 +6,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+/**
+ * Archivo de tipografía personalizado para el tema oscuro/claro.
+ *
+ * Este archivo contiene la tipografía personalizada para el tema oscuro/claro.
+ */
+
 // Familia de fuentes principal (Roboto es generalmente FontFamily.Default en Android)
-val RobotoFamily = FontFamily.Default // O podrías definir FontFamily.SansSerif
+val RobotoFamily = FontFamily.Default
 
 val AppTypography = Typography(
     // Título de Pantalla (ej. "Dashboard", "Nueva Transacción")
@@ -15,21 +21,18 @@ val AppTypography = Typography(
         fontFamily = RobotoFamily,
         fontWeight = FontWeight.Medium, // Roboto Medium
         fontSize = 20.sp
-        // El color vendrá del ColorScheme (onBackground o onSurface)
     ),
     // Número Grande Destacado (ej. Monto del Balance en Dashboard)
     headlineLarge = TextStyle(
         fontFamily = RobotoFamily,
-        fontWeight = FontWeight.Bold, // Roboto Bold (o SemiBold si es demasiado)
+        fontWeight = FontWeight.Bold, // Roboto Bold
         fontSize = 32.sp
-        // El color vendrá del ColorScheme
     ),
     // Encabezado de Sección / Etiqueta Importante
     titleMedium = TextStyle(
         fontFamily = RobotoFamily,
         fontWeight = FontWeight.Medium, // Roboto Medium
         fontSize = 16.sp
-        // El color puede ser onBackground, onSurface, o primary si se aplica específicamente
     ),
     // Texto del Cuerpo Principal
     bodyLarge = TextStyle(
@@ -38,14 +41,12 @@ val AppTypography = Typography(
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
-        // El color vendrá del ColorScheme
     ),
     // Texto Secundario / Subtexto
     bodyMedium = TextStyle(
         fontFamily = RobotoFamily,
         fontWeight = FontWeight.Normal, // Roboto Regular
         fontSize = 14.sp
-        // El color vendrá del ColorScheme (onSurfaceVariant)
     ),
     // Texto de Botón
     labelLarge = TextStyle(
@@ -53,7 +54,6 @@ val AppTypography = Typography(
         fontWeight = FontWeight.Medium, // Roboto Medium
         fontSize = 14.sp,
         letterSpacing = 0.1.sp,
-        // El color vendrá del ColorScheme (onPrimary, onSecondary, o primary para texto)
     ),
     // Leyenda / Texto Pequeño
     bodySmall = TextStyle(
@@ -62,6 +62,5 @@ val AppTypography = Typography(
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
-        // El color vendrá del ColorScheme (onSurfaceVariant)
     )
 )

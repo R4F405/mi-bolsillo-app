@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
-import com.rafa.mi_bolsillo_app.ui.theme.AppExpense // Asumiendo que definiste estos en Color.kt
-import com.rafa.mi_bolsillo_app.ui.theme.AppIncome   // Asumiendo que definiste estos en Color.kt
+import com.rafa.mi_bolsillo_app.ui.theme.AppExpense
+import com.rafa.mi_bolsillo_app.ui.theme.AppIncome
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import androidx.compose.foundation.clickable
 import java.text.SimpleDateFormat
@@ -34,6 +34,7 @@ import java.util.Date
 import java.util.Locale
 
 
+// Composable para mostrar una fila de una transacción
 @Composable
 fun TransactionRowItem(
     transactionItem: TransactionUiItem,
@@ -44,7 +45,7 @@ fun TransactionRowItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onItemClick() }, // <--- HACER LA TARJETA CLICABLE
+            .clickable { onItemClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -59,7 +60,7 @@ fun TransactionRowItem(
                 Spacer(modifier = Modifier.size(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = transactionItem.concepto ?: transactionItem.categoryName, // <-- LÍNEA CORREGIDA
+                        text = transactionItem.concepto ?: transactionItem.categoryName,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1
@@ -91,12 +92,13 @@ fun TransactionRowItem(
     }
 }
 
+// Composable para mostrar un indicador de color de categoría
 @Composable
 fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
     val color = try {
         Color(android.graphics.Color.parseColor(hexColor))
     } catch (e: IllegalArgumentException) {
-        MaterialTheme.colorScheme.surfaceVariant // Color por defecto si el hexadecimal es inválido
+        MaterialTheme.colorScheme.surfaceVariant
     }
     Box(
         modifier = modifier
@@ -117,6 +119,7 @@ private fun formatDate(timestamp: Long): String {
     return sdf.format(Date(timestamp))
 }
 
+// Composable de vista previa
 @Preview(showBackground = true)
 @Composable
 fun TransactionRowItemPreview() {
@@ -136,6 +139,7 @@ fun TransactionRowItemPreview() {
     }
 }
 
+// Composable de vista previa para ingresos
 @Preview(showBackground = true)
 @Composable
 fun TransactionRowItemIncomePreview() {

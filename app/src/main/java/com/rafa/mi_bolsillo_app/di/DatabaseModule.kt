@@ -11,6 +11,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Módulo Dagger para proveer dependencias relacionadas con la base de datos.
+ *
+ * Incluye funciones para proveer instancias de AppDatabase, CategoryDao y TransactionDao.
+ *
+ */
+
 @Module
 @InstallIn(SingletonComponent::class) // Las dependencias vivirán mientras la app viva
 object DatabaseModule {

@@ -16,8 +16,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
-import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme // Para el Preview
-import androidx.compose.ui.tooling.preview.Preview // Para el Preview
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +25,7 @@ fun AddTransactionSheetContent(
     viewModel: TransactionViewModel,
     onTransactionAdded: () -> Unit
 ) {
-    var concepto by rememberSaveable { mutableStateOf("") } // Cambiado de description a concepto
+    var concepto by rememberSaveable { mutableStateOf("") }
     var amount by rememberSaveable { mutableStateOf("") }
     var selectedTransactionType by remember { mutableStateOf(TransactionType.EXPENSE) }
 
@@ -41,14 +41,14 @@ fun AddTransactionSheetContent(
 
     Column(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 24.dp) // Aumentado padding vertical
+            .padding(horizontal = 16.dp, vertical = 24.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             "Nueva Transacción",
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 24.dp) // Aumentado padding inferior
+            modifier = Modifier.padding(bottom = 24.dp)
         )
 
         // Selector de Tipo (Ingreso/Gasto) - Mantenido al principio
@@ -79,16 +79,16 @@ fun AddTransactionSheetContent(
         }
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) // Divisor visual
 
-        // Campo de Concepto (antes Descripción)
+        // Campo de Concepto
         OutlinedTextField(
             value = concepto,
             onValueChange = { concepto = it },
-            label = { Text("Concepto (Opcional)") }, // Cambiado el label
+            label = { Text("Concepto (Opcional)") },
             singleLine = false,
             modifier = Modifier.fillMaxWidth(),
             maxLines = 3
         )
-        Spacer(modifier = Modifier.height(12.dp)) // Aumentado spacer
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Campo de Monto
         OutlinedTextField(
@@ -104,7 +104,7 @@ fun AddTransactionSheetContent(
             isError = amountError != null,
             supportingText = { if (amountError != null) Text(amountError!!) }
         )
-        Spacer(modifier = Modifier.height(12.dp)) // Aumentado spacer
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Selector de Categoría
         Box(modifier = Modifier.fillMaxWidth()) {

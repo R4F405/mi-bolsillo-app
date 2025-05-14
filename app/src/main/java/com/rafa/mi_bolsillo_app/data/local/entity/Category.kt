@@ -32,6 +32,6 @@ data class Category(
     @ColumnInfo(name = "color_hex")
     val colorHex: String, // Ejemplo: "#4CAF50" para verde, "#F44336" para rojo
 
-    @ColumnInfo(name = "is_predefined", defaultValue = "0") // SQLite no tiene boolean, usa 0 o 1. Default a 'no predefinida'
+    @ColumnInfo(name = "is_predefined", defaultValue = "0")
     val isPredefined: Boolean = false
 )

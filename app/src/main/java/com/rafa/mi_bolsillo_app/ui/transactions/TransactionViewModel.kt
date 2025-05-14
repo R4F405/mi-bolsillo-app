@@ -7,7 +7,7 @@ import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
-import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem // Asegúrate que el import es a ui.model
+import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,10 +40,10 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    //Lista de categorías predefinidas
     private suspend fun seedInitialCategoriesIfNeeded() {
         val currentCategories = categoryRepository.getAllCategories().first()
         if (currentCategories.isEmpty()) {
-            // ... (tu lista de predefinedCategories sin cambios)
             val predefinedCategories = listOf(
                 Category(name = "Comida", iconName = "ic_food", colorHex = "#FFC107", isPredefined = true),
                 Category(name = "Transporte", iconName = "ic_transport", colorHex = "#2196F3", isPredefined = true),
@@ -57,6 +57,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    // Carga inicial de datos
     private fun loadInitialData() {
         viewModelScope.launch {
             categoryRepository.getAllCategories().collect { categoryList ->
@@ -87,6 +88,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    // Función para agregar una transacción
     fun addTransaction(amount: Double, date: Long, concepto: String?, categoryId: Long, type: TransactionType) {
         viewModelScope.launch {
             val newTransaction = Transaction(
@@ -101,10 +103,10 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    // Nueva función para cargar una transacción para edición
+    // Función para cargar una transacción para edición
     fun loadTransactionForEditing(transactionId: Long) {
         viewModelScope.launch {
-            // Si transactionId es -1L (o nuestro valor por defecto para "nueva"), no cargamos nada.
+            // Si transactionId es -1L, no cargamos nada.
             if (transactionId == -1L) {
                 _transactionToEdit.value = null // Aseguramos que esté limpio para una nueva transacción
                 return@launch
@@ -115,7 +117,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    // Nueva función para actualizar una transacción existente
+    // Función para actualizar una transacción existente
     fun updateTransaction(
         transactionId: Long, // Importante pasar el ID original
         amount: Double,
@@ -125,10 +127,10 @@ class TransactionViewModel @Inject constructor(
         type: TransactionType
     ) {
         viewModelScope.launch {
-            if (transactionId == -1L) return@launch // No debería ocurrir si la lógica es correcta
+            if (transactionId == -1L) return@launch
 
             val updatedTransaction = Transaction(
-                id = transactionId, // <-- USA EL ID ORIGINAL para la actualización
+                id = transactionId,
                 amount = amount,
                 date = date,
                 description = concepto,
@@ -140,6 +142,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    // Función para eliminar una transacción
     fun deleteTransaction(transactionId: Long) {
         viewModelScope.launch {
             if (transactionId != -1L) { // Asegurarse de que no sea el ID por defecto
@@ -152,7 +155,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    // Nueva función para limpiar el estado de edición
+    // Función para limpiar el estado de edición
     fun clearEditingTransaction() {
         _transactionToEdit.value = null
     }

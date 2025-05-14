@@ -2,30 +2,30 @@ package com.rafa.mi_bolsillo_app.ui.transactions
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column // Importa Column
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth // Importa fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search // Importa el icono de búsqueda
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField // Importa OutlinedTextField
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf // Importa mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable // Importa rememberSaveable
-import androidx.compose.runtime.setValue // Importa setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,6 +34,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
+
+/**
+ *
+ * Esta pantalla muestra la lista de transacciones.
+ *
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +85,7 @@ fun TransactionListScreen(
         }
     ) { innerPadding ->
 
-        // Usamos Column para apilar la barra de búsqueda y la lista/estado vacío
+        // Column para apilar la barra de búsqueda y la lista/estado vacío
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
 
             // Barra de Búsqueda
@@ -101,7 +107,6 @@ fun TransactionListScreen(
             )
 
             // Contenedor para la lista o el estado vacío
-            // El Box ahora toma el peso restante para que la Column se distribuya correctamente
             Box(modifier = Modifier.weight(1f)) {
                 // Si la lista original está vacía Y no hay texto de búsqueda, muestra el EmptyState global
                 if (transactionsUiItems.isEmpty() && searchQuery.isBlank()) {
@@ -122,6 +127,7 @@ fun TransactionListScreen(
     }
 }
 
+// Composable para mostrar la lista de transacciones
 @Composable
 fun TransactionList(
     transactions: List<TransactionUiItem>,
@@ -134,7 +140,7 @@ fun TransactionList(
         transactions // Si no hay búsqueda, muestra todas las transacciones
     } else {
         transactions.filter { transaction ->
-            // Comprueba si el concepto (descripción) contiene el searchQuery (ignorando mayúsculas/minúsculas)
+            // Comprueba si el concepto contiene el searchQuery (ignorando mayúsculas/minúsculas)
             val matchesConcepto = transaction.concepto?.contains(searchQuery, ignoreCase = true) == true
             // Comprueba si el nombre de la categoría contiene el searchQuery (ignorando mayúsculas/minúsculas)
             val matchesCategory = transaction.categoryName.contains(searchQuery, ignoreCase = true)
@@ -170,11 +176,11 @@ fun TransactionList(
     }
 }
 
-
+// Composable para mostrar un estado vacío cuando no hay transacciones
 @Composable
 fun EmptyState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxSize().padding(16.dp), // Añade padding
+        modifier = modifier.fillMaxSize().padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(

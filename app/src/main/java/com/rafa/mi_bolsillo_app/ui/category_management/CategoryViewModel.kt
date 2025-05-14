@@ -10,11 +10,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+/**
+ * ViewModel para la pantalla de gestión de categorías.
+ *
+ * Permite a los usuarios añadir, editar y eliminar categorías.
+ *
+ */
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
@@ -22,6 +28,7 @@ class CategoryViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository // Para verificar transacciones antes de eliminar
 ) : ViewModel() {
 
+    // Estado mutable para la UI
     private val _uiState = MutableStateFlow(CategoryManagementUiState())
     val uiState: StateFlow<CategoryManagementUiState> = _uiState.asStateFlow()
 
@@ -29,6 +36,7 @@ class CategoryViewModel @Inject constructor(
         loadCategories()
     }
 
+    // Cargar categorías desde la base de datos
     private fun loadCategories() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -46,6 +54,7 @@ class CategoryViewModel @Inject constructor(
         }
     }
 
+    // Agregar una nueva categoría
     fun addCategory(name: String, colorHex: String, iconName: String) {
         viewModelScope.launch {
             if (name.isBlank()) {
@@ -59,6 +68,7 @@ class CategoryViewModel @Inject constructor(
                 return@launch
             }
 
+            // Crear la nueva categoría
             val newCategory = Category(
                 name = name.trim(),
                 colorHex = colorHex.ifBlank { "#CCCCCC" }, // Color por defecto si está vacío
@@ -71,6 +81,7 @@ class CategoryViewModel @Inject constructor(
         }
     }
 
+    // Actualizar una categoría existente
     fun updateCategory(id: Long, name: String, colorHex: String, iconName: String) {
         viewModelScope.launch {
             if (name.isBlank()) {
@@ -84,13 +95,13 @@ class CategoryViewModel @Inject constructor(
                 return@launch
             }
 
+            // Actualizar la categoría
             val categoryToUpdate = _uiState.value.categories.find { it.id == id }
             categoryToUpdate?.let {
                 val updatedCategory = it.copy(
                     name = name.trim(),
                     colorHex = colorHex.ifBlank { "#CCCCCC" },
                     iconName = iconName.ifBlank { "default_icon" }
-                    // isPredefined no se debería cambiar
                 )
                 categoryRepository.updateCategory(updatedCategory)
                 _uiState.update { it.copy(userMessage = "Categoría '$name' actualizada.", showEditDialog = false, categoryToEdit = null) }
@@ -98,6 +109,7 @@ class CategoryViewModel @Inject constructor(
         }
     }
 
+    // Eliminar una categoría
     fun deleteCategory(categoryId: Long) {
         viewModelScope.launch {
             val categoryToDelete = _uiState.value.categories.find { it.id == categoryId }
@@ -106,6 +118,7 @@ class CategoryViewModel @Inject constructor(
                 return@launch
             }
 
+            // Verificar si la categoría es predefinida
             if (categoryToDelete.isPredefined) {
                 _uiState.update { it.copy(userMessage = "Las categorías predefinidas no se pueden eliminar.") }
                 return@launch
@@ -118,19 +131,23 @@ class CategoryViewModel @Inject constructor(
                 return@launch
             }
 
+            // Elimina la categoría
             categoryRepository.deleteCategory(categoryToDelete)
             _uiState.update { it.copy(userMessage = "Categoría '${categoryToDelete.name}' eliminada.") }
         }
     }
 
+    // Preparar una categoría para su edición
     fun prepareCategoryForEditing(category: Category?) {
         _uiState.update { it.copy(categoryToEdit = category, showEditDialog = true) }
     }
 
+    // Ocultar el diálogo de edición
     fun dismissEditDialog() {
         _uiState.update { it.copy(showEditDialog = false, categoryToEdit = null) }
     }
 
+    // Limpiar el mensaje de usuario
     fun clearUserMessage() {
         _uiState.update { it.copy(userMessage = null) }
     }

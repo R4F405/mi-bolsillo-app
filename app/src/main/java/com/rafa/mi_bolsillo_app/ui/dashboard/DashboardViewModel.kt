@@ -3,23 +3,27 @@ package com.rafa.mi_bolsillo_app.ui.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafa.mi_bolsillo_app.data.local.dao.ExpenseByCategory
-import com.rafa.mi_bolsillo_app.data.local.entity.Category // <-- AÑADE IMPORT
-import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
-import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository // <-- AÑADE IMPORT
+import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
-import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem // <-- IMPORTA TransactionUiItem
+import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first // <-- AÑADE IMPORT
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
+
+/**
+ * Modelo de vista para la pantalla de Dashboard.
+ *
+ * Contiene la lógica para mostrar el balance actual, ingresos y gastos, un gráfico de gastos y una lista de movimientos recientes.
+ */
 
 // Actualiza DashboardUiState para usar TransactionUiItem
 data class DashboardUiState(
@@ -29,7 +33,7 @@ data class DashboardUiState(
     val totalIncome: Double = 0.0,
     val totalExpenses: Double = 0.0,
     val balance: Double = 0.0,
-    val recentTransactions: List<TransactionUiItem> = emptyList(), // CAMBIADO a TransactionUiItem
+    val recentTransactions: List<TransactionUiItem> = emptyList(),
     val expensesByCategory: List<ExpenseByCategory> = emptyList()
 )
 
@@ -48,7 +52,7 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
     }
 
-    // (Función getCurrentMonthDateRange sin cambios)
+    // Función para obtener el rango de fechas para el mes actual
     private fun getCurrentMonthDateRange(year: Int, month: Int): Pair<Long, Long> {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1, 0, 0, 0)
@@ -60,6 +64,7 @@ class DashboardViewModel @Inject constructor(
         return Pair(startDate, endDate)
     }
 
+    // Función para obtener el nombre del mes en español con la primera letra en mayúscula
     private fun getMonthYearString(year: Int, month: Int): String {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1)
@@ -68,6 +73,7 @@ class DashboardViewModel @Inject constructor(
     }
 
 
+    // Función para cargar los datos del dashboard
     fun loadDashboardData() {
         viewModelScope.launch {
             val (startDate, endDate) = getCurrentMonthDateRange(currentYear, currentMonth)
@@ -97,11 +103,10 @@ class DashboardViewModel @Inject constructor(
                 transactionRepository.getExpensesByCategoryInRange(startDate, endDate)
             ) { income, expenses, recents, expensesByCategoryData ->
                 val calculatedBalance = income - expenses
-                // Actualiza el uiState con el nuevo monthName
-                _uiState.value = _uiState.value.copy( // Usamos copy para mantener otros estados si los hubiera
+                _uiState.value = _uiState.value.copy(
                     selectedYear = currentYear,
                     selectedMonth = currentMonth,
-                    monthName = monthName, // <-- Asegúrate que esto se actualiza
+                    monthName = monthName,
                     totalIncome = income,
                     totalExpenses = expenses,
                     balance = calculatedBalance,
@@ -111,6 +116,8 @@ class DashboardViewModel @Inject constructor(
             }.collect {}
         }
     }
+
+    // Funciones para cambiar el mes/año
     fun selectNextMonth() {
         val calendar = Calendar.getInstance()
         calendar.set(currentYear, currentMonth, 1)
@@ -120,6 +127,7 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData() // Recarga los datos para el nuevo mes/año
     }
 
+    // Funciones para cambiar el mes/año
     fun selectPreviousMonth() {
         val calendar = Calendar.getInstance()
         calendar.set(currentYear, currentMonth, 1)

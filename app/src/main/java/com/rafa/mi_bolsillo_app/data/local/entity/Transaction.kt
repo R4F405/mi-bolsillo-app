@@ -29,8 +29,6 @@ import com.rafa.mi_bolsillo_app.data.local.converters.TransactionTypeConverter
             parentColumns = ["id"],
             childColumns = ["category_id"],
             onDelete = ForeignKey.RESTRICT // Previene borrar una categoría si tiene transacciones asociadas.
-            // Considera SET_NULL si categoryId puede ser nulo y quieres permitirlo,
-            // o CASCADE si quieres borrar transacciones al borrar categoría (¡cuidado!).
         )
     ],
     indices = [Index(value = ["category_id"])] // Index para optimizar búsquedas por category_id
@@ -41,10 +39,10 @@ data class Transaction(
     val id: Long = 0,
 
     @ColumnInfo(name = "amount")
-    val amount: Double, // Considerar BigDecimal para precisión monetaria absoluta en fases avanzadas. Double es más simple inicialmente.
+    val amount: Double,
 
     @ColumnInfo(name = "date")
-    val date: Long, // Almacenar como timestamp (System.currentTimeMillis())
+    val date: Long,
 
     @ColumnInfo(name = "description")
     val description: String?, // Puede ser nulo si no se proporciona descripción

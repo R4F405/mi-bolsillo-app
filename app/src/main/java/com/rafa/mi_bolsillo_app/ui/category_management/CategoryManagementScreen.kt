@@ -32,17 +32,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.rafa.mi_bolsillo_app.data.local.entity.Category // Necesario para el tipo en items
-import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog // Diálogo de confirmación
-import androidx.compose.runtime.getValue // Necesario para 'by'
-import androidx.compose.runtime.setValue // Necesario para 'by' si reasignas la variable directamente (no es el caso aquí con 'by')
+import com.rafa.mi_bolsillo_app.data.local.entity.Category
+import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.material.icons.filled.Warning // Para el ConfirmationDialog
-import androidx.compose.material3.rememberModalBottomSheetState // Para el estado del BottomSheet
-import androidx.compose.runtime.SideEffect
-import kotlinx.coroutines.launch // Para el scope del sheet
-import androidx.compose.runtime.rememberCoroutineScope // Para el scope del sheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
+/**
+ * Composable para la pantalla de gestión de categorías.
+ *
+ * Permite a los usuarios añadir, editar y eliminar categorías.
+ *
+ */
 
 @OptIn(ExperimentalMaterial3Api::class) // Necesario para ModalBottomSheetState y ModalBottomSheet
 @Composable
@@ -80,6 +83,7 @@ fun CategoryManagementScreen(
         }
     }
 
+    // Efecto para mostrar mensajes de usuario
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
             snackbarHostState.showSnackbar(
@@ -90,6 +94,7 @@ fun CategoryManagementScreen(
         }
     }
 
+    // Composición de la pantalla
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
@@ -107,6 +112,7 @@ fun CategoryManagementScreen(
                 )
             )
         },
+        // Botón flotante para añadir una nueva categoría
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -118,6 +124,7 @@ fun CategoryManagementScreen(
                 Icon(Icons.Filled.Add, "Añadir categoría")
             }
         }
+        // Textos de carga y vacio
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             if (uiState.isLoading) {

@@ -31,6 +31,12 @@ import androidx.compose.ui.unit.dp
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 
+/**
+ * Composable para mostrar un item de categoría.
+ *
+ * Muestra el color, el nombre y un ícono de edición y eliminación.
+ */
+
 @Composable
 fun CategoryItem(
     category: Category,
@@ -61,6 +67,7 @@ fun CategoryItem(
                 )
             }
 
+            // Ícono de edición y eliminación
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (category.isPredefined) {
                     Icon(
@@ -89,6 +96,7 @@ fun CategoryItem(
     }
 }
 
+// Composable para mostrar un indicador de color de categoría
 @Composable
 fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
     val color = try {
@@ -104,6 +112,7 @@ fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
     )
 }
 
+// Vista previa
 @Preview(showBackground = true, name = "Custom Category Item")
 @Composable
 fun CategoryItemCustomPreview() {
@@ -116,6 +125,7 @@ fun CategoryItemCustomPreview() {
     }
 }
 
+// Vista previa
 @Preview(showBackground = true, name = "Predefined Category Item")
 @Composable
 fun CategoryItemPredefinedPreview() {
