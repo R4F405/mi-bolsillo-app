@@ -1,6 +1,7 @@
 # Gradle files
 .gradle/
 build/
+app/build
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -31,3 +32,8 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Archivos de metadatos de compilación de Android
+app/release/output-metadata.json
+app/build/outputs/apk/**/output-metadata.json
+app/build/outputs/bundle/**/output-metadata.json
