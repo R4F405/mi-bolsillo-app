@@ -1,32 +1,39 @@
 package com.rafa.mi_bolsillo_app.ui.transactions
 
-import androidx.compose.foundation.isSystemInDarkTheme // ¡IMPORTANTE AÑADIR ESTE IMPORT!
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column // Importa Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth // Importa fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack // Icono de flecha atrás
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search // Importa el icono de búsqueda
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton // Para el botón de navegación
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField // Importa OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf // Importa mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable // Importa rememberSaveable
+import androidx.compose.runtime.setValue // Importa setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController // Necesario para la navegación
-import com.rafa.mi_bolsillo_app.navigation.AppScreens // Para las rutas
-import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem // Asegúrate que el import es a ui.model
+import androidx.navigation.NavController
+import com.rafa.mi_bolsillo_app.navigation.AppScreens
+import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,20 +42,22 @@ fun TransactionListScreen(
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val transactionsUiItems by viewModel.transactionsUiItems.collectAsStateWithLifecycle()
-    val currentDarkTheme = isSystemInDarkTheme() // Detecta si el tema oscuro del sistema está activo
+    val currentDarkTheme = isSystemInDarkTheme()
+
+    // Estado para guardar el texto de búsqueda
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
-            // Determinar colores de la TopAppBar basados en el tema actual
             val topAppBarContainerColor = if (currentDarkTheme) {
-                MaterialTheme.colorScheme.surface // Usar color de superficie para modo oscuro
+                MaterialTheme.colorScheme.surface
             } else {
-                MaterialTheme.colorScheme.primary // Usar color primario para modo claro
+                MaterialTheme.colorScheme.primary
             }
             val topAppBarContentColor = if (currentDarkTheme) {
-                MaterialTheme.colorScheme.onSurface // Contenido sobre superficie para modo oscuro
+                MaterialTheme.colorScheme.onSurface
             } else {
-                MaterialTheme.colorScheme.onPrimary // Contenido sobre primario para modo claro
+                MaterialTheme.colorScheme.onPrimary
             }
 
             TopAppBar(
@@ -57,7 +66,7 @@ fun TransactionListScreen(
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver" // Cambiado para ser más genérico
+                            contentDescription = "Volver"
                         )
                     }
                 },
@@ -70,17 +79,44 @@ fun TransactionListScreen(
         }
     ) { innerPadding ->
 
-        Box(modifier = Modifier.padding(innerPadding)) {
-            if (transactionsUiItems.isEmpty()) {
-                EmptyState(modifier = Modifier.fillMaxSize())
-            } else {
-                TransactionList(
-                    transactions = transactionsUiItems,
-                    onTransactionClick = { transactionId ->
-                        navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionId))
-                    },
-                    modifier = Modifier.fillMaxSize()
-                )
+        // Usamos Column para apilar la barra de búsqueda y la lista/estado vacío
+        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+
+            // Barra de Búsqueda
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Buscar por concepto o categoría") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Filled.Search,
+                        contentDescription = "Icono de Búsqueda"
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                singleLine = true,
+                shape = MaterialTheme.shapes.medium // Esquinas redondeadas
+            )
+
+            // Contenedor para la lista o el estado vacío
+            // El Box ahora toma el peso restante para que la Column se distribuya correctamente
+            Box(modifier = Modifier.weight(1f)) {
+                // Si la lista original está vacía Y no hay texto de búsqueda, muestra el EmptyState global
+                if (transactionsUiItems.isEmpty() && searchQuery.isBlank()) {
+                    EmptyState(modifier = Modifier.fillMaxSize())
+                } else {
+                    // Pasamos la lista original y el searchQuery al composable TransactionList
+                    TransactionList(
+                        transactions = transactionsUiItems,
+                        searchQuery = searchQuery, // Pasar el término de búsqueda
+                        onTransactionClick = { transactionId ->
+                            navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionId))
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }
@@ -89,18 +125,47 @@ fun TransactionListScreen(
 @Composable
 fun TransactionList(
     transactions: List<TransactionUiItem>,
+    searchQuery: String, // Nuevo parámetro para el término de búsqueda
     onTransactionClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(), // Asegura que LazyColumn llene el espacio disponible
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        items(transactions, key = { it.id }) { transactionItem ->
-            TransactionRowItem(
-                transactionItem = transactionItem,
-                onItemClick = { onTransactionClick(transactionItem.id) }
+    // Filtramos la lista de transacciones basándonos en el searchQuery
+    val filteredTransactions = if (searchQuery.isBlank()) {
+        transactions // Si no hay búsqueda, muestra todas las transacciones
+    } else {
+        transactions.filter { transaction ->
+            // Comprueba si el concepto (descripción) contiene el searchQuery (ignorando mayúsculas/minúsculas)
+            val matchesConcepto = transaction.concepto?.contains(searchQuery, ignoreCase = true) == true
+            // Comprueba si el nombre de la categoría contiene el searchQuery (ignorando mayúsculas/minúsculas)
+            val matchesCategory = transaction.categoryName.contains(searchQuery, ignoreCase = true)
+            matchesConcepto || matchesCategory
+        }
+    }
+
+    // Si después de filtrar no hay transacciones, muestra un mensaje específico
+    if (filteredTransactions.isEmpty()) {
+        Box(
+            modifier = modifier.fillMaxSize().padding(16.dp), // Añade padding para que no esté pegado a los bordes
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = if (searchQuery.isBlank()) "No hay transacciones registradas." // Si la lista original está vacía
+                else "No se encontraron transacciones para \"$searchQuery\".",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top=0.dp, bottom = 8.dp) // Ajusta padding para que no haya doble vertical con la searchbar
+        ) {
+            items(filteredTransactions, key = { it.id }) { transactionItem ->
+                TransactionRowItem(
+                    transactionItem = transactionItem,
+                    onItemClick = { onTransactionClick(transactionItem.id) }
+                )
+            }
         }
     }
 }
@@ -109,13 +174,13 @@ fun TransactionList(
 @Composable
 fun EmptyState(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxSize(), // Asegura que EmptyState llene el espacio disponible
+        modifier = modifier.fillMaxSize().padding(16.dp), // Añade padding
         contentAlignment = Alignment.Center
     ) {
         Text(
-            "No hay transacciones registradas.",
+            "Aún no tienes transacciones registradas.",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant // Buen color para texto secundario
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
