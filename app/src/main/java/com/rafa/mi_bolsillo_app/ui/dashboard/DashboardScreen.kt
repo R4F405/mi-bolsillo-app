@@ -27,13 +27,6 @@ import java.text.NumberFormat
 import java.util.Locale
 import androidx.compose.material.icons.filled.Settings
 
-/**
- * Composable para la pantalla de Dashboard.
- *
- * Muestra el balance actual, ingresos y gastos, un gráfico de gastos y una lista de movimientos recientes.
- *
- */
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
@@ -42,27 +35,24 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val numberFormat = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
-    val currentDarkTheme = isSystemInDarkTheme() // Detecta si el tema oscuro del sistema está activo
+    val currentDarkTheme = isSystemInDarkTheme()
 
     Scaffold(
         topBar = {
-            // Determinar colores de la TopAppBar basados en el tema actual
             val topAppBarContainerColor = if (currentDarkTheme) {
-                MaterialTheme.colorScheme.surface // Usar color de superficie para modo oscuro
+                MaterialTheme.colorScheme.surface
             } else {
-                MaterialTheme.colorScheme.primary // Usar color primario para modo claro
+                MaterialTheme.colorScheme.primary
             }
             val topAppBarContentColor = if (currentDarkTheme) {
-                MaterialTheme.colorScheme.onSurface // Contenido sobre superficie para modo oscuro
+                MaterialTheme.colorScheme.onSurface
             } else {
-                MaterialTheme.colorScheme.onPrimary // Contenido sobre primario para modo claro
+                MaterialTheme.colorScheme.onPrimary
             }
 
-            // Configuración de la TopAppBar
             TopAppBar(
                 title = { Text("Mi Bolsillo") },
                 actions = {
-                    // Selector de Mes/Año
                     IconButton(onClick = { viewModel.selectPreviousMonth() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Mes anterior")
                     }
@@ -74,8 +64,6 @@ fun DashboardScreen(
                     IconButton(onClick = { viewModel.selectNextMonth() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowForward, "Mes siguiente")
                     }
-
-                    // Botón para gestionar categorías
                     IconButton(onClick = {
                         navController.navigate(AppScreens.CategoryManagementScreen.route)
                     }) {
@@ -92,7 +80,6 @@ fun DashboardScreen(
                 )
             )
         },
-        // Configuración del FloatingActionButton (+)
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -105,122 +92,124 @@ fun DashboardScreen(
             }
         }
     ) { innerPadding ->
-        Box(
+        // La Column principal ahora envuelve todo el contenido desplazable
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding) // Aplicar el padding del Scaffold aquí
+                .verticalScroll(rememberScrollState()) // Habilitar scroll para toda la columna
+                .padding(horizontal = 16.dp) // Padding horizontal general
+                .padding(top = 16.dp, bottom = 16.dp) // Padding vertical general (el bottom es para el último elemento)
         ) {
-            // Contenido principal con scroll
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp, bottom = 16.dp)
-                    .verticalScroll(rememberScrollState())
+            // Balance Actual
+            Text(
+                text = "Balance Actual",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = numberFormat.format(uiState.balance),
+                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
+                color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else AppExpense
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Ingresos y Gastos
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                // Balance Actual
-                Text(
-                    text = "Balance Actual",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = numberFormat.format(uiState.balance),
-                    style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
-                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else AppExpense // Considera usar MaterialTheme.colorScheme.error para gastos
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Ingresos y Gastos
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Ingresos", style = MaterialTheme.typography.labelLarge)
-                        Text(
-                            numberFormat.format(uiState.totalIncome),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = AppIncome // Considera usar un color del theme si es posible/deseado
-                        )
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Gastos", style = MaterialTheme.typography.labelLarge)
-                        Text(
-                            numberFormat.format(uiState.totalExpenses),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = AppExpense // Considera usar MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(35.dp))
-
-                // Gráfico de Gastos
-                Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(15.dp)) //Bajar el grafico
-
-                if (uiState.expensesByCategory.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp) //Tamaño grafico
-                            .padding(vertical = 4.dp) // Un poco de padding vertical para el gráfico
-                    ) {
-                        CategoryPieChart(
-                            expensesByCategory = uiState.expensesByCategory,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp) // Misma altura para consistencia
-                            .padding(vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("No hay datos de gastos para mostrar en el gráfico.")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(15.dp)) // Reducido para dar más espacio a la lista
-
-                // Movimientos Recientes
-                Text("Movimientos Recientes", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (uiState.recentTransactions.isEmpty()) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Ingresos", style = MaterialTheme.typography.labelLarge)
                     Text(
-                        "No hay movimientos recientes este mes.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 80.dp)
+                        numberFormat.format(uiState.totalIncome),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = AppIncome
                     )
-                } else {
-                    Column {
-                        uiState.recentTransactions.forEach { transactionItem ->
-                            TransactionRowItem(
-                                transactionItem = transactionItem,
-                                onItemClick = {
-                                    navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
-                                }
-                            )
-                        }
-                    }
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Gastos", style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        numberFormat.format(uiState.totalExpenses),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = AppExpense
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(35.dp))
 
-                    // Espacio para el botón fijo de abajo
-                    Spacer(modifier = Modifier.height(80.dp))
+            // Gráfico de Gastos
+            Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(15.dp))
+
+            if (uiState.expensesByCategory.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(vertical = 4.dp)
+                ) {
+                    CategoryPieChart(
+                        expensesByCategory = uiState.expensesByCategory,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(vertical = 4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("No hay datos de gastos para mostrar en el gráfico.")
                 }
             }
 
-            // Botón fijo en la parte inferior
+            Spacer(modifier = Modifier.height(15.dp))
+
+            // Movimientos Recientes
+            Text("Movimientos Recientes", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (uiState.recentTransactions.isEmpty()) {
+                Text(
+                    "No hay movimientos recientes este mes.",
+                    style = MaterialTheme.typography.bodyMedium
+                    // El padding inferior aquí ya no es necesario si el botón va después
+                )
+            } else {
+                Column { // Contenedor para las transacciones recientes
+                    uiState.recentTransactions.forEach { transactionItem ->
+                        TransactionRowItem(
+                            transactionItem = transactionItem,
+                            onItemClick = {
+                                navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Botón "Ver Historial Completo" - movido aquí
+            // Se mostrará siempre, debajo de la lista de transacciones o del mensaje de "No hay movimientos"
+            Spacer(modifier = Modifier.height(16.dp)) // Espacio antes del botón
             OutlinedButton(
                 onClick = { navController.navigate(AppScreens.TransactionHistoryScreen.route) },
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp) // Padding para separarlo de los bordes
+                // El padding vertical y horizontal ya se maneja en la Column principal
+                // y el fillMaxWidth asegura que ocupe el ancho disponible.
             ) {
                 Text("Ver Historial Completo")
             }
+
+            // Spacer adicional al final si el FAB podría solaparse con el último elemento
+            // Si el botón de historial es el último, y el FAB está presente,
+            // puede ser útil añadir un padding final a la Column o un Spacer grande
+            // para asegurar que el FAB no oculte el botón al hacer scroll hasta el final.
+            // El padding `bottom = 16.dp` en la Column principal ya ayuda,
+            // pero si tienes un FAB, considera un Spacer de unos 72.dp o 80.dp al final de la Column.
+            Spacer(modifier = Modifier.height(64.dp)) // Espacio para que el FAB no solape el botón
         }
     }
 }
