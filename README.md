@@ -77,9 +77,9 @@ app/
 ## ⚡ Instalación
 
 ### Descarga Directa
-Descarga la última versión estable (v1.0.0) desde el siguiente enlace:
+Descarga la última versión estable desde el siguiente enlace:
 
-👉 [Descargar Mi Bolsillo App v1.0.0](https://github.com/R4F405/mi_bolsillo_app/releases/tag/v1.0.0)
+👉 [Descargar Mi Bolsillo App v1.0.0](https://github.com/R4F405/mi_bolsillo_app/releases/)
 
 ### Desde el Código Fuente
 1. Clona este repositorio
