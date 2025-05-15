@@ -162,7 +162,7 @@ fun DashboardScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(160.dp)
+                            .height(250.dp) //Tamaño grafico
                             .padding(vertical = 4.dp) // Un poco de padding vertical para el gráfico
                     ) {
                         CategoryPieChart(
@@ -174,7 +174,7 @@ fun DashboardScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(160.dp) // Misma altura para consistencia
+                            .height(250.dp) // Misma altura para consistencia
                             .padding(vertical = 4.dp),
                         contentAlignment = Alignment.Center
                     ) {
