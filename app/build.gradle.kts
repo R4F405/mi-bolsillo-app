@@ -56,6 +56,8 @@ dependencies {
     ksp(libs.androidx.room.compiler) // Usa ksp para el procesador de anotaciones de Room
     implementation(libs.androidx.room.ktx)   // Para extensiones Kotlin y soporte de Coroutines
 
+    implementation(libs.mpandroidchart)
+
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler) // Usa ksp para el compilador de Hilt
