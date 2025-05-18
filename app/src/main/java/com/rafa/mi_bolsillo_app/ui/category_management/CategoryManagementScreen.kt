@@ -1,5 +1,6 @@
 package com.rafa.mi_bolsillo_app.ui.category_management
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,6 +65,7 @@ fun CategoryManagementScreen(
         skipPartiallyExpanded = true // Para que solo sea expandido o cerrado
     )
     val coroutineScope = rememberCoroutineScope()
+    val currentDarkTheme = isSystemInDarkTheme()
 
     // Efecto para mostrar/ocultar el BottomSheet basado en uiState.showEditDialog
     // y también para limpiar categoryToEdit cuando el sheet se oculta por cualquier motivo.
@@ -98,6 +100,16 @@ fun CategoryManagementScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
+            val topAppBarContainerColor = if (currentDarkTheme) {
+                MaterialTheme.colorScheme.surface
+            } else {
+                MaterialTheme.colorScheme.primary
+            }
+            val topAppBarContentColor = if (currentDarkTheme) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            }
             TopAppBar(
                 title = { Text("Gestionar Categorías") },
                 navigationIcon = {
@@ -106,9 +118,9 @@ fun CategoryManagementScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = topAppBarContainerColor,
+                    titleContentColor = topAppBarContentColor,
+                    navigationIconContentColor = topAppBarContentColor
                 )
             )
         },
