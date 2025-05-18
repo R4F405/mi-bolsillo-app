@@ -3,6 +3,8 @@ package com.rafa.mi_bolsillo_app.di
 // Imports necesarios para las interfaces y las implementaciones de los repositorios
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepositoryImpl
+import com.rafa.mi_bolsillo_app.data.repository.RecurringTransactionRepository
+import com.rafa.mi_bolsillo_app.data.repository.RecurringTransactionRepositoryImpl
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepositoryImpl
 
@@ -33,4 +35,10 @@ abstract class RepositoryModule { // Los módulos con @Binds DEBEN ser clases ab
     abstract fun bindTransactionRepository(
         transactionRepositoryImpl: TransactionRepositoryImpl // Hilt sabe cómo crear esto
     ): TransactionRepository // Cuando se pida TransactionRepository, Hilt proveerá TransactionRepositoryImpl
+
+    @Binds
+    @Singleton // La instancia de RecurringTransactionRepository también será un singleton
+    abstract fun bindRecurringTransactionRepository(
+        recurringTransactionRepositoryImpl: RecurringTransactionRepositoryImpl
+    ): RecurringTransactionRepository
 }

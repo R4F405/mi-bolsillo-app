@@ -58,15 +58,24 @@ dependencies {
 
     implementation(libs.mpandroidchart)
 
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx) // Para WorkManager con Kotlin y Coroutines
+    implementation(libs.androidx.hilt.work)
+
+
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler) // Usa ksp para el compilador de Hilt
+    ksp(libs.androidx.hilt.compiler)
 
     // Hilt Navigation Compose (para hiltViewModel())
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Lifecycle ViewModel KTX (para viewModelScope)
     implementation(libs.androidx.lifecycle.viewmodelktx)
+
+    implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // Dependencias de Test
     testImplementation(libs.junit)

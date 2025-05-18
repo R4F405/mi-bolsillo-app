@@ -3,6 +3,7 @@ package com.rafa.mi_bolsillo_app.di
 import android.content.Context
 import com.rafa.mi_bolsillo_app.data.local.AppDatabase
 import com.rafa.mi_bolsillo_app.data.local.dao.CategoryDao
+import com.rafa.mi_bolsillo_app.data.local.dao.RecurringTransactionDao
 import com.rafa.mi_bolsillo_app.data.local.dao.TransactionDao
 import dagger.Module
 import dagger.Provides
@@ -38,5 +39,11 @@ object DatabaseModule {
     @Singleton
     fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao {
         return appDatabase.transactionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecurringTransactionDao(appDatabase: AppDatabase): RecurringTransactionDao {
+        return appDatabase.recurringTransactionDao()
     }
 }

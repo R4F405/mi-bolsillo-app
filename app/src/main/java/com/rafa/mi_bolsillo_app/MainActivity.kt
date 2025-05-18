@@ -19,6 +19,7 @@ import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.rafa.mi_bolsillo_app.ui.category_management.CategoryManagementScreen
+import com.rafa.mi_bolsillo_app.ui.recurring_transactions.RecurringTransactionListScreen
 
 /**
  * Clase principal de la aplicación.
@@ -55,6 +56,10 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = AppScreens.CategoryManagementScreen.route) {
                             CategoryManagementScreen(navController = navController)
+                        }
+                        // Nueva ruta para la lista de plantillas recurrentes
+                        composable(route = AppScreens.RecurringTransactionListScreen.route) {
+                            RecurringTransactionListScreen(navController = navController)
                         }
                     }
                 }

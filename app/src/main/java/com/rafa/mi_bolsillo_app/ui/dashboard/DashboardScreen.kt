@@ -27,6 +27,8 @@ import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.filled.Autorenew // Para el icono de recurrentes
+import androidx.compose.material3.HorizontalDivider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,21 +46,38 @@ fun DashboardScreen(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = true, // Habilitar el gesto de arrastrar para abrir el drawer
+        gesturesEnabled = true,
         drawerContent = {
-            // Contenido del menú lateral
             ModalDrawerSheet {
                 Spacer(Modifier.height(12.dp))
+                Text(
+                    "Gestión",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 NavigationDrawerItem(
                     label = { Text(text = "Gestionar Categorías") },
-                    selected = false,
+                    selected = false, // Puedes hacer esto dinámico si la ruta actual es la de categorías
                     onClick = {
                         navController.navigate(AppScreens.CategoryManagementScreen.route)
                         scope.launch { drawerState.close() }
                     },
-                    icon = { Icon(Icons.Filled.List, contentDescription = "Categorías") }, // Añadido el icono
+                    icon = { Icon(Icons.Filled.List, contentDescription = "Categorías") },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
+                // Item para transacciones recurrentes
+                NavigationDrawerItem(
+                    label = { Text(text = "Plantillas Recurrentes") },
+                    selected = false, // Puedes hacerlo dinámico también
+                    onClick = {
+                        navController.navigate(AppScreens.RecurringTransactionListScreen.route)
+                        scope.launch { drawerState.close() }
+                    },
+                    icon = { Icon(Icons.Filled.Autorenew, contentDescription = "Plantillas Recurrentes") },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
     ) {

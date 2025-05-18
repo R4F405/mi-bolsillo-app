@@ -9,4 +9,5 @@ sealed class AppScreens(val route: String) {
             else "add_transaction_screen?transactionId=-1"
     }
     object CategoryManagementScreen : AppScreens("category_management_screen")
+    object RecurringTransactionListScreen : AppScreens("recurring_transaction_list_screen")
 }
