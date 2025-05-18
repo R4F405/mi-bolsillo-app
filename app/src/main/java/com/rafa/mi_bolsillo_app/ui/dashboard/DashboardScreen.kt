@@ -115,7 +115,7 @@ fun DashboardScreen(
                 }
             }
         ) { innerPadding ->
-            // La Column principal ahora envuelve todo el contenido desplazable
+            // La Column principal ahora envuelve ttodo el contenido desplazable
             Column(
                 modifier = Modifier
                     .fillMaxSize()
