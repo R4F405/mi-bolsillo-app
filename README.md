@@ -8,6 +8,7 @@
   <a href="https://github.com/rafa/mi_bolsillo_app/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Version-1.0.0-blue" alt="Version 1.0.0"></a>
   <a href="https://github.com/rafa/mi_bolsillo_app/releases"><img src="https://img.shields.io/badge/Platform-Android%206.0+-brightgreen" alt="Platform Android 6.0+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL%203-orange" alt="License Apache 2.0"></a>
+  <a href="https://deepwiki.com/R4F405/mi_bolsillo_app"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 </p>
 
 ## 📱 Descripción
