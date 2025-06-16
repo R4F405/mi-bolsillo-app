@@ -1,56 +1,64 @@
-# Mi Bolsillo App
+# Mi Bolsillo - Personal Finance App
 
 <p align="center">
   <img src="images/app_icon.png" alt="Mi Bolsillo App Logo" width="150"/>
 </p>
 
 <p align="center">
-  <a href="https://github.com/rafa/mi_bolsillo_app/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Version-1.0.0-blue" alt="Version 1.1.0"></a>
-  <a href="https://github.com/rafa/mi_bolsillo_app/releases"><img src="https://img.shields.io/badge/Platform-Android%206.0+-brightgreen" alt="Platform Android 6.0+"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL%203-orange" alt="License Apache 2.0"></a>
-  <a href="https://deepwiki.com/R4F405/mi_bolsillo_app"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+  <a href="https://github.com/rafa/mi_bolsillo_app/releases/tag/v1.1.0"><img src="https://img.shields.io/badge/Version-1.0.0-blue" alt="Version 1.0.0"></a>
+  <a href="https://github.com/rafa/mi_bolsillo_app/releases"><img src="https://img.shields.io/badge/Platform-Android%208.0%2B-brightgreen" alt="Platform Android 8.0+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL%20v3-orange" alt="License GNU GPLv3"></a>
 </p>
 
-## 📱 Descripción
+## 📱 About The Project
 
-**Mi Bolsillo App** es una aplicación móvil Android que permite a los usuarios gestionar sus finanzas personales de manera sencilla e intuitiva. Registra ingresos y gastos, organízalos por categorías y visualiza tu balance mensual con gráficos atractivos.
+**Mi Bolsillo** (My Pocket) is a native Android application designed for intuitive and straightforward personal finance management. Track your income and expenses, organize them into categories, and visualize your financial health with insightful charts and summaries. All your data is stored securely on your device, ensuring your privacy.
 
-## ✨ Características Principales
+## ✨ Key Features
 
-- ✅ **Dashboard financiero** con balance actual, ingresos, gastos y gráfico de distribución por categoría
-- ✅ **Registro rápido** de ingresos y gastos con categorización flexible
-- ✅ **Historial completo** de transacciones con opciones de edición y eliminación
-- ✅ **Categorías personalizables** con colores distintivos
-- ✅ **Almacenamiento local** seguro de todos tus datos en el dispositivo
-- ✅ **Interfaz moderna** desarrollada con Jetpack Compose y Material Design 3
+-   **Financial Dashboard**: Get an at-a-glance view of your current balance, monthly income, and expenses, along with a pie chart visualizing spending by category.
+-   **Recurring Transactions**: Create templates for recurring payments like subscriptions or salary to automate transaction logging.
+-   **Automated Background Processing**: A `WorkManager` background job reliably checks for and creates recurring transactions, even when the app is not running.
+-   **Quick Transaction Entry**: Log new income and expenses with a flexible and easy-to-use interface.
+-   **Comprehensive History**: View a complete history of all your transactions, with options to edit or delete any entry.
+-   **Customizable Categories**: Organize your finances with customizable categories, each with a distinctive color for easy identification.
+-   **Secure Local Storage**: All financial data is stored locally and securely on your device using the Room persistence library.
+-   **Modern UI**: A clean and modern user interface built entirely with Jetpack Compose and Material Design 3.
 
-## 📸 Capturas de Pantalla
+## 📸 Screenshots
 
 <p align="center">
   <img src="images/dashboard.jpg" width="200" alt="Dashboard"/>
-  <img src="images/transaction_list.jpg" width="200" alt="Transacciones"/>
-  <img src="images/add_transaction.jpg" width="200" alt="Añadir Transacción"/>
-  <img src="images/category_management.jpg" width="200" alt="Gestión de Categorías"/>
+  <img src="images/transaction_list.jpg" width="200" alt="Transactions"/>
+  <img src="images/add_transaction.jpg" width="200" alt="Add Transaction"/>
+  <img src="images/category_management.jpg" width="200" alt="Category Management"/>
 </p>
 
-## 🚀 Arquitectura y Tecnologías
+## 🚀 Architecture & Tech Stack
 
-<!--
-<p align="center">
-  <img src="documentation/app_architecture.png" width="600" alt="Arquitectura de la aplicación"/>
-</p>
--->
+Mi Bolsillo is built with a modern Android architecture, following MVVM (Model-View-ViewModel) and Clean Architecture principles.
 
-Mi Bolsillo está construida siguiendo los principios de la arquitectura MVVM (Model-View-ViewModel) y Clean Architecture:
+-   **Language**: [Kotlin](https://kotlinlang.org/)
+-   **UI**: [Jetpack Compose](https://developer.android.com/jetpack/compose) for building a declarative and modern UI.
+-   **Architecture**:
+    -   [MVVM (Model-View-ViewModel)](https://developer.android.com/jetpack/guide)
+    -   [Clean Architecture Principles](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+-   **Asynchronous Programming**:
+    -   [Kotlin Coroutines & Flow](https://kotlinlang.org/docs/flow.html) for managing background threads and handling data streams.
+-   **Dependency Injection**:
+    -   [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) for robust dependency management.
+-   **Persistence**:
+    -   [Room Database](https://developer.android.com/training/data-storage/room) for local data storage.
+-   **Background Processing**:
+    -   [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) to handle recurring transaction generation.
+-   **Navigation**:
+    -   [Jetpack Navigation Compose](https://developer.android.com/jetpack/compose/navigation) for navigating between screens.
+-   **Charting**:
+    -   [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) for creating the expense distribution chart.
+-   **State Management**:
+    -   [Kotlin Flow](https://kotlinlang.org/docs/flow.html) and [StateFlow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/) for managing UI state.
 
-- **Lenguaje**: [Kotlin](https://kotlinlang.org/)
-- **UI**: [Jetpack Compose](https://developer.android.com/jetpack/compose)
-- **Persistencia**: [Room Database](https://developer.android.com/training/data-storage/room)
-- **Inyección de dependencias**: [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
-- **Gráficos**: [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart)
-- **Gestión de estado**: [Kotlin Flow](https://kotlinlang.org/docs/flow.html) y [StateFlow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/)
-
-## 📦 Estructura del Proyecto
+## 📦 Project Structure
 
 ```
 app/
@@ -58,60 +66,62 @@ app/
 │  ├─ java/com/rafa/mi_bolsillo_app/
 │  │  ├─ data/
 │  │  │  ├─ local/
-│  │  │  │  ├─ dao/        # Acceso a datos (Data Access Objects)
-│  │  │  │  ├─ entity/     # Entidades de la base de datos
-│  │  │  │  ├─ converters/ # Conversores para tipos de datos
-│  │  │  ├─ repository/    # Implementación de repositorios
-│  │  ├─ di/               # Módulos de inyección de dependencias
-│  │  ├─ navigation/       # Configuración de navegación
+│  │  │  │  ├─ dao/        # Data Access Objects for Room
+│  │  │  │  ├─ entity/     # Database entities (tables)
+│  │  │  │  ├─ converters/ # Type converters for Room
+│  │  │  ├─ repository/    # Repository implementations
+│  │  ├─ di/               # Hilt dependency injection modules
+│  │  ├─ navigation/       # Navigation configuration (AppScreens)
 │  │  ├─ ui/
-│  │  │  ├─ add_transaction/    # Pantalla de añadir/editar transacción
-│  │  │  ├─ category_management/ # Gestión de categorías
-│  │  │  ├─ components/          # Componentes UI reutilizables
-│  │  │  ├─ dashboard/          # Pantalla principal
-│  │  │  ├─ model/              # Modelos UI
-│  │  │  ├─ theme/              # Tema y estilo de la aplicación
-│  │  │  ├─ transactions/       # Pantalla de historial de transacciones
-│  ├─ res/                 # Recursos (imágenes, strings, colores, etc.)
+│  │  │  ├─ dashboard/
+│  │  │  ├─ transactions/
+│  │  │  ├─ add_transaction/
+│  │  │  ├─ category_management/
+│  │  │  ├─ recurring_transactions/ # UI for recurring transaction templates
+│  │  │  ├─ components/          # Reusable UI components
+│  │  │  ├─ model/              # UI-specific models
+│  │  │  ├─ theme/              # App theme and styling
+│  │  ├─ utils/              # Utility classes and helpers
+│  │  ├─ workers/            # WorkManager implementations
+│  ├─ res/                 # Resources (images, strings, colors, etc.)
 ```
 
-## ⚡ Instalación
+## ⚡ Getting Started
 
-### Descarga Directa
-Descarga la última versión estable desde el siguiente enlace:
+To get a local copy up and running, follow these simple steps.
 
-👉 [Descargar Mi Bolsillo App v1.1.0](https://github.com/R4F405/mi_bolsillo_app/releases/tag/v1.1.0)
+1.  Clone the repository:
+    ```sh
+    git clone [https://github.com/rafa/mi_bolsillo_app.git](https://github.com/rafa/mi_bolsillo_app.git)
+    ```
+2.  Open the project in Android Studio.
+3.  Build and run the app on an Android device or emulator (min. API level 26).
 
-### Desde el Código Fuente
-1. Clona este repositorio
-2. Abre el proyecto en Android Studio
-3. Compila y ejecuta en un dispositivo Android o emulador
+## 🔮 Roadmap
 
-## 🔮 Funcionalidades Planeadas
+-   📊 **Monthly Budgets**: Set spending limits for specific categories and track your progress.
+-   ☁️ **Cloud Sync**: Keep your data backed up and synced across multiple devices.
+-   📤 **Data Export**: Download your transaction history as a CSV or PDF file.
+-   🔔 **Smart Notifications**: Receive alerts for budget overruns and other important events.
+-   🎨 **Advanced Customization**: More themes, widgets, and visual settings.
 
-- 📊 **Presupuestos mensuales por categoría**: Establece límites y realiza seguimiento de tus gastos
-- ☁️ **Sincronización en la nube**: Mantén tus datos seguros y disponibles en todos tus dispositivos
-- 📤 **Exportación de datos**: Descarga tus transacciones como CSV o PDF
-- 🔔 **Notificaciones inteligentes**: Alertas cuando excedas presupuestos u otros eventos relevantes
-- 🏦 **Integración con API bancarias**: Importación automática de transacciones desde tu banco
-- 🎨 **Personalización avanzada**: Temas, widgets y ajustes visuales
+## 🤝 Contributing
 
-## 🤝 Contribuciones
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
+Please follow these steps to contribute:
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
-1. Haz fork del repositorio
-2. Crea una rama para tu funcionalidad (`git checkout -b feature/amazing-feature`)
-3. Haz commit de tus cambios (`git commit -m 'Add some amazing feature'`)
-4. Haz push a la rama (`git push origin feature/amazing-feature`)
-5. Abre un Pull Request
+## 📄 License
 
-## 📄 Licencia
-
-Este proyecto está licenciado bajo [GNU GPL3](LICENSE).
+This project is licensed under the **GNU General Public License v3.0**. See the `LICENSE` file for more information.
 
 ---
 
 <p align="center">
-  Desarrollado con ❤️ por Rafael
+  Developed with ❤️ by Rafa
 </p>
