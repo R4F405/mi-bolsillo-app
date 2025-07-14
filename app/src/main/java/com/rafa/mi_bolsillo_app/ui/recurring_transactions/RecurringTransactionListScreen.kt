@@ -99,7 +99,7 @@ fun RecurringTransactionListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.prepareForEditing(null) }, // null para nueva plantilla
-                containerColor = MaterialTheme.colorScheme.secondary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
                 Icon(Icons.Filled.Add, "Añadir plantilla recurrente")

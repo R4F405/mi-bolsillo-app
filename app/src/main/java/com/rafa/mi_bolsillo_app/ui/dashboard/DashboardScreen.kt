@@ -21,13 +21,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
-import com.rafa.mi_bolsillo_app.ui.theme.AppExpense
-import com.rafa.mi_bolsillo_app.ui.theme.AppIncome
+import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed // Cambio
+import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen // Cambio
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Autorenew // Para el icono de recurrentes
+import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material3.HorizontalDivider
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,7 +128,7 @@ fun DashboardScreen(
                         navController.navigate(AppScreens.AddTransactionScreen.createRoute(null))
                     },
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = MaterialTheme.colorScheme.surface,
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
                 }
@@ -151,7 +151,7 @@ fun DashboardScreen(
                 Text(
                     text = numberFormat.format(uiState.balance),
                     style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
-                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else AppExpense
+                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else ExpenseRed // Cambio
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -165,7 +165,7 @@ fun DashboardScreen(
                         Text(
                             numberFormat.format(uiState.totalIncome),
                             style = MaterialTheme.typography.titleLarge,
-                            color = AppIncome
+                            color = IncomeGreen
                         )
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -173,7 +173,7 @@ fun DashboardScreen(
                         Text(
                             numberFormat.format(uiState.totalExpenses),
                             style = MaterialTheme.typography.titleLarge,
-                            color = AppExpense
+                            color = ExpenseRed
                         )
                     }
                 }
@@ -217,7 +217,6 @@ fun DashboardScreen(
                     Text(
                         "No hay movimientos recientes este mes.",
                         style = MaterialTheme.typography.bodyMedium
-                        // El padding inferior aquí ya no es necesario si el botón va después
                     )
                 } else {
                     Column { // Contenedor para las transacciones recientes
@@ -238,9 +237,11 @@ fun DashboardScreen(
                 OutlinedButton(
                     onClick = { navController.navigate(AppScreens.TransactionHistoryScreen.route) },
                     modifier = Modifier
-                        .fillMaxWidth()
-                    // El padding vertical y horizontal ya se maneja en la Column principal
-                    // y el fillMaxWidth asegura que ocupe el ancho disponible.
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Text("Ver Historial Completo")
                 }

@@ -16,87 +16,42 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Definición de LightColorScheme usando los colores mapeados
+// Nuevo esquema de colores para el TEMA CLARO, basado en la paleta simplificada
 private val LightColorScheme = lightColorScheme(
-    primary = md_theme_light_primary,
-    onPrimary = md_theme_light_onPrimary,
-    primaryContainer = md_theme_light_primaryContainer,
-    onPrimaryContainer = md_theme_light_onPrimaryContainer,
-    secondary = md_theme_light_secondary,
-    onSecondary = md_theme_light_onSecondary,
-    secondaryContainer = md_theme_light_secondaryContainer,
-    onSecondaryContainer = md_theme_light_onSecondaryContainer,
-    tertiary = md_theme_light_tertiary,
-    onTertiary = md_theme_light_onTertiary,
-    tertiaryContainer = md_theme_light_tertiaryContainer,
-    onTertiaryContainer = md_theme_light_onTertiaryContainer,
-    error = md_theme_light_error,
-    onError = md_theme_light_onError,
-    errorContainer = md_theme_light_errorContainer,
-    onErrorContainer = md_theme_light_onErrorContainer,
-    background = md_theme_light_background,
-    onBackground = md_theme_light_onBackground,
-    surface = md_theme_light_surface,
-    onSurface = md_theme_light_onSurface,
-    surfaceVariant = md_theme_light_surfaceVariant,
-    onSurfaceVariant = md_theme_light_onSurfaceVariant,
-    outline = md_theme_light_outline,
-    outlineVariant = md_theme_light_outlineVariant,
+    primary = BrandBlue,
+    onPrimary = BrandWhite,
+    secondary = TextPrimaryDark, // El color de acento es el texto oscuro
+    onSecondary = BrandWhite,
+    background = LightBackground,
+    onBackground = TextPrimaryDark,
+    surface = BrandWhite,
+    onSurface = TextPrimaryDark,
+    onSurfaceVariant = TextSecondary,
+    error = ExpenseRed,
+    onError = BrandWhite,
+    outline = LightGray
 )
 
-// Definición de DarkColorScheme usando los colores mapeados
+// Nuevo esquema de colores para el TEMA OSCURO, basado en la paleta simplificada
 private val DarkColorScheme = darkColorScheme(
-    primary = md_theme_dark_primary,
-    onPrimary = md_theme_dark_onPrimary,
-    primaryContainer = md_theme_dark_primaryContainer,
-    onPrimaryContainer = md_theme_dark_onPrimaryContainer,
-    secondary = md_theme_dark_secondary,
-    onSecondary = md_theme_dark_onSecondary,
-    secondaryContainer = md_theme_dark_secondaryContainer,
-    onSecondaryContainer = md_theme_dark_onSecondaryContainer,
-    tertiary = md_theme_dark_tertiary,
-    onTertiary = md_theme_dark_onTertiary,
-    tertiaryContainer = md_theme_dark_tertiaryContainer,
-    onTertiaryContainer = md_theme_dark_onTertiaryContainer,
-    error = md_theme_dark_error,
-    onError = md_theme_dark_onError,
-    errorContainer = md_theme_dark_errorContainer,
-    onErrorContainer = md_theme_dark_onErrorContainer,
-    background = md_theme_dark_background,
-    onBackground = md_theme_dark_onBackground,
-    surface = md_theme_dark_surface,
-    onSurface = md_theme_dark_onSurface,
-    surfaceVariant = md_theme_dark_surfaceVariant,
-    onSurfaceVariant = md_theme_dark_onSurfaceVariant,
-    outline = md_theme_dark_outline,
-    outlineVariant = md_theme_dark_outlineVariant,
+    primary = BrandGray,
+    onPrimary = BrandBlack,
+    secondary = LightGray, // El color del FAB en modo oscuro
+    onSecondary = TextPrimaryDark,
+    background = BrandBlack,
+    onBackground = TextPrimaryLight,
+    surface = DarkSurface,
+    onSurface = TextPrimaryLight,
+    onSurfaceVariant = TextSecondary,
+    error = ExpenseRed,
+    onError = BrandWhite,
+    outline = TextSecondary
 )
 
-// Extensión para añadir los colores personalizados al tema
-val MaterialTheme.customColors: CustomColors
-    @Composable
-    get() = CustomColors(
-        income = AppIncome,
-        onIncome = AppTextOnPrimary,
-        expense = AppExpense,
-        onExpense = AppTextOnPrimary,
-        accent = AppAccent // Haciendo AppAccent accesible
-    )
-
-// Modelo de datos para los colores personalizados
-data class CustomColors(
-    val income: Color,
-    val onIncome: Color,
-    val expense: Color,
-    val onExpense: Color,
-    val accent: Color
-)
-
-// Composable para el tema personalizado
 @Composable
 fun MiBolsilloAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Material You - true para S+
+    dynamicColor: Boolean = false, // Material You - Desactivado por defecto para usar nuestro tema
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -112,20 +67,23 @@ fun MiBolsilloAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            val newStatusBarColor = if (darkTheme) {
-                colorScheme.surface.toArgb() // Usar color de superficie para la barra de estado en modo oscuro
+            // La barra de estado en modo oscuro ahora usará el color de la superficie (tarjetas)
+            // y en modo claro usará el color primario, tal como en tus capturas.
+            val statusBarColor = if (darkTheme) {
+                colorScheme.surface.toArgb()
             } else {
-                colorScheme.primary.toArgb() // Mantener primario para modo claro
+                colorScheme.primary.toArgb()
             }
-            window.statusBarColor = newStatusBarColor // Aplicar el nuevo color
+            window.statusBarColor = statusBarColor
 
+            // Asegura que los iconos de la barra de estado (hora, batería) tengan el contraste correcto.
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = AppTypography,
+        typography = AppTypography, // La tipografía no ha cambiado
         content = content
     )
 }

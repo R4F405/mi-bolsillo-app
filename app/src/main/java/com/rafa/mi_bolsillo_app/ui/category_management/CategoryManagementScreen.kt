@@ -130,7 +130,7 @@ fun CategoryManagementScreen(
                 onClick = {
                     viewModel.prepareCategoryForEditing(null)
                 },
-                containerColor = MaterialTheme.colorScheme.secondary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
                 Icon(Icons.Filled.Add, "Añadir categoría")
