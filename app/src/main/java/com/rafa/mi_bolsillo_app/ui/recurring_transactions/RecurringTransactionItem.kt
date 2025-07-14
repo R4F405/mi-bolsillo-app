@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.sp
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurrenceFrequency
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurringTransaction
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
-import com.rafa.mi_bolsillo_app.ui.theme.AppExpense
-import com.rafa.mi_bolsillo_app.ui.theme.AppIncome
+import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed
+import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -108,7 +108,7 @@ fun RecurringTransactionItem(
                 Text(
                     text = formatCurrency(template.amount),
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (template.transactionType == TransactionType.INCOME) AppIncome else AppExpense,
+                    color = if (template.transactionType == TransactionType.INCOME) IncomeGreen else ExpenseRed,
                     fontWeight = FontWeight.SemiBold
                 )
             }

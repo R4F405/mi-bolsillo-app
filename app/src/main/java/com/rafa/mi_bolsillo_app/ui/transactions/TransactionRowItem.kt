@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
-import com.rafa.mi_bolsillo_app.ui.theme.AppExpense
-import com.rafa.mi_bolsillo_app.ui.theme.AppIncome
+import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed // Cambio
+import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen // Cambio
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import androidx.compose.foundation.clickable
 import java.text.SimpleDateFormat
@@ -79,7 +79,7 @@ fun TransactionRowItem(
                     text = formatCurrency(transactionItem.amount),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (transactionItem.transactionType == TransactionType.INCOME) AppIncome else AppExpense
+                    color = if (transactionItem.transactionType == TransactionType.INCOME) IncomeGreen else ExpenseRed
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(

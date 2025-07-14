@@ -21,8 +21,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
-import com.rafa.mi_bolsillo_app.ui.theme.AppExpense
-import com.rafa.mi_bolsillo_app.ui.theme.AppIncome
+import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed // Cambio
+import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen // Cambio
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem
 import java.text.NumberFormat
 import java.util.Locale
@@ -127,7 +127,7 @@ fun DashboardScreen(
                     onClick = {
                         navController.navigate(AppScreens.AddTransactionScreen.createRoute(null))
                     },
-                    containerColor = MaterialTheme.colorScheme.onSurface,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.surface,
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
@@ -151,7 +151,7 @@ fun DashboardScreen(
                 Text(
                     text = numberFormat.format(uiState.balance),
                     style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
-                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else AppExpense
+                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else ExpenseRed // Cambio
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -165,7 +165,7 @@ fun DashboardScreen(
                         Text(
                             numberFormat.format(uiState.totalIncome),
                             style = MaterialTheme.typography.titleLarge,
-                            color = AppIncome
+                            color = IncomeGreen
                         )
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -173,7 +173,7 @@ fun DashboardScreen(
                         Text(
                             numberFormat.format(uiState.totalExpenses),
                             style = MaterialTheme.typography.titleLarge,
-                            color = AppExpense
+                            color = ExpenseRed
                         )
                     }
                 }
