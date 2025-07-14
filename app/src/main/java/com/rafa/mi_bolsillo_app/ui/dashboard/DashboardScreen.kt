@@ -27,7 +27,7 @@ import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Autorenew // Para el icono de recurrentes
+import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material3.HorizontalDivider
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -127,8 +127,8 @@ fun DashboardScreen(
                     onClick = {
                         navController.navigate(AppScreens.AddTransactionScreen.createRoute(null))
                     },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = MaterialTheme.colorScheme.onSurface,
+                    contentColor = MaterialTheme.colorScheme.surface,
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
                 }
@@ -238,9 +238,11 @@ fun DashboardScreen(
                 OutlinedButton(
                     onClick = { navController.navigate(AppScreens.TransactionHistoryScreen.route) },
                     modifier = Modifier
-                        .fillMaxWidth()
-                    // El padding vertical y horizontal ya se maneja en la Column principal
-                    // y el fillMaxWidth asegura que ocupe el ancho disponible.
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Text("Ver Historial Completo")
                 }
