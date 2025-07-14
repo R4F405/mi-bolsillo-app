@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -33,8 +34,8 @@ private val LightColorScheme = lightColorScheme(
 
 // Nuevo esquema de colores para el TEMA OSCURO, basado en la paleta simplificada
 private val DarkColorScheme = darkColorScheme(
-    primary = BrandBlue, // Mantenemos el azul de la marca como primario subyacente
-    onPrimary = BrandWhite,
+    primary = BrandGray,
+    onPrimary = BrandBlack,
     secondary = LightGray, // El color del FAB en modo oscuro
     onSecondary = TextPrimaryDark,
     background = BrandBlack,

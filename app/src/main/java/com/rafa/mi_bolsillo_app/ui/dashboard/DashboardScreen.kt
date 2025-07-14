@@ -217,7 +217,6 @@ fun DashboardScreen(
                     Text(
                         "No hay movimientos recientes este mes.",
                         style = MaterialTheme.typography.bodyMedium
-                        // El padding inferior aquí ya no es necesario si el botón va después
                     )
                 } else {
                     Column { // Contenedor para las transacciones recientes

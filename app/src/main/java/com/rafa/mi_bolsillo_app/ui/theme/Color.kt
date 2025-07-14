@@ -8,8 +8,10 @@ import androidx.compose.ui.graphics.Color
 
 // Colores base para la marca y la UI
 val BrandBlue = Color(0xFF073763)
+val BrandGray = Color(0xFFE0E0E0)
 val BrandWhite = Color(0xFFFFFFFF)
 val BrandBlack = Color(0xFF121212) // Usado para el fondo oscuro
+
 
 // Colores de Texto
 val TextPrimaryDark = Color(0xFF212121) // Texto principal sobre fondos claros
