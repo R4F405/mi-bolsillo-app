@@ -12,15 +12,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
-import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen
 import dagger.hilt.android.AndroidEntryPoint
 import com.rafa.mi_bolsillo_app.ui.dashboard.DashboardScreen
 import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.rafa.mi_bolsillo_app.ui.budget.BudgetScreen
 import com.rafa.mi_bolsillo_app.ui.category_management.CategoryManagementScreen
 import com.rafa.mi_bolsillo_app.ui.recurring_transactions.RecurringTransactionListScreen
-
+import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen
 /**
  * Clase principal de la aplicación.
  *
@@ -57,9 +57,12 @@ class MainActivity : ComponentActivity() {
                         composable(route = AppScreens.CategoryManagementScreen.route) {
                             CategoryManagementScreen(navController = navController)
                         }
-                        // Nueva ruta para la lista de plantillas recurrentes
                         composable(route = AppScreens.RecurringTransactionListScreen.route) {
                             RecurringTransactionListScreen(navController = navController)
+                        }
+                        // Nueva ruta para la pantalla de presupuestos
+                        composable(route = AppScreens.BudgetScreen.route) {
+                            BudgetScreen(navController = navController)
                         }
                     }
                 }

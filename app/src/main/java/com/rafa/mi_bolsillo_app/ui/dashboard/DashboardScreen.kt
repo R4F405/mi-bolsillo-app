@@ -1,5 +1,6 @@
 package com.rafa.mi_bolsillo_app.ui.dashboard
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,14 +22,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
-import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed // Cambio
-import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen // Cambio
+import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed
+import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem
 import java.text.NumberFormat
 import java.util.Locale
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.Autorenew
+import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.HorizontalDivider
+import com.rafa.mi_bolsillo_app.ui.budget.BudgetItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +43,6 @@ fun DashboardScreen(
     val numberFormat = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
     val currentDarkTheme = isSystemInDarkTheme()
 
-    // State para el drawer
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -57,8 +59,18 @@ fun DashboardScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 NavigationDrawerItem(
+                    label = { Text(text = "Gestionar Presupuestos") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(AppScreens.BudgetScreen.route)
+                        scope.launch { drawerState.close() }
+                    },
+                    icon = { Icon(Icons.Filled.PieChart, contentDescription = "Presupuestos") },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+                NavigationDrawerItem(
                     label = { Text(text = "Gestionar Categorías") },
-                    selected = false, // Puedes hacer esto dinámico si la ruta actual es la de categorías
+                    selected = false,
                     onClick = {
                         navController.navigate(AppScreens.CategoryManagementScreen.route)
                         scope.launch { drawerState.close() }
@@ -66,10 +78,9 @@ fun DashboardScreen(
                     icon = { Icon(Icons.Filled.List, contentDescription = "Categorías") },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
-                // Item para transacciones recurrentes
                 NavigationDrawerItem(
                     label = { Text(text = "Plantillas Recurrentes") },
-                    selected = false, // Puedes hacerlo dinámico también
+                    selected = false,
                     onClick = {
                         navController.navigate(AppScreens.RecurringTransactionListScreen.route)
                         scope.launch { drawerState.close() }
@@ -98,7 +109,7 @@ fun DashboardScreen(
                     title = { Text("Mi Bolsillo") },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Filled.Menu, "Menú") // Icono de hamburguesa
+                            Icon(Icons.Filled.Menu, "Menú")
                         }
                     },
                     actions = {
@@ -118,7 +129,7 @@ fun DashboardScreen(
                         containerColor = topAppBarContainerColor,
                         titleContentColor = topAppBarContentColor,
                         actionIconContentColor = topAppBarContentColor,
-                        navigationIconContentColor = topAppBarContentColor // Color del icono de hamburguesa
+                        navigationIconContentColor = topAppBarContentColor
                     )
                 )
             },
@@ -134,16 +145,14 @@ fun DashboardScreen(
                 }
             }
         ) { innerPadding ->
-            // La Column principal ahora envuelve ttodo el contenido desplazable
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding) // Aplicar el padding del Scaffold aquí
-                    .verticalScroll(rememberScrollState()) // Habilitar scroll para toda la columna
-                    .padding(horizontal = 16.dp) // Padding horizontal general
-                    .padding(top = 16.dp, bottom = 16.dp) // Padding vertical general (el bottom es para el último elemento)
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp, bottom = 16.dp)
             ) {
-                // Balance Actual
                 Text(
                     text = "Balance Actual",
                     style = MaterialTheme.typography.titleMedium
@@ -151,11 +160,10 @@ fun DashboardScreen(
                 Text(
                     text = numberFormat.format(uiState.balance),
                     style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
-                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else ExpenseRed // Cambio
+                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else ExpenseRed
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Ingresos y Gastos
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
@@ -179,7 +187,6 @@ fun DashboardScreen(
                 }
                 Spacer(modifier = Modifier.height(35.dp))
 
-                // Gráfico de Gastos
                 Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(15.dp))
 
@@ -209,7 +216,6 @@ fun DashboardScreen(
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                // Movimientos Recientes
                 Text("Movimientos Recientes", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -219,7 +225,7 @@ fun DashboardScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 } else {
-                    Column { // Contenedor para las transacciones recientes
+                    Column {
                         uiState.recentTransactions.forEach { transactionItem ->
                             TransactionRowItem(
                                 transactionItem = transactionItem,
@@ -231,9 +237,7 @@ fun DashboardScreen(
                     }
                 }
 
-                // Botón "Ver Historial Completo" - movido aquí
-                // Se mostrará siempre, debajo de la lista de transacciones o del mensaje de "No hay movimientos"
-                Spacer(modifier = Modifier.height(16.dp)) // Espacio antes del botón
+                Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
                     onClick = { navController.navigate(AppScreens.TransactionHistoryScreen.route) },
                     modifier = Modifier
@@ -245,7 +249,30 @@ fun DashboardScreen(
                 ) {
                     Text("Ver Historial Completo")
                 }
-                Spacer(modifier = Modifier.height(64.dp)) // Espacio para que el FAB no solape el botón
+                Spacer(modifier = Modifier.height(24.dp))
+
+                if (uiState.favoriteBudgets.isNotEmpty()) {
+                    Text("Presupuestos Favoritos", style = MaterialTheme.typography.titleMedium)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        uiState.favoriteBudgets.forEach { budgetItem ->
+                            Box(
+                                modifier = Modifier.clickable {
+                                    // Al pulsar, navegamos a la pantalla de presupuestos
+                                    navController.navigate(AppScreens.BudgetScreen.route)
+                                }
+                            ) {
+                                BudgetItem(
+                                    item = budgetItem,
+                                    showActions = false, // Ocultamos los botones de edición y borrado
+                                    onToggleFavorite = {},
+                                    onEditClick = {},
+                                    onDeleteClick = {}
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

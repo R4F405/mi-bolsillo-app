@@ -5,32 +5,34 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration // Importar Migration
-import androidx.sqlite.db.SupportSQLiteDatabase // Importar SupportSQLiteDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.rafa.mi_bolsillo_app.data.local.converters.TransactionTypeConverter
+import com.rafa.mi_bolsillo_app.data.local.dao.BudgetDao
 import com.rafa.mi_bolsillo_app.data.local.dao.CategoryDao
+import com.rafa.mi_bolsillo_app.data.local.dao.RecurringTransactionDao
 import com.rafa.mi_bolsillo_app.data.local.dao.TransactionDao
+import com.rafa.mi_bolsillo_app.data.local.entity.Budget
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
-// Nuevas importaciones
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurringTransaction
-import com.rafa.mi_bolsillo_app.data.local.dao.RecurringTransactionDao
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurrenceFrequencyConverter
 
 @Database(
-    entities = [Category::class, Transaction::class, RecurringTransaction::class], // Añadida RecurringTransaction
-    version = 2, // ¡VERSIÓN INCREMENTADA!
-    exportSchema = false // Mantenlo en false por ahora para simplificar
+    entities = [Category::class, Transaction::class, RecurringTransaction::class, Budget::class],
+    version = 4,
+    exportSchema = false
 )
 @TypeConverters(
     TransactionTypeConverter::class,
-    RecurrenceFrequencyConverter::class // Añadido el nuevo converter
+    RecurrenceFrequencyConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun categoryDao(): CategoryDao
     abstract fun transactionDao(): TransactionDao
-    abstract fun recurringTransactionDao(): RecurringTransactionDao // Nuevo DAO
+    abstract fun recurringTransactionDao(): RecurringTransactionDao
+    abstract fun budgetDao(): BudgetDao
 
     companion object {
         @Volatile
@@ -39,7 +41,6 @@ abstract class AppDatabase : RoomDatabase() {
         // Definición de la Migración de la versión 1 a la 2
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                // Crear la nueva tabla recurring_transactions
                 db.execSQL("""
                     CREATE TABLE IF NOT EXISTS `recurring_transactions` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -61,8 +62,34 @@ abstract class AppDatabase : RoomDatabase() {
                         FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`) ON DELETE RESTRICT
                     )
                 """.trimIndent())
-                // Crear índice para category_id si no existe (opcional pero bueno para rendimiento)
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_recurring_transactions_category_id` ON `recurring_transactions` (`category_id`)")
+            }
+        }
+
+        // Definición de la Migración de la versión 2 a la 3
+        val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Crear la nueva tabla budgets
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `budgets` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `category_id` INTEGER NOT NULL,
+                        `amount` REAL NOT NULL,
+                        `month` INTEGER NOT NULL,
+                        `year` INTEGER NOT NULL,
+                        `creation_date` INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`) ON DELETE CASCADE
+                    )
+                """.trimIndent())
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_budgets_category_id` ON `budgets` (`category_id`)")
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_budgets_year_month_category_id` ON `budgets` (`year`, `month`, `category_id`)")
+            }
+        }
+
+        // Definición de la Migración de la versión 3 a la 4
+        val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `budgets` ADD COLUMN `is_favorite` INTEGER NOT NULL DEFAULT 0")
             }
         }
 
@@ -73,8 +100,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "mi_bolsillo_database"
                 )
-                    .addMigrations(MIGRATION_1_2) // ¡AÑADIR LA MIGRACIÓN AQUÍ!
-                    // .fallbackToDestructiveMigration() // Quitar esto si usas migraciones reales
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                 INSTANCE = instance
                 instance
