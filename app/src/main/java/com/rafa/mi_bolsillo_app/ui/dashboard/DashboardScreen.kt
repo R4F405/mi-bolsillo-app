@@ -59,7 +59,7 @@ fun DashboardScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Gestionar Presupuestos") },
+                    label = { Text(text = "Presupuestos") },
                     selected = false,
                     onClick = {
                         navController.navigate(AppScreens.BudgetScreen.route)
@@ -69,7 +69,7 @@ fun DashboardScreen(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
                 NavigationDrawerItem(
-                    label = { Text(text = "Gestionar Categorías") },
+                    label = { Text(text = "Categorías") },
                     selected = false,
                     onClick = {
                         navController.navigate(AppScreens.CategoryManagementScreen.route)
@@ -112,23 +112,9 @@ fun DashboardScreen(
                             Icon(Icons.Filled.Menu, "Menú")
                         }
                     },
-                    actions = {
-                        IconButton(onClick = { viewModel.selectPreviousMonth() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Mes anterior")
-                        }
-                        Text(
-                            text = uiState.monthName,
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                        )
-                        IconButton(onClick = { viewModel.selectNextMonth() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, "Mes siguiente")
-                        }
-                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = topAppBarContainerColor,
                         titleContentColor = topAppBarContentColor,
-                        actionIconContentColor = topAppBarContentColor,
                         navigationIconContentColor = topAppBarContentColor
                     )
                 )
@@ -150,128 +136,164 @@ fun DashboardScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp, bottom = 16.dp)
             ) {
-                Text(
-                    text = "Balance Actual",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = numberFormat.format(uiState.balance),
-                    style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
-                    color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else ExpenseRed
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
+                // --- SELECTOR DE MES DESTACADO ---
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Ingresos", style = MaterialTheme.typography.labelLarge)
-                        Text(
-                            numberFormat.format(uiState.totalIncome),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = IncomeGreen
-                        )
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Gastos", style = MaterialTheme.typography.labelLarge)
-                        Text(
-                            numberFormat.format(uiState.totalExpenses),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = ExpenseRed
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(35.dp))
-
-                Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(15.dp))
-
-                if (uiState.expensesByCategory.isNotEmpty()) {
-                    Box(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(300.dp)
-                            .padding(vertical = 4.dp)
+                            .padding(vertical = 2.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        CategoryPieChart(
-                            expensesByCategory = uiState.expensesByCategory,
-                            modifier = Modifier.fillMaxSize()
+                        IconButton(onClick = { viewModel.selectPreviousMonth() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Mes anterior")
+                        }
+                        Text(
+                            text = uiState.monthName,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium)
                         )
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp)
-                            .padding(vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("No hay datos de gastos para mostrar en el gráfico.")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(15.dp))
-
-                Text("Movimientos Recientes", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (uiState.recentTransactions.isEmpty()) {
-                    Text(
-                        "No hay movimientos recientes este mes.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                } else {
-                    Column {
-                        uiState.recentTransactions.forEach { transactionItem ->
-                            TransactionRowItem(
-                                transactionItem = transactionItem,
-                                onItemClick = {
-                                    navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
-                                }
-                            )
+                        IconButton(onClick = { viewModel.selectNextMonth() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, "Mes siguiente")
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedButton(
-                    onClick = { navController.navigate(AppScreens.TransactionHistoryScreen.route) },
+                // --- RESTO DEL CONTENIDO ---
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp, bottom = 16.dp)
                 ) {
-                    Text("Ver Historial Completo")
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-
-                if (uiState.favoriteBudgets.isNotEmpty()) {
-                    Text("Presupuestos Favoritos", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "Balance Actual",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = numberFormat.format(uiState.balance),
+                        style = MaterialTheme.typography.headlineLarge.copy(fontSize = 36.sp),
+                        color = if (uiState.balance >= 0) MaterialTheme.colorScheme.onBackground else ExpenseRed
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        uiState.favoriteBudgets.forEach { budgetItem ->
-                            Box(
-                                modifier = Modifier.clickable {
-                                    // Al pulsar, navegamos a la pantalla de presupuestos
-                                    navController.navigate(AppScreens.BudgetScreen.route)
-                                }
-                            ) {
-                                BudgetItem(
-                                    item = budgetItem,
-                                    showActions = false, // Ocultamos los botones de edición y borrado
-                                    onToggleFavorite = {},
-                                    onEditClick = {},
-                                    onDeleteClick = {}
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Ingresos", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                numberFormat.format(uiState.totalIncome),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = IncomeGreen
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Gastos", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                numberFormat.format(uiState.totalExpenses),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = ExpenseRed
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(35.dp))
+
+                    Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    if (uiState.expensesByCategory.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                                .padding(vertical = 4.dp)
+                        ) {
+                            CategoryPieChart(
+                                expensesByCategory = uiState.expensesByCategory,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("No hay datos de gastos para mostrar en el gráfico.")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    Text("Movimientos Recientes", style = MaterialTheme.typography.titleMedium)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (uiState.recentTransactions.isEmpty()) {
+                        Text(
+                            "No hay movimientos recientes este mes.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    } else {
+                        Column {
+                            uiState.recentTransactions.forEach { transactionItem ->
+                                TransactionRowItem(
+                                    transactionItem = transactionItem,
+                                    onItemClick = {
+                                        navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
+                                    }
                                 )
                             }
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedButton(
+                        onClick = { navController.navigate(AppScreens.TransactionHistoryScreen.route) },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) {
+                        Text("Ver Historial Completo")
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    if (uiState.favoriteBudgets.isNotEmpty()) {
+                        Text("Presupuestos Favoritos", style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            uiState.favoriteBudgets.forEach { budgetItem ->
+                                Box(
+                                    modifier = Modifier.clickable {
+                                        // Al pulsar, navegamos a la pantalla de presupuestos
+                                        navController.navigate(AppScreens.BudgetScreen.route)
+                                    }
+                                ) {
+                                    BudgetItem(
+                                        item = budgetItem,
+                                        showActions = false, // Ocultamos los botones de edición y borrado
+                                        onToggleFavorite = {},
+                                        onEditClick = {},
+                                        onDeleteClick = {}
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(60.dp))
                 }
             }
         }
