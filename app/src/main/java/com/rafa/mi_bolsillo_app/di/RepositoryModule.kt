@@ -1,6 +1,7 @@
 package com.rafa.mi_bolsillo_app.di
 
-// Imports necesarios para las interfaces y las implementaciones de los repositorios
+import com.rafa.mi_bolsillo_app.data.repository.BudgetRepository
+import com.rafa.mi_bolsillo_app.data.repository.BudgetRepositoryImpl
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepositoryImpl
 import com.rafa.mi_bolsillo_app.data.repository.RecurringTransactionRepository
@@ -21,24 +22,30 @@ import javax.inject.Singleton
  */
 
 @Module
-@InstallIn(SingletonComponent::class) // Decide el alcance de estas vinculaciones
-abstract class RepositoryModule { // Los módulos con @Binds DEBEN ser clases abstractas
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
 
     @Binds
-    @Singleton // La instancia de CategoryRepository será un singleton
+    @Singleton
     abstract fun bindCategoryRepository(
-        categoryRepositoryImpl: CategoryRepositoryImpl // Hilt sabe cómo crear esto
-    ): CategoryRepository // Cuando se pida CategoryRepository, Hilt proveerá CategoryRepositoryImpl
+        categoryRepositoryImpl: CategoryRepositoryImpl
+    ): CategoryRepository
 
     @Binds
-    @Singleton // La instancia de TransactionRepository también será un singleton
+    @Singleton
     abstract fun bindTransactionRepository(
-        transactionRepositoryImpl: TransactionRepositoryImpl // Hilt sabe cómo crear esto
-    ): TransactionRepository // Cuando se pida TransactionRepository, Hilt proveerá TransactionRepositoryImpl
+        transactionRepositoryImpl: TransactionRepositoryImpl
+    ): TransactionRepository
 
     @Binds
-    @Singleton // La instancia de RecurringTransactionRepository también será un singleton
+    @Singleton
     abstract fun bindRecurringTransactionRepository(
         recurringTransactionRepositoryImpl: RecurringTransactionRepositoryImpl
     ): RecurringTransactionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBudgetRepository(
+        budgetRepositoryImpl: BudgetRepositoryImpl
+    ): BudgetRepository
 }
