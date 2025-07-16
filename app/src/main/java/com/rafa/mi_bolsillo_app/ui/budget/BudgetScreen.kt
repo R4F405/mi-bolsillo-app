@@ -59,30 +59,16 @@ fun BudgetScreen(
             val topAppBarContentColor = if (currentDarkTheme) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary
 
             TopAppBar(
-                title = { Text("Gestión de Presupuestos") },
+                title = { Text("Presupuestos") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.selectPreviousMonth() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Mes anterior")
-                    }
-                    Text(
-                        text = uiState.monthName,
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium)
-                    )
-                    IconButton(onClick = { viewModel.selectNextMonth() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowForward, "Mes siguiente")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = topAppBarContainerColor,
                     titleContentColor = topAppBarContentColor,
                     navigationIconContentColor = topAppBarContentColor,
-                    actionIconContentColor = topAppBarContentColor
                 )
             )
         },
@@ -99,60 +85,92 @@ fun BudgetScreen(
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (uiState.budgetItems.isEmpty()) {
-                Text(
-                    "No hay presupuestos para este mes. ¡Añade uno!",
-                    modifier = Modifier.align(Alignment.Center).padding(16.dp)
-                )
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+        Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+            // --- SELECTOR DE MES DESTACADO ---
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = MaterialTheme.shapes.medium, // Esquinas redondeadas
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f) // Color de fondo sutil
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp), // Padding vertical interno
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    items(uiState.budgetItems, key = { it.budget.id }) { item ->
-                        BudgetItem(
-                            item = item,
-                            onToggleFavorite = { viewModel.toggleFavoriteStatus(item.budget.id) },
-                            onEditClick = {
-                                budgetToEdit = it
-                                showAddEditDialog = true
-                            },
-                            onDeleteClick = {
-                                budgetToDelete = it
-                                showDeleteDialog = true
-                            }
-                        )
+                    IconButton(onClick = { viewModel.selectPreviousMonth() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Mes anterior")
+                    }
+                    Text(
+                        text = uiState.monthName,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium)
+                    )
+                    IconButton(onClick = { viewModel.selectNextMonth() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, "Mes siguiente")
                     }
                 }
             }
 
-            if (showAddEditDialog) {
-                AddEditBudgetDialog(
-                    budgetToEdit = budgetToEdit,
-                    availableCategories = uiState.availableCategories,
-                    onDismiss = { showAddEditDialog = false },
-                    onConfirm = { categoryId, amount ->
-                        viewModel.upsertBudget(categoryId, amount)
-                        showAddEditDialog = false
+            // --- RESTO DEL CONTENIDO ---
+            Box(modifier = Modifier.weight(1f)) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else if (uiState.budgetItems.isEmpty()) {
+                    Text(
+                        "No hay presupuestos para este mes. ¡Añade uno!",
+                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                    )
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uiState.budgetItems, key = { it.budget.id }) { item ->
+                            BudgetItem(
+                                item = item,
+                                onToggleFavorite = { viewModel.toggleFavoriteStatus(item.budget.id) },
+                                onEditClick = {
+                                    budgetToEdit = it
+                                    showAddEditDialog = true
+                                },
+                                onDeleteClick = {
+                                    budgetToDelete = it
+                                    showDeleteDialog = true
+                                }
+                            )
+                        }
                     }
-                )
-            }
+                }
 
-            if (showDeleteDialog) {
-                ConfirmationDialog(
-                    showDialog = true,
-                    onConfirm = {
-                        budgetToDelete?.let { viewModel.deleteBudget(it.budget.id) }
-                        showDeleteDialog = false
-                    },
-                    onDismiss = { showDeleteDialog = false },
-                    title = "Eliminar Presupuesto",
-                    message = "¿Seguro que quieres eliminar el presupuesto para la categoría '${budgetToDelete?.category?.name}'?",
-                    icon = Icons.Filled.Warning
-                )
+                if (showAddEditDialog) {
+                    AddEditBudgetDialog(
+                        budgetToEdit = budgetToEdit,
+                        availableCategories = uiState.availableCategories,
+                        onDismiss = { showAddEditDialog = false },
+                        onConfirm = { categoryId, amount ->
+                            viewModel.upsertBudget(categoryId, amount)
+                            showAddEditDialog = false
+                        }
+                    )
+                }
+
+                if (showDeleteDialog) {
+                    ConfirmationDialog(
+                        showDialog = true,
+                        onConfirm = {
+                            budgetToDelete?.let { viewModel.deleteBudget(it.budget.id) }
+                            showDeleteDialog = false
+                        },
+                        onDismiss = { showDeleteDialog = false },
+                        title = "Eliminar Presupuesto",
+                        message = "¿Seguro que quieres eliminar el presupuesto para la categoría '${budgetToDelete?.category?.name}'?",
+                        icon = Icons.Filled.Warning
+                    )
+                }
             }
         }
     }
