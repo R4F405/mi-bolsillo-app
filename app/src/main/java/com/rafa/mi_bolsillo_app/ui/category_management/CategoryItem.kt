@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Lock // Para categorías predefinidas
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -47,19 +46,19 @@ fun CategoryItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 2.dp), // Reducido de 4.dp
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp), // Reducido de 12.dp
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                 CategoryColorIndicator(hexColor = category.colorHex)
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(10.dp)) // Reducido de 12.dp
                 Text(
                     text = category.name,
                     style = MaterialTheme.typography.bodyLarge,
@@ -67,29 +66,21 @@ fun CategoryItem(
                 )
             }
 
-            // Ícono de edición y eliminación
+            // Íconos de edición y eliminación
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (category.isPredefined) {
+                IconButton(onClick = { onEditClick(category) }, modifier = Modifier.size(40.dp)) {
                     Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription = "Categoría predefinida",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = "Editar categoría",
+                        tint = MaterialTheme.colorScheme.primary
                     )
-                } else {
-                    IconButton(onClick = { onEditClick(category) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Edit,
-                            contentDescription = "Editar categoría",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    IconButton(onClick = { onDeleteClick(category) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Eliminar categoría",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
+                }
+                IconButton(onClick = { onDeleteClick(category) }, modifier = Modifier.size(40.dp)) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Eliminar categoría",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
@@ -106,7 +97,7 @@ fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
     }
     Box(
         modifier = modifier
-            .size(20.dp)
+            .size(18.dp) // Reducido de 20.dp
             .clip(CircleShape)
             .background(color)
     )
@@ -118,7 +109,7 @@ fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
 fun CategoryItemCustomPreview() {
     MiBolsilloAppTheme {
         CategoryItem(
-            category = Category(id = 1, name = "Gimnasio", colorHex = "#3F51B5", iconName = "ic_gym", isPredefined = false),
+            category = Category(id = 1, name = "Gimnasio", colorHex = "#3F51B5", isPredefined = false),
             onEditClick = {},
             onDeleteClick = {}
         )
@@ -131,7 +122,7 @@ fun CategoryItemCustomPreview() {
 fun CategoryItemPredefinedPreview() {
     MiBolsilloAppTheme {
         CategoryItem(
-            category = Category(id = 2, name = "Comida", colorHex = "#FFC107", iconName = "ic_food", isPredefined = true),
+            category = Category(id = 2, name = "Comida", colorHex = "#FFC107", isPredefined = true),
             onEditClick = {},
             onDeleteClick = {}
         )

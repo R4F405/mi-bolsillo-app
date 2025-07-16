@@ -14,13 +14,13 @@ import com.rafa.mi_bolsillo_app.data.local.dao.RecurringTransactionDao
 import com.rafa.mi_bolsillo_app.data.local.dao.TransactionDao
 import com.rafa.mi_bolsillo_app.data.local.entity.Budget
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
-import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurringTransaction
+import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurrenceFrequencyConverter
 
 @Database(
     entities = [Category::class, Transaction::class, RecurringTransaction::class, Budget::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(
@@ -93,6 +93,36 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // Definición de la Migración de la versión 4 a la 5
+        val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // 1. Create new table without the icon_name column
+                db.execSQL("""
+                    CREATE TABLE `categories_new` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `color_hex` TEXT NOT NULL,
+                        `is_predefined` INTEGER NOT NULL DEFAULT 0
+                    )
+                """.trimIndent())
+
+                // Add unique index to the new table
+                db.execSQL("CREATE UNIQUE INDEX `index_categories_new_name` ON `categories_new` (`name`)")
+
+                // 2. Copy data from old table to new table
+                db.execSQL("""
+                    INSERT INTO `categories_new` (id, name, color_hex, is_predefined)
+                    SELECT id, name, color_hex, is_predefined FROM `categories`
+                """.trimIndent())
+
+                // 3. Drop the old table
+                db.execSQL("DROP TABLE `categories`")
+
+                // 4. Rename new table to original table name
+                db.execSQL("ALTER TABLE `categories_new` RENAME TO `categories`")
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -100,7 +130,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "mi_bolsillo_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
                 INSTANCE = instance
                 instance

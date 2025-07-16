@@ -37,9 +37,6 @@ import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.material3.rememberModalBottomSheetState
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
 
 /**
  * Composable para la pantalla de gestión de categorías.
@@ -48,7 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
  *
  */
 
-@OptIn(ExperimentalMaterial3Api::class) // Necesario para ModalBottomSheetState y ModalBottomSheet
+@OptIn(ExperimentalMaterial3Api::class) // Necesario para Scaffold etc.
 @Composable
 fun CategoryManagementScreen(
     navController: NavController,
@@ -60,32 +57,9 @@ fun CategoryManagementScreen(
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
     var categoryToDelete by remember { mutableStateOf<Category?>(null) }
 
-    // Estado para el ModalBottomSheet
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true // Para que solo sea expandido o cerrado
-    )
-    val coroutineScope = rememberCoroutineScope()
     val currentDarkTheme = isSystemInDarkTheme()
 
-    // Efecto para mostrar/ocultar el BottomSheet basado en uiState.showEditDialog
-    // y también para limpiar categoryToEdit cuando el sheet se oculta por cualquier motivo.
-    LaunchedEffect(uiState.showEditDialog, bottomSheetState.isVisible) { // Añadir bottomSheetState.isVisible como key
-        if (uiState.showEditDialog) {
-            if (!bottomSheetState.isVisible) { // Solo mostrar si no está ya visible
-                coroutineScope.launch {
-                    bottomSheetState.show()
-                }
-            }
-        } else {
-            if (bottomSheetState.isVisible) { // Solo ocultar si está visible
-                coroutineScope.launch {
-                    bottomSheetState.hide()
-                }
-            }
-        }
-    }
-
-    // Efecto para mostrar mensajes de usuario
+    // Efecto para mostrar mensajes de usuario (Snackbar)
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { message ->
             snackbarHostState.showSnackbar(
@@ -111,7 +85,7 @@ fun CategoryManagementScreen(
                 MaterialTheme.colorScheme.onPrimary
             }
             TopAppBar(
-                title = { Text("Gestionar Categorías") },
+                title = { Text("Categorías") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
@@ -150,7 +124,7 @@ fun CategoryManagementScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp) // Espacio al final para el FAB
                 ) {
                     items(uiState.categories, key = { it.id }) { category ->
                         CategoryItem(
@@ -185,21 +159,20 @@ fun CategoryManagementScreen(
                 icon = Icons.Filled.Warning
             )
 
+            // El nuevo Dialogo de Añadir/Editar
             if (uiState.showEditDialog) {
-                AddEditCategorySheetContent(
+                AddEditCategoryDialog(
                     categoryToEdit = uiState.categoryToEdit,
-                    onSave = { id, name, colorHex, iconName ->
-                        if (id == null) { // Nueva categoría
-                            viewModel.addCategory(name, colorHex, iconName)
-                        } else { // Editar categoría existente
-                            viewModel.updateCategory(id, name, colorHex, iconName)
-                        }
-                        // El ViewModel se encargará de poner showEditDialog = false, lo que ocultará el sheet.
-                    },
                     onDismiss = {
                         viewModel.dismissEditDialog()
                     },
-                    sheetState = bottomSheetState
+                    onConfirm = { id, name, colorHex ->
+                        if (id == null) { // Nueva categoría
+                            viewModel.addCategory(name, colorHex)
+                        } else { // Editar categoría existente
+                            viewModel.updateCategory(id, name, colorHex)
+                        }
+                    }
                 )
             }
         }

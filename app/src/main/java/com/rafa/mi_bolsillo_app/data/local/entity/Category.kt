@@ -10,7 +10,6 @@ import androidx.room.PrimaryKey
  *
  * @property id Identificador único autogenerado para la categoría.
  * @property name Nombre de la categoría (ej. "Comida", "Transporte"). Debe ser único.
- * @property iconName Referencia al nombre de un icono (ej. "ic_food", podría usarse para mapear a un drawable).
  * @property colorHex Código hexadecimal del color asociado a la categoría (ej. "#FF5733").
  * @property isPredefined Indica si la categoría es una de las predefinidas por la app (true) o creada por el usuario (false).
  */
@@ -25,9 +24,6 @@ data class Category(
 
     @ColumnInfo(name = "name")
     val name: String,
-
-    @ColumnInfo(name = "icon_name")
-    val iconName: String, // Ejemplo: "ic_category_food", "ic_category_transport"
 
     @ColumnInfo(name = "color_hex")
     val colorHex: String, // Ejemplo: "#4CAF50" para verde, "#F44336" para rojo

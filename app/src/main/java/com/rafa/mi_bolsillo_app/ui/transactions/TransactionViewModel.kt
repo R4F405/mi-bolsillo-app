@@ -45,13 +45,13 @@ class TransactionViewModel @Inject constructor(
         val currentCategories = categoryRepository.getAllCategories().first()
         if (currentCategories.isEmpty()) {
             val predefinedCategories = listOf(
-                Category(name = "Comida", iconName = "ic_food", colorHex = "#FFC107", isPredefined = true),
-                Category(name = "Transporte", iconName = "ic_transport", colorHex = "#2196F3", isPredefined = true),
-                Category(name = "Ocio", iconName = "ic_leisure", colorHex = "#4CAF50", isPredefined = true),
-                Category(name = "Hogar", iconName = "ic_home", colorHex = "#E91E63", isPredefined = true),
-                Category(name = "Salario", iconName = "ic_salary", colorHex = "#009688", isPredefined = true),
-                Category(name = "Otros Ingresos", iconName = "ic_other_income", colorHex = "#795548", isPredefined = true),
-                Category(name = "Sin Categoría", iconName = "ic_no_category", colorHex = "#9E9E9E", isPredefined = true)
+                Category(name = "Comida", colorHex = "#FFC107", isPredefined = true),
+                Category(name = "Transporte", colorHex = "#2196F3", isPredefined = true),
+                Category(name = "Ocio", colorHex = "#4CAF50", isPredefined = true),
+                Category(name = "Hogar", colorHex = "#E91E63", isPredefined = true),
+                Category(name = "Salario", colorHex = "#009688", isPredefined = true),
+                Category(name = "Otros Ingresos", colorHex = "#795548", isPredefined = true),
+                Category(name = "Sin Categoría", colorHex = "#9E9E9E", isPredefined = true)
             )
             categoryRepository.insertCategories(predefinedCategories)
         }

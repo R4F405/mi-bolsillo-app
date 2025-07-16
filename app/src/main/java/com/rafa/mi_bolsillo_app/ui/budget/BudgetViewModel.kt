@@ -85,7 +85,7 @@ class BudgetViewModel @Inject constructor(
                 val category = categories.find { it.id == budget.categoryId }
                 BudgetUiItem(
                     budget = budget,
-                    category = category ?: Category(0, "Desconocida", "", "#CCCCCC", false),
+                    category = category ?: Category(0, "Desconocida",  "#CCCCCC", false),
                     spentAmount = expenses[budget.categoryId] ?: 0.0
                 )
             }.sortedBy { it.category.name }
