@@ -55,7 +55,7 @@ class CategoryViewModel @Inject constructor(
     }
 
     // Agregar una nueva categoría
-    fun addCategory(name: String, colorHex: String, iconName: String) {
+    fun addCategory(name: String, colorHex: String) {
         viewModelScope.launch {
             if (name.isBlank()) {
                 _uiState.update { it.copy(userMessage = "El nombre de la categoría no puede estar vacío.") }
@@ -72,7 +72,6 @@ class CategoryViewModel @Inject constructor(
             val newCategory = Category(
                 name = name.trim(),
                 colorHex = colorHex.ifBlank { "#CCCCCC" }, // Color por defecto si está vacío
-                iconName = iconName.ifBlank { "default_icon" }, // Icono por defecto
                 isPredefined = false
             )
             categoryRepository.insertCategory(newCategory)
@@ -82,7 +81,7 @@ class CategoryViewModel @Inject constructor(
     }
 
     // Actualizar una categoría existente
-    fun updateCategory(id: Long, name: String, colorHex: String, iconName: String) {
+    fun updateCategory(id: Long, name: String, colorHex: String) {
         viewModelScope.launch {
             if (name.isBlank()) {
                 _uiState.update { it.copy(userMessage = "El nombre de la categoría no puede estar vacío.") }
@@ -100,8 +99,7 @@ class CategoryViewModel @Inject constructor(
             categoryToUpdate?.let {
                 val updatedCategory = it.copy(
                     name = name.trim(),
-                    colorHex = colorHex.ifBlank { "#CCCCCC" },
-                    iconName = iconName.ifBlank { "default_icon" }
+                    colorHex = colorHex.ifBlank { "#CCCCCC" }
                 )
                 categoryRepository.updateCategory(updatedCategory)
                 _uiState.update { it.copy(userMessage = "Categoría '$name' actualizada.", showEditDialog = false, categoryToEdit = null) }
@@ -115,12 +113,6 @@ class CategoryViewModel @Inject constructor(
             val categoryToDelete = _uiState.value.categories.find { it.id == categoryId }
             if (categoryToDelete == null) {
                 _uiState.update { it.copy(userMessage = "Error: Categoría no encontrada.") }
-                return@launch
-            }
-
-            // Verificar si la categoría es predefinida
-            if (categoryToDelete.isPredefined) {
-                _uiState.update { it.copy(userMessage = "Las categorías predefinidas no se pueden eliminar.") }
                 return@launch
             }
 
@@ -152,4 +144,3 @@ class CategoryViewModel @Inject constructor(
         _uiState.update { it.copy(userMessage = null) }
     }
 }
-

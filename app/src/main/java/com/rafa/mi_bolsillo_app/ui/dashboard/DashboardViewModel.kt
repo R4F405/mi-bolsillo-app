@@ -115,7 +115,7 @@ class DashboardViewModel @Inject constructor(
 
                         BudgetUiItem(
                             budget = budget,
-                            category = cat ?: Category(0, "Desconocida", "", "", false),
+                            category = cat ?: Category(0, "Desconocida", "", false),
                             spentAmount = spent
                         )
                     }
