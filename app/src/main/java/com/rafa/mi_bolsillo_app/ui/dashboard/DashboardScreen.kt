@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.HorizontalDivider
 import com.rafa.mi_bolsillo_app.ui.budget.BudgetItem
+import androidx.compose.material.icons.filled.Settings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,6 +90,22 @@ fun DashboardScreen(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                Text(
+                    "Configuración",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Ajustes") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(AppScreens.SettingsScreen.route)
+                        scope.launch { drawerState.close() }
+                              },
+                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Ajustes") },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
             }
         }
     ) {
