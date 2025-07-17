@@ -1,4 +1,5 @@
 [versions]
+datastorePreferences = "1.1.7"
 kotlin = "2.0.21"
 ksp = "2.0.21-1.0.25"
 room = "2.6.1"
@@ -23,6 +24,7 @@ composeMaterialIcons = "1.6.7"
 
 
 [libraries]
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }

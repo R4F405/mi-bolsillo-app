@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.HorizontalDivider
 import com.rafa.mi_bolsillo_app.ui.budget.BudgetItem
+import androidx.compose.material.icons.filled.Settings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +41,11 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val numberFormat = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
+    val numberFormat = remember(uiState.currency) {
+        NumberFormat.getCurrencyInstance().apply {
+            currency = uiState.currency
+        }
+    }
     val currentDarkTheme = isSystemInDarkTheme()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -89,6 +94,22 @@ fun DashboardScreen(
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                Text(
+                    "Configuración",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                NavigationDrawerItem(
+                    label = { Text(text = "Ajustes") },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(AppScreens.SettingsScreen.route)
+                        scope.launch { drawerState.close() }
+                              },
+                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Ajustes") },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
             }
         }
     ) {
@@ -219,6 +240,7 @@ fun DashboardScreen(
                         ) {
                             CategoryPieChart(
                                 expensesByCategory = uiState.expensesByCategory,
+                                currency = uiState.currency,
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
@@ -249,6 +271,7 @@ fun DashboardScreen(
                             uiState.recentTransactions.forEach { transactionItem ->
                                 TransactionRowItem(
                                     transactionItem = transactionItem,
+                                    currency = uiState.currency,
                                     onItemClick = {
                                         navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
                                     }
@@ -284,6 +307,7 @@ fun DashboardScreen(
                                 ) {
                                     BudgetItem(
                                         item = budgetItem,
+                                        currency = uiState.currency,
                                         showActions = false, // Ocultamos los botones de edición y borrado
                                         onToggleFavorite = {},
                                         onEditClick = {},

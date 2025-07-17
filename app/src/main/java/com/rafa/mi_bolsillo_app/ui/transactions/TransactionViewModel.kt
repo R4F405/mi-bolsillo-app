@@ -6,6 +6,7 @@ import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
+import com.rafa.mi_bolsillo_app.data.repository.SettingsRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +21,12 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _transactionsUiItems = MutableStateFlow<List<TransactionUiItem>>(emptyList())
-    val transactionsUiItems: StateFlow<List<TransactionUiItem>> = _transactionsUiItems.asStateFlow()
+    private val _uiState = MutableStateFlow(TransactionListUiState())
+    val uiState: StateFlow<TransactionListUiState> = _uiState.asStateFlow()
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
@@ -65,12 +67,14 @@ class TransactionViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            // Necesitamos las categorías para mapear Transaction a TransactionUiItem
-            // Asegurémonos de que _categories se combine correctamente.
-            transactionRepository.getAllTransactions()
-                .combine(_categories) { transactions, categoriesList ->
+            // Combinamos los tres flujos: transacciones, categorías y moneda
+            combine(
+                transactionRepository.getAllTransactions(),
+                _categories,
+                settingsRepository.currency
+            ) { transactions, categoriesList, currency ->
                     val categoriesMap = categoriesList.associateBy { it.id }
-                    transactions.map { transaction ->
+                    val transactionUiItems = transactions.map { transaction ->
                         val category = categoriesMap[transaction.categoryId]
                         TransactionUiItem(
                             id = transaction.id,
@@ -82,9 +86,13 @@ class TransactionViewModel @Inject constructor(
                             transactionType = transaction.transactionType
                         )
                     }
-                }.collect { combinedList ->
-                    _transactionsUiItems.value = combinedList
-                }
+                    TransactionListUiState(
+                        transactions = transactionUiItems,
+                        currency = currency
+                    )
+            }.collect { newState ->
+                _uiState.value = newState
+            }
         }
     }
 

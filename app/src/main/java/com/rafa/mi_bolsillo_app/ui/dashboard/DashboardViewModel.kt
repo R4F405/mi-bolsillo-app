@@ -3,10 +3,12 @@ package com.rafa.mi_bolsillo_app.ui.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafa.mi_bolsillo_app.data.local.dao.ExpenseByCategory
+import com.rafa.mi_bolsillo_app.data.local.entity.Budget
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.data.repository.BudgetRepository
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
+import com.rafa.mi_bolsillo_app.data.repository.SettingsRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
 import com.rafa.mi_bolsillo_app.ui.budget.BudgetUiItem
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Currency
 import java.util.Locale
 import javax.inject.Inject
 
@@ -32,14 +35,26 @@ data class DashboardUiState(
     val balance: Double = 0.0,
     val recentTransactions: List<TransactionUiItem> = emptyList(),
     val expensesByCategory: List<ExpenseByCategory> = emptyList(),
-    val favoriteBudgets: List<BudgetUiItem> = emptyList()
+    val favoriteBudgets: List<BudgetUiItem> = emptyList(),
+    val currency: Currency = Currency.getInstance("EUR")
 )
+
+// Data class interna para la combinación de flujos
+private data class DashboardIntermediateData(
+    val income: Double,
+    val expenses: Double,
+    val recents: List<TransactionUiItem>,
+    val expensesByCategoryData: List<ExpenseByCategory>,
+    val favoriteBudgets: List<Budget>
+)
+
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
-    private val budgetRepository: BudgetRepository
+    private val budgetRepository: BudgetRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
@@ -78,7 +93,8 @@ class DashboardViewModel @Inject constructor(
             val allCategories = categoryRepository.getAllCategories().first()
             val categoriesMap = allCategories.associateBy { it.id }
 
-            combine(
+            // 1. Combinamos los primeros 5 flujos y los empaquetamos en nuestra data class
+            val firstFiveFlows = combine(
                 transactionRepository.getTotalIncomeBetweenDates(startDate, endDate).map { it ?: 0.0 },
                 transactionRepository.getTotalExpensesBetweenDates(startDate, endDate).map { it ?: 0.0 },
                 transactionRepository.getTransactionsBetweenDates(startDate, endDate)
@@ -99,15 +115,21 @@ class DashboardViewModel @Inject constructor(
                 transactionRepository.getExpensesByCategoryInRange(startDate, endDate),
                 budgetRepository.getFavoriteBudgets()
             ) { income, expenses, recents, expensesByCategoryData, favoriteBudgets ->
+                // Empaquetamos los resultados
+                DashboardIntermediateData(income, expenses, recents, expensesByCategoryData, favoriteBudgets)
+            }
+
+            // 2. Combinamos el flujo resultante con el sexto flujo (la moneda)
+            firstFiveFlows.combine(settingsRepository.currency) { intermediateData, currency ->
+                // Desempaquetamos los datos
+                val (income, expenses, recents, expensesByCategoryData, favoriteBudgets) = intermediateData
 
                 val favoriteBudgetUiItems = favoriteBudgets
                     .filter { budget ->
-                        // Filtra para que solo se incluyan los del mes y año actual
                         budget.year == currentYear && budget.month == (currentMonth + 1)
                     }
                     .map { budget ->
                         val cat = allCategories.find { it.id == budget.categoryId }
-                        // El gasto sí se calcula sobre el rango de fechas actual, esto estaba bien
                         val spent = transactionRepository.getTransactionsBetweenDates(startDate, endDate)
                             .first()
                             .filter { it.categoryId == budget.categoryId && it.transactionType == TransactionType.EXPENSE }
@@ -121,6 +143,8 @@ class DashboardViewModel @Inject constructor(
                     }
 
                 val calculatedBalance = income - expenses
+
+                // Actualizamos el estado de la UI con todos los datos
                 _uiState.value = _uiState.value.copy(
                     selectedYear = currentYear,
                     selectedMonth = currentMonth,
@@ -130,9 +154,10 @@ class DashboardViewModel @Inject constructor(
                     balance = calculatedBalance,
                     recentTransactions = recents,
                     expensesByCategory = expensesByCategoryData,
-                    favoriteBudgets = favoriteBudgetUiItems
+                    favoriteBudgets = favoriteBudgetUiItems,
+                    currency = currency
                 )
-            }.collect {}
+            }.collect{} // El .collect() ahora es vacío y solo sirve para activar el flujo
         }
     }
 

@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.ui.category_management.CategoryColorIndicator
 import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
 import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,6 +133,7 @@ fun BudgetScreen(
                         items(uiState.budgetItems, key = { it.budget.id }) { item ->
                             BudgetItem(
                                 item = item,
+                                currency = uiState.currency, // Pasamos la moneda al item
                                 onToggleFavorite = { viewModel.toggleFavoriteStatus(item.budget.id) },
                                 onEditClick = {
                                     budgetToEdit = it
@@ -178,12 +180,17 @@ fun BudgetScreen(
 @Composable
 fun BudgetItem(
     item: BudgetUiItem,
+    currency: Currency,
     onToggleFavorite: () -> Unit,
     onEditClick: (BudgetUiItem) -> Unit,
     onDeleteClick: (BudgetUiItem) -> Unit,
     showActions: Boolean = true
 ) {
-    val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale("es", "ES")) }
+    val currencyFormat = remember(currency) {
+        NumberFormat.getCurrencyInstance().apply {
+            this.currency = currency
+        }
+    }
     val progress = if (item.budget.amount > 0) (item.spentAmount / item.budget.amount).toFloat() else 0f
     val progressColor = when {
         progress > 1.0f -> MaterialTheme.colorScheme.error

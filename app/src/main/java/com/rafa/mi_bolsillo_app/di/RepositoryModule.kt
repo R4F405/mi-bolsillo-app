@@ -8,6 +8,8 @@ import com.rafa.mi_bolsillo_app.data.repository.RecurringTransactionRepository
 import com.rafa.mi_bolsillo_app.data.repository.RecurringTransactionRepositoryImpl
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepositoryImpl
+import com.rafa.mi_bolsillo_app.data.repository.SettingsRepository
+import com.rafa.mi_bolsillo_app.data.repository.SettingsRepositoryImpl
 
 import dagger.Binds
 import dagger.Module
@@ -48,4 +50,12 @@ abstract class RepositoryModule {
     abstract fun bindBudgetRepository(
         budgetRepositoryImpl: BudgetRepositoryImpl
     ): BudgetRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(
+        settingsRepositoryImpl: SettingsRepositoryImpl
+    ): SettingsRepository
+
+
 }

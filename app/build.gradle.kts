@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.2.1"
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,6 +55,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler) // Usa ksp para el procesador de anotaciones de Room
     implementation(libs.androidx.room.ktx)   // Para extensiones Kotlin y soporte de Coroutines
+
+    // DataStore (para preferencias de usuario como la moneda)
+    implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.mpandroidchart)
 
