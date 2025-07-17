@@ -7,7 +7,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Mi Bolsillo"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mi_bolsillo_app"
@@ -35,6 +35,20 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+
+        <!-- Configuración del nombre de la aplicación para build -->
+        <meta-data
+            android:name="com.android.application.label"
+            android:value="Mi Bolsillo" />
+
+        <!-- Configuración del ícono de la aplicación -->
+        <meta-data
+            android:name="com.android.application.icon"
+            android:value="@mipmap/ic_launcher" />
+
+        <meta-data
+            android:name="com.android.application.roundIcon"
+            android:value="@mipmap/ic_launcher_round" />
 
     </application>
 
