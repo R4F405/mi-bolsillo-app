@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/rafa/mi_bolsillo_app/releases/tag/v1.2.1"><img src="https://img.shields.io/badge/Version-1.2.1-blue" alt="Version 1.2.1"></a>
+  <a href="https://github.com/rafa/mi_bolsillo_app/releases/tag/v1.3.0"><img src="https://img.shields.io/badge/Version-1.3.0-blue" alt="Version 1.3.0"></a>
   <a href="https://github.com/rafa/mi_bolsillo_app/releases"><img src="https://img.shields.io/badge/Platform-Android%208.0%2B-brightgreen" alt="Platform Android 8.0+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL%20v3-orange" alt="License GNU GPLv3"></a>
 </p>
