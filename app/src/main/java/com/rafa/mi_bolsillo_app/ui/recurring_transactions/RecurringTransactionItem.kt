@@ -29,10 +29,13 @@ import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Currency
 import java.util.Locale
 
-fun formatCurrency(amount: Double): String {
-    return NumberFormat.getCurrencyInstance(Locale("es", "ES")).format(amount)
+fun formatCurrency(amount: Double, currency: Currency): String {
+    return NumberFormat.getCurrencyInstance().apply {
+        this.currency = currency
+    }.format(amount)
 }
 
 fun formatDate(timestamp: Long?, pattern: String = "dd MMM yyyy"): String {
@@ -68,6 +71,7 @@ fun formatFrequency(
 @Composable
 fun RecurringTransactionItem(
     template: RecurringTransaction,
+    currency: Currency,
     categoryName: String?, // Puede ser null si la categoría fue eliminada, aunque con RESTRICT no debería pasar
     categoryColorHex: String?,
     onEditClick: (RecurringTransaction) -> Unit,
@@ -106,7 +110,7 @@ fun RecurringTransactionItem(
                     )
                 }
                 Text(
-                    text = formatCurrency(template.amount),
+                    text = formatCurrency(template.amount, currency),
                     style = MaterialTheme.typography.titleMedium,
                     color = if (template.transactionType == TransactionType.INCOME) IncomeGreen else ExpenseRed,
                     fontWeight = FontWeight.SemiBold
@@ -212,6 +216,7 @@ fun RecurringTransactionItemPreview() {
                 lastGeneratedDate = System.currentTimeMillis() - 15L * 24 * 60 * 60 * 1000,
                 isActive = true
             ),
+            currency = Currency.getInstance("EUR"),
             categoryName = "Entretenimiento",
             categoryColorHex = "#E91E63", // Rosa
             onEditClick = {},

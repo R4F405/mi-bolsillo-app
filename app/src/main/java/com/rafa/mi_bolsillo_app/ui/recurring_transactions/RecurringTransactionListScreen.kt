@@ -124,6 +124,7 @@ fun RecurringTransactionListScreen(
                         val category = uiState.categories.find { it.id == template.categoryId }
                         RecurringTransactionItem(
                             template = template,
+                            currency = uiState.currency,
                             categoryName = category?.name,
                             categoryColorHex = category?.colorHex,
                             onEditClick = { viewModel.prepareForEditing(it) },

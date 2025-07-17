@@ -11,5 +11,6 @@ sealed class AppScreens(val route: String) {
     object CategoryManagementScreen : AppScreens("category_management_screen")
     object RecurringTransactionListScreen : AppScreens("recurring_transaction_list_screen")
     object BudgetScreen : AppScreens("budget_screen")
+    object CurrencySelectionScreen : AppScreens("currency_selection_screen")
     object SettingsScreen : AppScreens("settings_screen")
 }

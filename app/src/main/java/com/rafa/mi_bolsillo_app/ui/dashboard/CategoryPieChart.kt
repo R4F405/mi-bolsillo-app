@@ -4,6 +4,7 @@ import android.graphics.Color as AndroidColor
 import android.graphics.Typeface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -19,18 +20,24 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
 import com.rafa.mi_bolsillo_app.data.local.dao.ExpenseByCategory
 import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
 
 @Composable
 fun CategoryPieChart(
     expensesByCategory: List<ExpenseByCategory>,
+    currency: Currency,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current // context no se usa directamente, pero es bueno tenerlo por si acaso
     val legendTextColor = MaterialTheme.colorScheme.onBackground.toArgb()
     val valueTextColorPred = MaterialTheme.colorScheme.onBackground.toArgb() // Renombrado para claridad
 
-    val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
+    val currencyFormatter = remember(currency) {
+        NumberFormat.getCurrencyInstance().apply {
+            this.currency = currency
+        }
+    }
 
     AndroidView(
         factory = { ctx ->

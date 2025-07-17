@@ -41,7 +41,11 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val numberFormat = NumberFormat.getCurrencyInstance(Locale("es", "ES"))
+    val numberFormat = remember(uiState.currency) {
+        NumberFormat.getCurrencyInstance().apply {
+            currency = uiState.currency
+        }
+    }
     val currentDarkTheme = isSystemInDarkTheme()
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -236,6 +240,7 @@ fun DashboardScreen(
                         ) {
                             CategoryPieChart(
                                 expensesByCategory = uiState.expensesByCategory,
+                                currency = uiState.currency,
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
@@ -266,6 +271,7 @@ fun DashboardScreen(
                             uiState.recentTransactions.forEach { transactionItem ->
                                 TransactionRowItem(
                                     transactionItem = transactionItem,
+                                    currency = uiState.currency,
                                     onItemClick = {
                                         navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionItem.id))
                                     }
@@ -301,6 +307,7 @@ fun DashboardScreen(
                                 ) {
                                     BudgetItem(
                                         item = budgetItem,
+                                        currency = uiState.currency,
                                         showActions = false, // Ocultamos los botones de edición y borrado
                                         onToggleFavorite = {},
                                         onEditClick = {},

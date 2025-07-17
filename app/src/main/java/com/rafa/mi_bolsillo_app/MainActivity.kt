@@ -22,6 +22,7 @@ import com.rafa.mi_bolsillo_app.ui.category_management.CategoryManagementScreen
 import com.rafa.mi_bolsillo_app.ui.recurring_transactions.RecurringTransactionListScreen
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen
 import com.rafa.mi_bolsillo_app.ui.settings.SettingsScreen
+import com.rafa.mi_bolsillo_app.ui.settings.CurrencySelectionScreen
 
 /**
  * Clase principal de la aplicación.
@@ -74,6 +75,9 @@ class MainActivity : ComponentActivity() {
                         // Ruta para la pantalla de ajustes
                         composable(route = AppScreens.SettingsScreen.route) {
                             SettingsScreen(navController = navController)
+                        }
+                        composable(route = AppScreens.CurrencySelectionScreen.route) {
+                            CurrencySelectionScreen(navController = navController)
                         }
                     }
                 }

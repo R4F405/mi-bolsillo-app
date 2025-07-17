@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.rafa.mi_bolsillo_app.navigation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +77,7 @@ fun SettingsScreen(
                 title = "Moneda",
                 subtitle = "Selecciona tu moneda local",
                 icon = Icons.Default.MonetizationOn,
-                onClick = { /* TODO: Navegar a HU-AJT-3 */ }
+                onClick = { navController.navigate(AppScreens.CurrencySelectionScreen.route) }
             )
             SettingsItem(
                 title = "Tema de la Aplicación",

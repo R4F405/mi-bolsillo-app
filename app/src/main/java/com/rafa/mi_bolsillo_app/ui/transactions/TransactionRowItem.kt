@@ -29,7 +29,10 @@ import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed // Cambio
 import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen // Cambio
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import androidx.compose.foundation.clickable
+import com.rafa.mi_bolsillo_app.ui.recurring_transactions.formatCurrency
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.Currency
 import java.util.Date
 import java.util.Locale
 
@@ -38,6 +41,7 @@ import java.util.Locale
 @Composable
 fun TransactionRowItem(
     transactionItem: TransactionUiItem,
+    currency: Currency,
     onItemClick: () -> Unit, // Nuevo callback para el clic
     modifier: Modifier = Modifier
 ) {
@@ -76,7 +80,7 @@ fun TransactionRowItem(
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = formatCurrency(transactionItem.amount),
+                    text = formatCurrency(transactionItem.amount, currency),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = if (transactionItem.transactionType == TransactionType.INCOME) IncomeGreen else ExpenseRed
@@ -109,9 +113,10 @@ fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
 }
 
 // Funciones de ayuda para formateo
-private fun formatCurrency(amount: Double): String {
-    // Implementa un formateo de moneda más robusto según sea necesario
-    return String.format(Locale.getDefault(), "%.2f €", amount) // Ejemplo simple
+private fun formatCurrency(amount: Double, currency: Currency): String {
+    return NumberFormat.getCurrencyInstance().apply {
+        this.currency = currency
+    }.format(amount)
 }
 
 private fun formatDate(timestamp: Long): String {
@@ -134,6 +139,7 @@ fun TransactionRowItemPreview() {
                 categoryColorHex = "#FFC107",
                 transactionType = TransactionType.EXPENSE
             ),
+            currency = Currency.getInstance("EUR"),
             onItemClick = {} // Añadir lambda vacía para el preview
         )
     }
@@ -154,6 +160,7 @@ fun TransactionRowItemIncomePreview() {
                 categoryColorHex = "#009688",
                 transactionType = TransactionType.INCOME
             ),
+            currency = Currency.getInstance("EUR"),
             onItemClick = {} // Añadir lambda vacía para el preview
         )
     }

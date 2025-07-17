@@ -8,6 +8,7 @@ import com.rafa.mi_bolsillo_app.data.local.entity.RecurringTransaction
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
 import com.rafa.mi_bolsillo_app.data.repository.RecurringTransactionRepository
+import com.rafa.mi_bolsillo_app.data.repository.SettingsRepository
 import com.rafa.mi_bolsillo_app.utils.RecurrenceHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Currency
 import javax.inject.Inject
 
 data class RecurringTransactionScreenUiState(
@@ -24,13 +26,15 @@ data class RecurringTransactionScreenUiState(
     val isLoading: Boolean = false,
     val userMessage: String? = null,
     val recurringTransactionToEdit: RecurringTransaction? = null,
-    val showEditSheet: Boolean = false
+    val showEditSheet: Boolean = false,
+    val currency: Currency = Currency.getInstance("EUR")
 )
 
 @HiltViewModel
 class RecurringTransactionViewModel @Inject constructor(
     private val recurringTransactionRepository: RecurringTransactionRepository,
-    private val categoryRepository: CategoryRepository // Para el selector de categorías
+    private val categoryRepository: CategoryRepository, // Para el selector de categorías
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RecurringTransactionScreenUiState())
@@ -45,15 +49,21 @@ class RecurringTransactionViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             combine(
                 recurringTransactionRepository.getActiveRecurringTransactionsSortedByNextOccurrence(),
-                categoryRepository.getAllCategories()
-            ) { templates, cats ->
+                categoryRepository.getAllCategories(),
+                settingsRepository.currency
+            ) { templates, cats, currency ->
                 RecurringTransactionScreenUiState(
                     recurringTransactions = templates,
                     categories = cats,
-                    isLoading = false
+                    isLoading = false,
+                    currency = currency
                 )
             }.collect { combinedState ->
-                _uiState.value = combinedState
+                _uiState.value = combinedState.copy(
+                    // Mantenemos el estado del diálogo de edición al refrescar los datos
+                    showEditSheet = _uiState.value.showEditSheet,
+                    recurringTransactionToEdit = _uiState.value.recurringTransactionToEdit
+                )
             }
         }
     }

@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
+import java.util.Currency
 
 /**
  *
@@ -47,7 +48,7 @@ fun TransactionListScreen(
     navController: NavController,
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
-    val transactionsUiItems by viewModel.transactionsUiItems.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val currentDarkTheme = isSystemInDarkTheme()
 
     // Estado para guardar el texto de búsqueda
@@ -109,12 +110,13 @@ fun TransactionListScreen(
             // Contenedor para la lista o el estado vacío
             Box(modifier = Modifier.weight(1f)) {
                 // Si la lista original está vacía Y no hay texto de búsqueda, muestra el EmptyState global
-                if (transactionsUiItems.isEmpty() && searchQuery.isBlank()) {
+                if (uiState.transactions.isEmpty() && searchQuery.isBlank()) {
                     EmptyState(modifier = Modifier.fillMaxSize())
                 } else {
                     // Pasamos la lista original y el searchQuery al composable TransactionList
                     TransactionList(
-                        transactions = transactionsUiItems,
+                        transactions = uiState.transactions,
+                        currency = uiState.currency, // Pasamos la moneda
                         searchQuery = searchQuery, // Pasar el término de búsqueda
                         onTransactionClick = { transactionId ->
                             navController.navigate(AppScreens.AddTransactionScreen.createRoute(transactionId))
@@ -131,6 +133,7 @@ fun TransactionListScreen(
 @Composable
 fun TransactionList(
     transactions: List<TransactionUiItem>,
+    currency: Currency,
     searchQuery: String, // Nuevo parámetro para el término de búsqueda
     onTransactionClick: (Long) -> Unit,
     modifier: Modifier = Modifier
@@ -169,6 +172,7 @@ fun TransactionList(
             items(filteredTransactions, key = { it.id }) { transactionItem ->
                 TransactionRowItem(
                     transactionItem = transactionItem,
+                    currency = currency,
                     onItemClick = { onTransactionClick(transactionItem.id) }
                 )
             }

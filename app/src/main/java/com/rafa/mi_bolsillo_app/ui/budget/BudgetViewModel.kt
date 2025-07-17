@@ -6,6 +6,7 @@ import com.rafa.mi_bolsillo_app.data.local.entity.Budget
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.repository.BudgetRepository
 import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
+import com.rafa.mi_bolsillo_app.data.repository.SettingsRepository
 import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Currency
 import javax.inject.Inject
 
 // Modelo para un item de presupuesto en la UI
@@ -30,7 +32,8 @@ data class BudgetScreenUiState(
     val budgetItems: List<BudgetUiItem> = emptyList(),
     val availableCategories: List<Category> = emptyList(), // Categorías sin presupuesto este mes
     val isLoading: Boolean = true,
-    val userMessage: String? = null
+    val userMessage: String? = null,
+    val currency: Currency = Currency.getInstance("EUR") // Valor inicial
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,7 +41,8 @@ data class BudgetScreenUiState(
 class BudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val transactionRepository: TransactionRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val settingsRepository: SettingsRepository // Inyectamos el nuevo repositorio
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BudgetScreenUiState())
@@ -78,7 +82,12 @@ class BudgetViewModel @Inject constructor(
                     .mapValues { entry -> entry.value.sumOf { it.amount } }
             }
 
-        return combine(expenseCategoriesFlow, budgetsFlow, expensesFlow) { categories, budgets, expenses ->
+        return combine(
+            expenseCategoriesFlow,
+            budgetsFlow,
+            expensesFlow,
+            settingsRepository.currency
+        ) { categories, budgets, expenses, currency ->
             val budgetCategoryIds = budgets.map { it.categoryId }.toSet()
 
             val budgetItems = budgets.map { budget ->
@@ -98,7 +107,8 @@ class BudgetViewModel @Inject constructor(
                 monthName = monthName,
                 budgetItems = budgetItems,
                 availableCategories = availableCategories,
-                isLoading = false
+                isLoading = false,
+                currency = currency // Añadimos la moneda al estado
             )
         }
     }
