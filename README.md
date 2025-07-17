@@ -14,6 +14,15 @@
 
 **Mi Bolsillo** (My Pocket) is a native Android application designed for intuitive and straightforward personal finance management. Track your income and expenses, organize them into categories, and visualize your financial health with insightful charts and summaries. All your data is stored securely on your device, ensuring your privacy.
 
+## 📜 Documentation
+
+For more specific details on the application's design and planning, you can consult the following documents:
+
+* **[Visual Style Guide](documentation/visual_style.md)**
+* **[User Stories](documentation/user_stories.md)**
+* **[User Flows](documentation/user_flows.md)**
+* **[Structure and Architecture (Summary)](documentation/structure_&_architecture.md)**
+
 ## ✨ Key Features
 
 -   **Financial Dashboard**: Get an at-a-glance view of your current balance, monthly income, and expenses, along with a pie chart visualizing spending by category.
@@ -21,6 +30,7 @@
 -   **Automated Background Processing**: A `WorkManager` background job reliably checks for and creates recurring transactions, even when the app is not running.
 -   **Quick Transaction Entry**: Log new income and expenses with a flexible and easy-to-use interface.
 -   **Comprehensive History**: View a complete history of all your transactions, with options to edit or delete any entry.
+-   **Intuitive Monthly Budgets**: Take control of your spending by setting monthly budgets for various expense categories. Easily visualize your budget progress in real-time, helping you stay on track and avoid overspending.
 -   **Customizable Categories**: Organize your finances with customizable categories, each with a distinctive color for easy identification.
 -   **Secure Local Storage**: All financial data is stored locally and securely on your device using the Room persistence library.
 -   **Modern UI**: A clean and modern user interface built entirely with Jetpack Compose and Material Design 3.
@@ -92,14 +102,13 @@ To get a local copy up and running, follow these simple steps.
 
 1.  Clone the repository:
     ```sh
-    git clone [https://github.com/rafa/mi_bolsillo_app.git](https://github.com/rafa/mi_bolsillo_app.git)
+    git clone https://github.com/rafa/mi_bolsillo_app.git
     ```
-2.  Open the project in Android Studio.
+2.  Open the project in [Android Studio](https://developer.android.com/studio).
 3.  Build and run the app on an Android device or emulator (min. API level 26).
 
 ## 🔮 Roadmap
 
--   📊 **Monthly Budgets**: Set spending limits for specific categories and track your progress.
 -   ☁️ **Cloud Sync**: Keep your data backed up and synced across multiple devices.
 -   📤 **Data Export**: Download your transaction history as a CSV or PDF file.
 -   🔔 **Smart Notifications**: Receive alerts for budget overruns and other important events.
