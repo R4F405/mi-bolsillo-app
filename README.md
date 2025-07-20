@@ -8,7 +8,7 @@
   <a href="https://github.com/R4F405/mi-bolsillo-app/releases/tag/v1.4.0"><img src="https://img.shields.io/badge/Version-1.4.0-blue" alt="Version 1.4.0"></a>
   <a href="https://github.com/rafa/mi_bolsillo_app/releases"><img src="https://img.shields.io/badge/Platform-Android%208.0%2B-brightgreen" alt="Platform Android 8.0+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL%20v3-orange" alt="License GNU GPLv3"></a>
-  [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/R4F405/mi-bolsillo-app)
+  <a href="https://deepwiki.com/R4F405/mi-bolsillo-app"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
 
 </p>
 
@@ -20,6 +20,7 @@
 
 For more specific details on the application's design and planning, you can consult the following documents:
 
+* **[Ask DeepWiki](https://deepwiki.com/R4F405/mi-bolsillo-app)**
 * **[Visual Style Guide](documentation/visual_style.md)**
 * **[User Stories](documentation/user_stories.md)**
 * **[User Flows](documentation/user_flows.md)**
