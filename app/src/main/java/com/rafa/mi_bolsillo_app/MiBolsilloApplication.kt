@@ -1,7 +1,7 @@
 package com.rafa.mi_bolsillo_app
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory // Necesario para Hilt con WorkManager
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -10,6 +10,14 @@ import com.rafa.mi_bolsillo_app.workers.RecurringTransactionWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
+/**
+ * Clase Application personalizada para MiBolsillo.
+ * Configura Hilt para la inyección de dependencias y WorkManager para manejar trabajos periódicos.
+ * Esta configuración permite que la aplicación realice tareas en segundo plano, como procesar transacciones recurrentes,
+ * sin necesidad de que la aplicación esté abierta.
+ *
+ */
 
 @HiltAndroidApp
 class MiBolsilloApplication : Application(), Configuration.Provider {
@@ -26,20 +34,18 @@ class MiBolsilloApplication : Application(), Configuration.Provider {
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
-            .setMinimumLoggingLevel(android.util.Log.DEBUG) // Opcional: para ver logs de WorkManager
+            .setMinimumLoggingLevel(android.util.Log.DEBUG) // Ver logs de WorkManager
             .build()
 
+    /*
+    Crear una solicitud de trabajo periódica.
+    Repetir cada 24 horas.
+    WorkManager intentará ejecutarlo alrededor de este tiempo, teniendo en cuenta restricciones del sistema como Doze mode.
+    */
     private fun setupRecurringWork() {
         val workManager = WorkManager.getInstance(applicationContext)
-
-        // Crear una solicitud de trabajo periódica
-        // Repetir cada 24 horas. Puedes ajustar el intervalo.
-        // WorkManager intentará ejecutarlo alrededor de este tiempo, teniendo en cuenta
-        // restricciones del sistema como Doze mode.
         val recurringTxRequest =
             PeriodicWorkRequestBuilder<RecurringTransactionWorker>(24, TimeUnit.HOURS)
-                // Podrías añadir Constraints aquí si es necesario (ej. conectado a red, batería no baja)
-                // .setConstraints(Constraints.Builder()...build())
                 .build()
 
         // Encolar el trabajo periódico, manteniendo el trabajo existente si ya está programado

@@ -1,8 +1,6 @@
 package com.rafa.mi_bolsillo_app.ui.budget
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,7 +27,12 @@ import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 import java.text.NumberFormat
 import java.util.Currency
-import java.util.Locale
+
+/**
+ * Pantalla principal de Presupuestos.
+ * Muestra una lista de presupuestos para el mes actual y permite añadir, editar o eliminar presupuestos.
+ *
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +77,7 @@ fun BudgetScreen(
                 )
             )
         },
+        // Botón flotante para añadir un nuevo presupuesto
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -88,18 +92,18 @@ fun BudgetScreen(
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
-            // --- SELECTOR DE MES DESTACADO ---
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = MaterialTheme.shapes.medium, // Esquinas redondeadas
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f) // Color de fondo sutil
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
             ) {
+                // Fila para seleccionar el mes actual
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 2.dp), // Padding vertical interno
+                        .padding(vertical = 2.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -117,7 +121,7 @@ fun BudgetScreen(
                 }
             }
 
-            // --- RESTO DEL CONTENIDO ---
+            // Contenedor principal para la lista de presupuestos
             Box(modifier = Modifier.weight(1f)) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -134,7 +138,7 @@ fun BudgetScreen(
                         items(uiState.budgetItems, key = { it.budget.id }) { item ->
                             BudgetItem(
                                 item = item,
-                                currency = uiState.currency, // Pasamos la moneda al item
+                                currency = uiState.currency,
                                 onToggleFavorite = { viewModel.toggleFavoriteStatus(item.budget.id) },
                                 onEditClick = {
                                     budgetToEdit = it
@@ -149,18 +153,7 @@ fun BudgetScreen(
                     }
                 }
 
-                if (showAddEditDialog) {
-                    AddEditBudgetDialog(
-                        budgetToEdit = budgetToEdit,
-                        availableCategories = uiState.availableCategories,
-                        onDismiss = { showAddEditDialog = false },
-                        onConfirm = { categoryId, amount ->
-                            viewModel.upsertBudget(categoryId, amount)
-                            showAddEditDialog = false
-                        }
-                    )
-                }
-
+                // Diálogo de confirmación para eliminar presupuesto
                 if (showDeleteDialog) {
                     ConfirmationDialog(
                         showDialog = true,
@@ -175,9 +168,29 @@ fun BudgetScreen(
                     )
                 }
             }
+
+            // Diálogo para añadir/editar presupuesto
+            if (showAddEditDialog) {
+                AddEditBudgetDialog(
+                    budgetToEdit = budgetToEdit,
+                    availableCategories = uiState.availableCategories,
+                    onDismiss = { showAddEditDialog = false },
+                    onConfirm = { categoryId, amount ->
+                        viewModel.upsertBudget(categoryId, amount)
+                        showAddEditDialog = false
+                    }
+                )
+            }
         }
     }
 }
+
+/**
+ * Componente que representa un ítem de presupuesto en la lista.
+ * Muestra la categoría, el monto gastado, el total del presupuesto y un indicador de progreso.
+ * Permite marcar como favorito, editar o eliminar el presupuesto.
+ *
+ */
 @Composable
 fun BudgetItem(
     item: BudgetUiItem,
@@ -187,18 +200,22 @@ fun BudgetItem(
     onDeleteClick: (BudgetUiItem) -> Unit,
     showActions: Boolean = true
 ) {
+    // Formato de moneda
     val currencyFormat = remember(currency) {
         NumberFormat.getCurrencyInstance().apply {
             this.currency = currency
         }
     }
+
+    // Cálculo del progreso y color del progreso
     val progress = if (item.budget.amount > 0) (item.spentAmount / item.budget.amount).toFloat() else 0f
     val progressColor = when {
         progress > 1.0f -> MaterialTheme.colorScheme.error
-        progress > 0.85f -> Color(0xFFFFA000) // Amber
+        progress > 0.85f -> Color(0xFFFFA000)
         else -> MaterialTheme.colorScheme.primary
     }
 
+    // Diseño de la tarjeta del ítem de presupuesto
     Card(elevation = CardDefaults.cardElevation(2.dp)) {
         Column(
             modifier = Modifier

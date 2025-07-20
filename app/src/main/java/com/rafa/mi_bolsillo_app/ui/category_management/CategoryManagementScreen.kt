@@ -1,6 +1,5 @@
 package com.rafa.mi_bolsillo_app.ui.category_management
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,13 +39,11 @@ import androidx.compose.runtime.mutableStateOf
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
 /**
- * Composable para la pantalla de gestión de categorías.
- *
- * Permite a los usuarios añadir, editar y eliminar categorías.
- *
+ * Pantalla de gestión de categorías.
+ * Permite ver, añadir, editar y eliminar categorías.
  */
 
-@OptIn(ExperimentalMaterial3Api::class) // Necesario para Scaffold etc.
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryManagementScreen(
     navController: NavController,
@@ -160,7 +157,7 @@ fun CategoryManagementScreen(
                 icon = Icons.Filled.Warning
             )
 
-            // El nuevo Dialogo de Añadir/Editar
+            // Dialogo de Añadir/Editar
             if (uiState.showEditDialog) {
                 AddEditCategoryDialog(
                     categoryToEdit = uiState.categoryToEdit,

@@ -1,6 +1,5 @@
 package com.rafa.mi_bolsillo_app.ui.recurring_transactions
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +19,13 @@ import com.rafa.mi_bolsillo_app.data.local.entity.RecurringTransaction
 import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
+/**
+ * Pantalla de gestión de transacciones recurrentes.
+ * Permite ver, añadir, editar y eliminar plantillas de transacciones recurrentes.
+ * Esta pantalla muestra una lista de las plantillas existentes y permite al usuario interactuar con ellas.
+ *
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecurringTransactionListScreen(
@@ -28,7 +34,6 @@ fun RecurringTransactionListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
     val currentDarkTheme = LocalIsDarkTheme.current
 
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -82,6 +87,7 @@ fun RecurringTransactionListScreen(
             } else {
                 MaterialTheme.colorScheme.onPrimary
             }
+            // Composición de la barra superior
             TopAppBar(
                 title = { Text("Plantillas Recurrentes") },
                 navigationIcon = {
@@ -93,10 +99,10 @@ fun RecurringTransactionListScreen(
                     containerColor = topAppBarContainerColor,
                     titleContentColor = topAppBarContentColor,
                     navigationIconContentColor = topAppBarContentColor
-                    // actionIconContentColor = topAppBarContentColor
                 )
             )
         },
+        // Botón flotante para añadir una nueva plantilla recurrente
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.prepareForEditing(null) }, // null para nueva plantilla
@@ -106,6 +112,7 @@ fun RecurringTransactionListScreen(
                 Icon(Icons.Filled.Add, "Añadir plantilla recurrente")
             }
         }
+        // Contenido de la pantalla
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
             if (uiState.isLoading) {
@@ -119,7 +126,7 @@ fun RecurringTransactionListScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 8.dp) // No necesita padding horizontal aquí, se maneja en el item
+                    contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
                     items(uiState.recurringTransactions, key = { it.id }) { template ->
                         val category = uiState.categories.find { it.id == template.categoryId }
@@ -158,7 +165,7 @@ fun RecurringTransactionListScreen(
 
             // ModalBottomSheet para Añadir/Editar
             if (uiState.showEditSheet) {
-                AddEditRecurringTransactionSheet( // Este será el siguiente Composable que crearemos
+                AddEditRecurringTransactionSheet(
                     sheetState = sheetState,
                     categories = uiState.categories,
                     recurringTransactionToEdit = uiState.recurringTransactionToEdit,
@@ -166,7 +173,6 @@ fun RecurringTransactionListScreen(
                         viewModel.saveRecurringTransaction(
                             id, name, amount, description, categoryId, transactionType, startDate, frequency, interval, dayOfMonth, monthOfYear, endDate, isActive
                         )
-                        // El ViewModel se encargará de poner showEditSheet = false
                     },
                     onDismiss = {
                         viewModel.dismissEditSheet()

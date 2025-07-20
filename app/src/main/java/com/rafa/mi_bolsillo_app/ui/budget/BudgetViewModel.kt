@@ -17,6 +17,11 @@ import java.util.*
 import java.util.Currency
 import javax.inject.Inject
 
+/**
+ * ViewModel para la pantalla de presupuestos.
+ * Proporciona la lógica de negocio para manejar presupuestos, categorías y transacciones.
+ */
+
 // Modelo para un item de presupuesto en la UI
 data class BudgetUiItem(
     val budget: Budget,
@@ -30,7 +35,7 @@ data class BudgetScreenUiState(
     val selectedMonth: Int = Calendar.getInstance().get(Calendar.MONTH), // 0-11
     val monthName: String = "",
     val budgetItems: List<BudgetUiItem> = emptyList(),
-    val availableCategories: List<Category> = emptyList(), // Categorías sin presupuesto este mes
+    val availableCategories: List<Category> = emptyList(),
     val isLoading: Boolean = true,
     val userMessage: String? = null,
     val currency: Currency = Currency.getInstance("EUR") // Valor inicial
@@ -42,7 +47,7 @@ class BudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
-    private val settingsRepository: SettingsRepository // Inyectamos el nuevo repositorio
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BudgetScreenUiState())
@@ -62,6 +67,7 @@ class BudgetViewModel @Inject constructor(
         }
     }
 
+    // Carga los cambios en la fecha seleccionada
     private fun loadDataForMonth(year: Int, month: Int): Flow<BudgetScreenUiState> {
         val (startDate, endDate) = getDateRangeForMonth(year, month)
         val monthName = getMonthYearString(year, month)
@@ -108,11 +114,12 @@ class BudgetViewModel @Inject constructor(
                 budgetItems = budgetItems,
                 availableCategories = availableCategories,
                 isLoading = false,
-                currency = currency // Añadimos la moneda al estado
+                currency = currency
             )
         }
     }
 
+    // Actualiza el estado de la UI cuando cambia la fecha seleccionada
     fun upsertBudget(categoryId: Long, amount: Double) {
         viewModelScope.launch {
             val year = selectedDateFlow.value.first
@@ -136,6 +143,7 @@ class BudgetViewModel @Inject constructor(
         }
     }
 
+    // Elimina un presupuesto por su ID
     fun deleteBudget(budgetId: Long) {
         viewModelScope.launch {
             val itemToDelete = _uiState.value.budgetItems.find { it.budget.id == budgetId }
@@ -146,6 +154,7 @@ class BudgetViewModel @Inject constructor(
         }
     }
 
+    // Actualiza el estado de favorito de un presupuesto
     fun toggleFavoriteStatus(budgetId: Long) {
         viewModelScope.launch {
             val budget = uiState.value.budgetItems.find { it.budget.id == budgetId }?.budget
@@ -155,6 +164,7 @@ class BudgetViewModel @Inject constructor(
         }
     }
 
+    // Selecciona el mes siguiente
     fun selectNextMonth() {
         val calendar = Calendar.getInstance().apply {
             set(selectedDateFlow.value.first, selectedDateFlow.value.second, 1)
@@ -163,6 +173,7 @@ class BudgetViewModel @Inject constructor(
         selectedDateFlow.value = Pair(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH))
     }
 
+    // Selecciona el mes anterior
     fun selectPreviousMonth() {
         val calendar = Calendar.getInstance().apply {
             set(selectedDateFlow.value.first, selectedDateFlow.value.second, 1)
@@ -175,6 +186,7 @@ class BudgetViewModel @Inject constructor(
         _uiState.update { it.copy(userMessage = null) }
     }
 
+    // Obtiene el rango de fechas para el mes seleccionado
     private fun getDateRangeForMonth(year: Int, month: Int): Pair<Long, Long> {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1, 0, 0, 0)
@@ -186,6 +198,7 @@ class BudgetViewModel @Inject constructor(
         return Pair(startDate, endDate)
     }
 
+    // Formatea el mes y año para mostrar en la UI
     private fun getMonthYearString(year: Int, month: Int): String {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1)

@@ -9,6 +9,10 @@ import androidx.room.Update
 import com.rafa.mi_bolsillo_app.data.local.entity.Budget
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data Access Object (DAO) para manejar las operaciones de la tabla de presupuestos.
+ * Contiene métodos para insertar, actualizar, eliminar y consultar presupuestos.
+ */
 @Dao
 interface BudgetDao {
 

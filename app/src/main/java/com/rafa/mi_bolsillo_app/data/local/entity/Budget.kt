@@ -48,7 +48,6 @@ data class Budget(
     @ColumnInfo(name = "year")
     val year: Int,
 
-    // --- NUEVO CAMPO ---
     @ColumnInfo(name = "is_favorite", defaultValue = "0")
     val isFavorite: Boolean = false,
 

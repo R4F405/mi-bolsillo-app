@@ -1,7 +1,6 @@
-package com.rafa.mi_bolsillo_app.ui.settings
+package com.rafa.mi_bolsillo_app.ui.settings.currency
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,9 +17,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.rafa.mi_bolsillo_app.ui.settings.SettingsViewModel
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 import java.util.Currency
 import java.util.Locale
+
+/**
+ * Pantalla para seleccionar la moneda de la aplicación.
+ * Muestra una lista de monedas disponibles y permite al usuario seleccionar una.
+ * La moneda seleccionada se guarda en el ViewModel.
+ *
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +38,7 @@ fun CurrencySelectionScreen(
     val currentCurrency by viewModel.currentCurrency.collectAsState()
     val currentDarkTheme = LocalIsDarkTheme.current
 
-    // Lista de monedas comunes. Puedes expandirla.
+    // Lista de monedas temporal
     val availableCurrencies = remember {
         listOf(
             Currency.getInstance("EUR"), // Euro
@@ -46,6 +53,7 @@ fun CurrencySelectionScreen(
         topBar = {
             val topAppBarContainerColor = if (currentDarkTheme) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primary
             val topAppBarContentColor = if (currentDarkTheme) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary
+            // Barra superior con título y botón de navegación
             TopAppBar(
                 title = { Text("Seleccionar Moneda") },
                 navigationIcon = {
@@ -66,6 +74,7 @@ fun CurrencySelectionScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
+            //Monedas disponibles
             items(availableCurrencies) { currency ->
                 CurrencyItem(
                     currency = currency,
@@ -80,6 +89,7 @@ fun CurrencySelectionScreen(
     }
 }
 
+// Composable para mostrar un item de moneda.
 @Composable
 fun CurrencyItem(
     currency: Currency,
@@ -94,16 +104,19 @@ fun CurrencyItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
+            // Nombre de la moneda
             Text(
                 text = currency.getDisplayName(Locale.getDefault()),
                 style = MaterialTheme.typography.bodyLarge
             )
+            // Código y símbolo de la moneda
             Text(
                 text = "${currency.currencyCode} (${currency.symbol})",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        // Check de selección
         if (isSelected) {
             Icon(
                 imageVector = Icons.Filled.Check,

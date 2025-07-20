@@ -7,6 +7,7 @@ import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
  * TypeConverter para que Room pueda almacenar y leer el enum [TransactionType].
  * Convierte el enum a String y viceversa.
  */
+
 class TransactionTypeConverter {
     @TypeConverter
     fun fromTransactionType(value: TransactionType): String {

@@ -1,5 +1,10 @@
 package com.rafa.mi_bolsillo_app.navigation
 
+/**
+ * Clase sellada que define las pantallas de la aplicación.
+ * Cada objeto dentro de esta clase representa una pantalla con su ruta correspondiente.
+ */
+
 sealed class AppScreens(val route: String) {
     object DashboardScreen : AppScreens("dashboard_screen")
     object TransactionHistoryScreen : AppScreens("transaction_history_screen")

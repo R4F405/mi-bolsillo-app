@@ -13,7 +13,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.Calendar
+
+/**
+ * Worker para manejar las transacciones recurrentes.
+ * Este worker se encarga de generar transacciones basadas en plantillas recurrentes
+ * y actualizar las plantillas según su frecuencia y fecha de finalización.
+ *
+ */
 
 @HiltWorker
 class RecurringTransactionWorker @AssistedInject constructor(
@@ -23,11 +29,13 @@ class RecurringTransactionWorker @AssistedInject constructor(
     private val transactionRepository: TransactionRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
+    // Identificador único para este worker
     companion object {
         const val WORK_NAME = "RecurringTransactionWorker"
         private const val TAG = "RecurringTxWorker"
     }
 
+    // Metodo que se ejecuta cuando el worker es activado
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         Log.d(TAG, "RecurringTransactionWorker: Iniciando trabajo...")
         try {
@@ -42,7 +50,7 @@ class RecurringTransactionWorker @AssistedInject constructor(
             Log.d(TAG, "Plantillas encontradas para procesar: ${dueTemplates.size}")
 
             for (template in dueTemplates) {
-                // 1. Generar la transacción
+                // Genera la transacción
                 val newTransaction = Transaction(
                     amount = template.amount,
                     date = template.nextOccurrenceDate, // La fecha de la transacción es la 'nextOccurrenceDate'
@@ -53,7 +61,7 @@ class RecurringTransactionWorker @AssistedInject constructor(
                 transactionRepository.insertTransaction(newTransaction)
                 Log.d(TAG, "Transacción generada para plantilla ID ${template.id}: ${newTransaction.description} - ${newTransaction.amount}")
 
-                // 2. Calcular la siguiente fecha de ocurrencia
+                // Calcula la siguiente fecha de ocurrencia
                 val nextValidOccurrence = RecurrenceHelper.calculateNextOccurrenceDate(
                     lastOccurrence = template.nextOccurrenceDate, // Base para el siguiente cálculo
                     frequency = template.frequency,
@@ -62,13 +70,13 @@ class RecurringTransactionWorker @AssistedInject constructor(
                     monthOfYear = template.monthOfYear
                 )
 
-                // 3. Actualizar la plantilla
+                // Actualiza la plantilla
                 val updatedTemplate = template.copy(
                     lastGeneratedDate = template.nextOccurrenceDate, // La que acabamos de usar
                     nextOccurrenceDate = nextValidOccurrence
                 )
 
-                // 4. Verificar si la recurrencia debe desactivarse (si endDate existe y la nueva ocurrencia la supera)
+                // Verifica si la recurrencia debe desactivarse (si endDate existe y la nueva ocurrencia la supera)
                 if (template.endDate != null && nextValidOccurrence > template.endDate) {
                     Log.d(TAG, "Plantilla ID ${template.id} ha alcanzado su fecha de finalización. Desactivando.")
                     recurringTransactionRepository.updateRecurringTransaction(
@@ -83,7 +91,7 @@ class RecurringTransactionWorker @AssistedInject constructor(
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Error durante la ejecución de RecurringTransactionWorker", e)
-            Result.failure() // O Result.retry() si tiene sentido
+            Result.failure()
         }
     }
 }

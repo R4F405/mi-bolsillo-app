@@ -11,6 +11,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 
+/**
+ * Composable para mostrar un diálogo de adición/edición de presupuesto.
+ * Permite seleccionar una categoría y especificar un monto.
+ *
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditBudgetDialog(

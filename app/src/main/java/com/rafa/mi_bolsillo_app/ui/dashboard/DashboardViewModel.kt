@@ -26,6 +26,12 @@ import java.util.Currency
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * ViewModel para la pantalla del Dashboard.
+ * Proporciona la lógica de negocio para manejar transacciones, presupuestos y categorías.
+ */
+
+//Data class para representar un item de presupuesto en la UI
 data class DashboardUiState(
     val selectedYear: Int = Calendar.getInstance().get(Calendar.YEAR),
     val selectedMonth: Int = Calendar.getInstance().get(Calendar.MONTH), // 0-11
@@ -66,6 +72,7 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
     }
 
+    // Método para obtener el rango de fechas del mes actual
     private fun getCurrentMonthDateRange(year: Int, month: Int): Pair<Long, Long> {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1, 0, 0, 0)
@@ -77,6 +84,7 @@ class DashboardViewModel @Inject constructor(
         return Pair(startDate, endDate)
     }
 
+    // Método para formatear el nombre del mes y el año
     private fun getMonthYearString(year: Int, month: Int): String {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, 1)
@@ -84,7 +92,7 @@ class DashboardViewModel @Inject constructor(
         return sdf.format(calendar.time).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
-
+    // Carga los datos del dashboard combinando múltiples flujos
     fun loadDashboardData() {
         viewModelScope.launch {
             val (startDate, endDate) = getCurrentMonthDateRange(currentYear, currentMonth)
@@ -93,7 +101,7 @@ class DashboardViewModel @Inject constructor(
             val allCategories = categoryRepository.getAllCategories().first()
             val categoriesMap = allCategories.associateBy { it.id }
 
-            // 1. Combinamos los primeros 5 flujos y los empaquetamos en nuestra data class
+            // Combinamos los primeros 5 flujos y los empaquetamos en nuestra data class
             val firstFiveFlows = combine(
                 transactionRepository.getTotalIncomeBetweenDates(startDate, endDate).map { it ?: 0.0 },
                 transactionRepository.getTotalExpensesBetweenDates(startDate, endDate).map { it ?: 0.0 },
@@ -119,7 +127,7 @@ class DashboardViewModel @Inject constructor(
                 DashboardIntermediateData(income, expenses, recents, expensesByCategoryData, favoriteBudgets)
             }
 
-            // 2. Combinamos el flujo resultante con el sexto flujo (la moneda)
+            // Combinamos el flujo resultante con el sexto flujo (la moneda)
             firstFiveFlows.combine(settingsRepository.currency) { intermediateData, currency ->
                 // Desempaquetamos los datos
                 val (income, expenses, recents, expensesByCategoryData, favoriteBudgets) = intermediateData
@@ -157,10 +165,11 @@ class DashboardViewModel @Inject constructor(
                     favoriteBudgets = favoriteBudgetUiItems,
                     currency = currency
                 )
-            }.collect{} // El .collect() ahora es vacío y solo sirve para activar el flujo
+            }.collect{}
         }
     }
 
+    // Metodo para seleccionar el mes actual
     fun selectNextMonth() {
         val calendar = Calendar.getInstance()
         calendar.set(currentYear, currentMonth, 1)
@@ -170,6 +179,7 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
     }
 
+    // Metodo para seleccionar el mes anterior
     fun selectPreviousMonth() {
         val calendar = Calendar.getInstance()
         calendar.set(currentYear, currentMonth, 1)

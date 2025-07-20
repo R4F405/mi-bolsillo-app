@@ -46,19 +46,19 @@ fun CategoryItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp), // Reducido de 4.dp
+            .padding(vertical = 2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp), // Reducido de 12.dp
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                 CategoryColorIndicator(hexColor = category.colorHex)
-                Spacer(modifier = Modifier.width(10.dp)) // Reducido de 12.dp
+                Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = category.name,
                     style = MaterialTheme.typography.bodyLarge,
@@ -97,13 +97,13 @@ fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
     }
     Box(
         modifier = modifier
-            .size(18.dp) // Reducido de 20.dp
+            .size(18.dp)
             .clip(CircleShape)
             .background(color)
     )
 }
 
-// Vista previa
+// Vista previa del item de categoría
 @Preview(showBackground = true, name = "Custom Category Item")
 @Composable
 fun CategoryItemCustomPreview() {
@@ -116,7 +116,7 @@ fun CategoryItemCustomPreview() {
     }
 }
 
-// Vista previa
+// Vista previa del item de categoría predefinida
 @Preview(showBackground = true, name = "Predefined Category Item")
 @Composable
 fun CategoryItemPredefinedPreview() {
