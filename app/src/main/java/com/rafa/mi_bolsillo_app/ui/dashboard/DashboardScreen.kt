@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.HorizontalDivider
 import com.rafa.mi_bolsillo_app.ui.budget.BudgetItem
 import androidx.compose.material.icons.filled.Settings
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +47,7 @@ fun DashboardScreen(
             currency = uiState.currency
         }
     }
-    val currentDarkTheme = isSystemInDarkTheme()
+    val currentDarkTheme = LocalIsDarkTheme.current
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()

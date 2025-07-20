@@ -37,6 +37,7 @@ import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
 /**
  * Composable para la pantalla de gestión de categorías.
@@ -57,7 +58,7 @@ fun CategoryManagementScreen(
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
     var categoryToDelete by remember { mutableStateOf<Category?>(null) }
 
-    val currentDarkTheme = isSystemInDarkTheme()
+    val currentDarkTheme = LocalIsDarkTheme.current
 
     // Efecto para mostrar mensajes de usuario (Snackbar)
     LaunchedEffect(uiState.userMessage) {

@@ -4,10 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.Currency
-import java.util.Locale
 import javax.inject.Inject
 
 class SettingsRepositoryImpl @Inject constructor(
@@ -16,6 +16,7 @@ class SettingsRepositoryImpl @Inject constructor(
 
     private object PreferencesKeys {
         val CURRENCY_CODE = stringPreferencesKey("currency_code")
+        val THEME = stringPreferencesKey("theme_option")
     }
 
     override val currency: Flow<Currency> = dataStore.data.map { preferences ->
@@ -23,7 +24,6 @@ class SettingsRepositoryImpl @Inject constructor(
         if (currencyCode != null) {
             Currency.getInstance(currencyCode)
         } else {
-            // Moneda por defecto EUR si no hay nada guardado
             Currency.getInstance("EUR")
         }
     }
@@ -31,6 +31,20 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun saveCurrency(currencyCode: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.CURRENCY_CODE] = currencyCode
+        }
+    }
+
+    override val theme: Flow<ThemeOption> = dataStore.data.map { preferences ->
+        when (preferences[PreferencesKeys.THEME]) {
+            ThemeOption.LIGHT.name -> ThemeOption.LIGHT
+            ThemeOption.DARK.name -> ThemeOption.DARK
+            else -> ThemeOption.SYSTEM
+        }
+    }
+
+    override suspend fun saveTheme(theme: ThemeOption) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.THEME] = theme.name
         }
     }
 }

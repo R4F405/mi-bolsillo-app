@@ -3,6 +3,7 @@ package com.rafa.mi_bolsillo_app.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafa.mi_bolsillo_app.data.repository.SettingsRepository
+import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -28,9 +29,22 @@ class SettingsViewModel @Inject constructor(
             initialValue = Currency.getInstance("EUR")
         )
 
-       fun saveCurrency(currencyCode: String) {
-            viewModelScope.launch {
-                settingsRepository.saveCurrency(currencyCode)
-            }
-       }
+    val currentTheme = settingsRepository.theme
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ThemeOption.SYSTEM
+        )
+
+    fun saveCurrency(currencyCode: String) {
+        viewModelScope.launch {
+            settingsRepository.saveCurrency(currencyCode)
+        }
+    }
+
+    fun saveTheme(theme: ThemeOption) {
+        viewModelScope.launch {
+            settingsRepository.saveTheme(theme)
+        }
+    }
 }

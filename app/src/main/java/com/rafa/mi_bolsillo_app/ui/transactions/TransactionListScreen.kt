@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.model.TransactionUiItem
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 import java.util.Currency
 
 /**
@@ -49,7 +50,7 @@ fun TransactionListScreen(
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val currentDarkTheme = isSystemInDarkTheme()
+    val currentDarkTheme = LocalIsDarkTheme.current
 
     // Estado para guardar el texto de búsqueda
     var searchQuery by rememberSaveable { mutableStateOf("") }

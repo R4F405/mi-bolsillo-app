@@ -9,12 +9,20 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.rafa.mi_bolsillo_app.ui.settings.SettingsViewModel
+import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
+
 
 // Nuevo esquema de colores para el TEMA CLARO, basado en la paleta simplificada
 private val LightColorScheme = lightColorScheme(
@@ -48,17 +56,23 @@ private val DarkColorScheme = darkColorScheme(
     outline = TextSecondary
 )
 
+val LocalIsDarkTheme = staticCompositionLocalOf { false }
+
 @Composable
 fun MiBolsilloAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Material You - Desactivado por defecto para usar nuestro tema
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
+    val themeOption by settingsViewModel.currentTheme.collectAsState()
+
+    val darkTheme = when (themeOption) {
+        ThemeOption.LIGHT -> false
+        ThemeOption.DARK -> true
+        ThemeOption.SYSTEM -> isSystemInDarkTheme()
+    }
+
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+        // dynamicColor está deshabilitado, así que esta lógica es la principal
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -67,23 +81,21 @@ fun MiBolsilloAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // La barra de estado en modo oscuro ahora usará el color de la superficie (tarjetas)
-            // y en modo claro usará el color primario, tal como en tus capturas.
             val statusBarColor = if (darkTheme) {
                 colorScheme.surface.toArgb()
             } else {
                 colorScheme.primary.toArgb()
             }
             window.statusBarColor = statusBarColor
-
-            // Asegura que los iconos de la barra de estado (hora, batería) tengan el contraste correcto.
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography, // La tipografía no ha cambiado
-        content = content
-    )
+    CompositionLocalProvider(LocalIsDarkTheme provides darkTheme) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
