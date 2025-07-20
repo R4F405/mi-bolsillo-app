@@ -53,6 +53,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.filled.Warning
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
 /**
  * Composable para la pantalla de añadir o editar una transacción.
@@ -69,7 +70,7 @@ fun AddTransactionScreen(
     viewModel: TransactionViewModel = hiltViewModel()
 ) {
     val isEditMode = transactionId != -1L
-    val currentDarkTheme = isSystemInDarkTheme() // Detecta si el tema oscuro del sistema está activo
+    val currentDarkTheme = LocalIsDarkTheme.current
 
     var concepto by rememberSaveable { mutableStateOf("") }
     var amount by rememberSaveable { mutableStateOf("") }
@@ -409,7 +410,7 @@ fun AddTransactionScreen(
 @Preview(showBackground = true, name = "Add Transaction Light")
 @Composable
 fun AddTransactionScreenNewPreviewLight() {
-    MiBolsilloAppTheme(darkTheme = false) {
+    MiBolsilloAppTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             // Simular NavController y ViewModel para la preview
             val navController = NavController(LocalContext.current)
@@ -423,7 +424,7 @@ fun AddTransactionScreenNewPreviewLight() {
 @Preview(showBackground = true, name = "Add Transaction Dark")
 @Composable
 fun AddTransactionScreenNewPreviewDark() {
-    MiBolsilloAppTheme(darkTheme = true) {
+    MiBolsilloAppTheme{
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             val navController = NavController(LocalContext.current)
             AddTransactionScreen(navController = navController, transactionId = -1L)

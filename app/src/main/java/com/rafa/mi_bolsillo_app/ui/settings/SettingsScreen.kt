@@ -22,13 +22,20 @@ import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
+import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +43,9 @@ fun SettingsScreen(
     navController: NavController,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val currentDarkTheme = isSystemInDarkTheme()
+    val currentDarkTheme = LocalIsDarkTheme.current
+    val currentTheme by viewModel.currentTheme.collectAsStateWithLifecycle()
+    var showThemeDialog by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -83,7 +92,7 @@ fun SettingsScreen(
                 title = "Tema de la Aplicación",
                 subtitle = "Claro, oscuro o predeterminado del sistema",
                 icon = Icons.Default.ColorLens,
-                onClick = { /* TODO: Navegar a HU-AJT-4 */ }
+                onClick = { showThemeDialog = true }
             )
             SettingsItem(
                 title = "Idioma",
@@ -122,6 +131,16 @@ fun SettingsScreen(
                 onClick = { /* TODO: Navegar a HU-AJT-12, 13, 14 */ }
             )
         }
+    }
+    if (showThemeDialog) {
+        ThemeSelectionDialog(
+            currentTheme = currentTheme,
+            onDismiss = { showThemeDialog = false },
+            onThemeSelected = { theme ->
+                viewModel.saveTheme(theme)
+                showThemeDialog = false
+            }
+        )
     }
 }
 
@@ -171,5 +190,50 @@ fun SettingsItem(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+@Composable
+fun ThemeSelectionDialog(
+    currentTheme: ThemeOption,
+    onDismiss: () -> Unit,
+    onThemeSelected: (ThemeOption) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Seleccionar Tema") },
+        text = {
+            Column {
+                ThemeOption.values().forEach { theme ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onThemeSelected(theme) }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (theme == currentTheme),
+                            onClick = { onThemeSelected(theme) }
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(theme.toDisplayString())
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
+
+fun ThemeOption.toDisplayString(): String {
+    return when (this) {
+        ThemeOption.LIGHT -> "Claro"
+        ThemeOption.DARK -> "Oscuro"
+        ThemeOption.SYSTEM -> "Predeterminado del sistema"
     }
 }

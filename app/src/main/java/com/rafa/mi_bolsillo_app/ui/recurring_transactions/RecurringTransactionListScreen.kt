@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurringTransaction
 import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +29,7 @@ fun RecurringTransactionListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    val currentDarkTheme = isSystemInDarkTheme()
+    val currentDarkTheme = LocalIsDarkTheme.current
 
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
     var templateToDelete by remember { mutableStateOf<RecurringTransaction?>(null) }

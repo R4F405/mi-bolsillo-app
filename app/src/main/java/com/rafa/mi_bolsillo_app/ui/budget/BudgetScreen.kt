@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.ui.category_management.CategoryColorIndicator
 import com.rafa.mi_bolsillo_app.ui.components.ConfirmationDialog
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
@@ -38,7 +39,7 @@ fun BudgetScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val currentDarkTheme = isSystemInDarkTheme()
+    val currentDarkTheme = LocalIsDarkTheme.current
 
     var showAddEditDialog by remember { mutableStateOf(false) }
     var budgetToEdit by remember { mutableStateOf<BudgetUiItem?>(null) }

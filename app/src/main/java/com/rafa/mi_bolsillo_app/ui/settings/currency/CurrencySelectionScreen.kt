@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 import java.util.Currency
 import java.util.Locale
 
@@ -28,7 +29,7 @@ fun CurrencySelectionScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val currentCurrency by viewModel.currentCurrency.collectAsState()
-    val currentDarkTheme = isSystemInDarkTheme()
+    val currentDarkTheme = LocalIsDarkTheme.current
 
     // Lista de monedas comunes. Puedes expandirla.
     val availableCurrencies = remember {
