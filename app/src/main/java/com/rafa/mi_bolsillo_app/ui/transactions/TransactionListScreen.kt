@@ -1,6 +1,5 @@
 package com.rafa.mi_bolsillo_app.ui.transactions
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,8 +37,9 @@ import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 import java.util.Currency
 
 /**
- *
- * Esta pantalla muestra la lista de transacciones.
+ * Pantalla que muestra el historial de transacciones.
+ * Permite buscar transacciones por concepto o categoría.
+ * Al hacer clic en una transacción, se navega a la pantalla de edición de transacción.
  *
  */
 
@@ -68,6 +68,7 @@ fun TransactionListScreen(
                 MaterialTheme.colorScheme.onPrimary
             }
 
+            // Barra superior con título y botón de navegación
             TopAppBar(
                 title = { Text("Historial de Transacciones") },
                 navigationIcon = {
@@ -87,7 +88,6 @@ fun TransactionListScreen(
         }
     ) { innerPadding ->
 
-        // Column para apilar la barra de búsqueda y la lista/estado vacío
         Column(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
 
             // Barra de Búsqueda
@@ -110,7 +110,6 @@ fun TransactionListScreen(
 
             // Contenedor para la lista o el estado vacío
             Box(modifier = Modifier.weight(1f)) {
-                // Si la lista original está vacía Y no hay texto de búsqueda, muestra el EmptyState global
                 if (uiState.transactions.isEmpty() && searchQuery.isBlank()) {
                     EmptyState(modifier = Modifier.fillMaxSize())
                 } else {
@@ -135,7 +134,7 @@ fun TransactionListScreen(
 fun TransactionList(
     transactions: List<TransactionUiItem>,
     currency: Currency,
-    searchQuery: String, // Nuevo parámetro para el término de búsqueda
+    searchQuery: String,
     onTransactionClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -155,11 +154,11 @@ fun TransactionList(
     // Si después de filtrar no hay transacciones, muestra un mensaje específico
     if (filteredTransactions.isEmpty()) {
         Box(
-            modifier = modifier.fillMaxSize().padding(16.dp), // Añade padding para que no esté pegado a los bordes
+            modifier = modifier.fillMaxSize().padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (searchQuery.isBlank()) "No hay transacciones registradas." // Si la lista original está vacía
+                text = if (searchQuery.isBlank()) "No hay transacciones registradas."
                 else "No se encontraron transacciones para \"$searchQuery\".",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -168,8 +167,9 @@ fun TransactionList(
     } else {
         LazyColumn(
             modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top=0.dp, bottom = 8.dp) // Ajusta padding para que no haya doble vertical con la searchbar
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top=0.dp, bottom = 8.dp)
         ) {
+            // Mostramos cada transacción filtrada
             items(filteredTransactions, key = { it.id }) { transactionItem ->
                 TransactionRowItem(
                     transactionItem = transactionItem,

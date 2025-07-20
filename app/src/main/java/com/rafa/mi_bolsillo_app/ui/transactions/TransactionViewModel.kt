@@ -18,6 +18,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel para la pantalla de transacciones.
+ * Proporciona la lógica de negocio para manejar transacciones, categorías y configuración de moneda.
+ * Incluye operaciones para agregar, editar, eliminar y listar transacciones,
+ * así como para manejar el estado de la UI y mensajes al usuario.
+ *
+ */
+
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
@@ -31,7 +39,6 @@ class TransactionViewModel @Inject constructor(
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
 
-    // Nuevo: StateFlow para la transacción que se está editando
     private val _transactionToEdit = MutableStateFlow<Transaction?>(null)
     val transactionToEdit: StateFlow<Transaction?> = _transactionToEdit.asStateFlow()
 
@@ -127,7 +134,7 @@ class TransactionViewModel @Inject constructor(
 
     // Función para actualizar una transacción existente
     fun updateTransaction(
-        transactionId: Long, // Importante pasar el ID original
+        transactionId: Long,
         amount: Double,
         date: Long,
         concepto: String?,

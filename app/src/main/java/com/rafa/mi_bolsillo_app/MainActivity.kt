@@ -14,7 +14,7 @@ import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import com.rafa.mi_bolsillo_app.ui.dashboard.DashboardScreen
-import com.rafa.mi_bolsillo_app.ui.add_transaction.AddTransactionScreen
+import com.rafa.mi_bolsillo_app.ui.transactions.AddTransactionScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.rafa.mi_bolsillo_app.ui.budget.BudgetScreen
@@ -22,10 +22,12 @@ import com.rafa.mi_bolsillo_app.ui.category_management.CategoryManagementScreen
 import com.rafa.mi_bolsillo_app.ui.recurring_transactions.RecurringTransactionListScreen
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionListScreen
 import com.rafa.mi_bolsillo_app.ui.settings.SettingsScreen
-import com.rafa.mi_bolsillo_app.ui.settings.CurrencySelectionScreen
+import com.rafa.mi_bolsillo_app.ui.settings.currency.CurrencySelectionScreen
 
 /**
  * Clase principal de la aplicación.
+ * Inicializa la actividad y configura el tema de la aplicación.
+ * Define las rutas de navegación utilizando Jetpack Compose Navigation.
  *
  */
 
@@ -76,6 +78,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = AppScreens.SettingsScreen.route) {
                             SettingsScreen(navController = navController)
                         }
+                        // Ruta para la pantalla de selección de moneda
                         composable(route = AppScreens.CurrencySelectionScreen.route) {
                             CurrencySelectionScreen(navController = navController)
                         }

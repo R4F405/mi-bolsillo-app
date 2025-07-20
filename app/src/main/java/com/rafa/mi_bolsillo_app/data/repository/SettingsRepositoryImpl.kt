@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.map
 import java.util.Currency
 import javax.inject.Inject
 
+/**
+ * Implementación del repositorio de configuración de la aplicación.
+ * Proporciona acceso a la configuración de moneda y tema a través de DataStore.
+ */
+
 class SettingsRepositoryImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : SettingsRepository {

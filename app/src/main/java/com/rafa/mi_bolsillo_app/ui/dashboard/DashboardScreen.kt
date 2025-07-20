@@ -1,7 +1,6 @@
 package com.rafa.mi_bolsillo_app.ui.dashboard
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,7 +25,6 @@ import com.rafa.mi_bolsillo_app.ui.theme.ExpenseRed
 import com.rafa.mi_bolsillo_app.ui.theme.IncomeGreen
 import com.rafa.mi_bolsillo_app.ui.transactions.TransactionRowItem
 import java.text.NumberFormat
-import java.util.Locale
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.PieChart
@@ -34,6 +32,13 @@ import androidx.compose.material3.HorizontalDivider
 import com.rafa.mi_bolsillo_app.ui.budget.BudgetItem
 import androidx.compose.material.icons.filled.Settings
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
+
+/**
+ * Pantalla principal del Dashboard.
+ * Muestra el balance actual, ingresos, gastos, gráfico de gastos por categoría, movimientos recientes y presupuestos favoritos.
+ * Incluye un menú lateral para navegar a otras secciones de la aplicación.
+ *
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +57,7 @@ fun DashboardScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    //Hamburgesa de navegación
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = true,
@@ -114,6 +120,7 @@ fun DashboardScreen(
             }
         }
     ) {
+        // Contenido principal del Dashboard
         Scaffold(
             topBar = {
                 val topAppBarContainerColor = if (currentDarkTheme) {
@@ -141,6 +148,7 @@ fun DashboardScreen(
                     )
                 )
             },
+            // Botón flotante para añadir transacciones
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
@@ -152,6 +160,7 @@ fun DashboardScreen(
                     Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
                 }
             }
+        // Selector de mes
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -159,7 +168,6 @@ fun DashboardScreen(
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
             ) {
-                // --- SELECTOR DE MES DESTACADO ---
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -187,8 +195,7 @@ fun DashboardScreen(
                         }
                     }
                 }
-
-                // --- RESTO DEL CONTENIDO ---
+                // Muestra el balance actual, ingresos y gastos
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -229,6 +236,7 @@ fun DashboardScreen(
                     }
                     Spacer(modifier = Modifier.height(35.dp))
 
+                    // Gráfico de gastos por categoría
                     Text("Gráfico de Gastos", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(15.dp))
 
@@ -259,6 +267,7 @@ fun DashboardScreen(
 
                     Spacer(modifier = Modifier.height(15.dp))
 
+                    // Movimientos recientes
                     Text("Movimientos Recientes", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -280,8 +289,9 @@ fun DashboardScreen(
                             }
                         }
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    // Botón para ver historial completo de transacciones
                     OutlinedButton(
                         onClick = { navController.navigate(AppScreens.TransactionHistoryScreen.route) },
                         modifier = Modifier
@@ -295,6 +305,7 @@ fun DashboardScreen(
                     }
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    // Presupuestos favoritos
                     if (uiState.favoriteBudgets.isNotEmpty()) {
                         Text("Presupuestos Favoritos", style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.height(16.dp))
@@ -318,6 +329,7 @@ fun DashboardScreen(
                             }
                         }
                     }
+                    // Dejar espacio para evitar el solapamiento del FAB
                     Spacer(modifier = Modifier.height(60.dp))
                 }
             }

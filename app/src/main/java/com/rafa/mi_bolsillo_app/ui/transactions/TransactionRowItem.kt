@@ -42,7 +42,7 @@ import java.util.Locale
 fun TransactionRowItem(
     transactionItem: TransactionUiItem,
     currency: Currency,
-    onItemClick: () -> Unit, // Nuevo callback para el clic
+    onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -60,6 +60,7 @@ fun TransactionRowItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                // Indicador de color de categoría
                 CategoryColorIndicator(hexColor = transactionItem.categoryColorHex)
                 Spacer(modifier = Modifier.size(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
@@ -70,6 +71,7 @@ fun TransactionRowItem(
                         maxLines = 1
                     )
                     Spacer(modifier = Modifier.height(2.dp))
+                    // Nombre de la categoría
                     Text(
                         text = transactionItem.categoryName,
                         style = MaterialTheme.typography.bodySmall,
@@ -79,6 +81,7 @@ fun TransactionRowItem(
             }
 
             Column(horizontalAlignment = Alignment.End) {
+            // Monto de la transacción
                 Text(
                     text = formatCurrency(transactionItem.amount, currency),
                     style = MaterialTheme.typography.bodyLarge,
@@ -86,6 +89,7 @@ fun TransactionRowItem(
                     color = if (transactionItem.transactionType == TransactionType.INCOME) IncomeGreen else ExpenseRed
                 )
                 Spacer(modifier = Modifier.height(2.dp))
+                // Fecha de la transacción
                 Text(
                     text = formatDate(transactionItem.date),
                     style = MaterialTheme.typography.bodySmall,
@@ -112,13 +116,7 @@ fun CategoryColorIndicator(hexColor: String, modifier: Modifier = Modifier) {
     )
 }
 
-// Funciones de ayuda para formateo
-private fun formatCurrency(amount: Double, currency: Currency): String {
-    return NumberFormat.getCurrencyInstance().apply {
-        this.currency = currency
-    }.format(amount)
-}
-
+// Formatea la fecha de la transacción a un formato legible
 private fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))

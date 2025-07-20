@@ -12,9 +12,9 @@ import java.util.Currency
 import javax.inject.Inject
 
 /**
- * ViewModel para la pantalla de Ajustes.
+ * ViewModel para la pantalla de configuración de la aplicación.
+ * Permite a los usuarios cambiar la moneda y el tema de la aplicación.
  *
- * (Actualmente sin lógica, preparado para futuras funcionalidades)
  */
 
 @HiltViewModel
@@ -22,6 +22,7 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
+    // Exponer el estado de la moneda y el tema como StateFlows
     val currentCurrency = settingsRepository.currency
         .stateIn(
             scope = viewModelScope,
@@ -29,6 +30,7 @@ class SettingsViewModel @Inject constructor(
             initialValue = Currency.getInstance("EUR")
         )
 
+    // Exponer el estado del tema como StateFlow
     val currentTheme = settingsRepository.theme
         .stateIn(
             scope = viewModelScope,
@@ -36,12 +38,14 @@ class SettingsViewModel @Inject constructor(
             initialValue = ThemeOption.SYSTEM
         )
 
+    // Funciones para guardar la moneda seleccionada
     fun saveCurrency(currencyCode: String) {
         viewModelScope.launch {
             settingsRepository.saveCurrency(currencyCode)
         }
     }
 
+    // Función para guardar el tema seleccionado
     fun saveTheme(theme: ThemeOption) {
         viewModelScope.launch {
             settingsRepository.saveTheme(theme)

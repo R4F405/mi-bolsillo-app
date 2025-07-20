@@ -1,13 +1,11 @@
 package com.rafa.mi_bolsillo_app.ui.settings
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,6 +35,11 @@ import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
+/**
+ * Pantalla de configuración de la aplicación.
+ * Permite al usuario ajustar preferencias como moneda, tema, idioma y más.
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -60,6 +63,7 @@ fun SettingsScreen(
                 MaterialTheme.colorScheme.onPrimary
             }
 
+            // Composición de la barra superior
             TopAppBar(
                 title = { Text("Ajustes") },
                 navigationIcon = {
@@ -82,18 +86,21 @@ fun SettingsScreen(
                 .padding(vertical = 8.dp)
         ) {
             SettingsCategory(title = "General y Apariencia")
+            // Sección de moneda
             SettingsItem(
                 title = "Moneda",
                 subtitle = "Selecciona tu moneda local",
                 icon = Icons.Default.MonetizationOn,
                 onClick = { navController.navigate(AppScreens.CurrencySelectionScreen.route) }
             )
+            // Sección de tema
             SettingsItem(
                 title = "Tema de la Aplicación",
                 subtitle = "Claro, oscuro o predeterminado del sistema",
                 icon = Icons.Default.ColorLens,
                 onClick = { showThemeDialog = true }
             )
+            // Sección de idioma
             SettingsItem(
                 title = "Idioma",
                 subtitle = "Cambia el idioma de la aplicación",
@@ -104,6 +111,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
 
             SettingsCategory(title = "Seguridad")
+            // Sección de bloqueo de la aplicación
             SettingsItem(
                 title = "Bloqueo de la Aplicación",
                 subtitle = "Protege el acceso con PIN o huella",
@@ -114,6 +122,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
 
             SettingsCategory(title = "Gestión de Datos")
+            // Sección de exportación e importación de datos
             SettingsItem(
                 title = "Exportar / Importar",
                 subtitle = "Guarda o recupera tus transacciones",
@@ -124,6 +133,7 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
 
             SettingsCategory(title = "Acerca de")
+            // Sección de información de la aplicación
             SettingsItem(
                 title = "Información de la App",
                 subtitle = "Versión, licencia y más",
@@ -132,6 +142,7 @@ fun SettingsScreen(
             )
         }
     }
+    // Diálogo para seleccionar el tema
     if (showThemeDialog) {
         ThemeSelectionDialog(
             currentTheme = currentTheme,
@@ -144,6 +155,7 @@ fun SettingsScreen(
     }
 }
 
+// Composable para mostrar una categoría de configuración
 @Composable
 fun SettingsCategory(title: String) {
     Text(
@@ -156,6 +168,7 @@ fun SettingsCategory(title: String) {
     )
 }
 
+// Composable para un elemento de configuración
 @Composable
 fun SettingsItem(
     title: String,
@@ -170,6 +183,7 @@ fun SettingsItem(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Icono del elemento de configuración
         Icon(
             imageVector = icon,
             contentDescription = title,
@@ -178,6 +192,7 @@ fun SettingsItem(
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
+            // Título y subtítulo del elemento de configuración
             Text(text = title, style = MaterialTheme.typography.bodyLarge)
             Text(
                 text = subtitle,
@@ -185,6 +200,7 @@ fun SettingsItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        // Icono de flecha para indicar que se puede hacer clic
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
@@ -193,16 +209,19 @@ fun SettingsItem(
     }
 }
 
+//
 @Composable
 fun ThemeSelectionDialog(
     currentTheme: ThemeOption,
     onDismiss: () -> Unit,
     onThemeSelected: (ThemeOption) -> Unit
 ) {
+    // Diálogo para seleccionar el tema de la aplicación
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Seleccionar Tema") },
         text = {
+            // Contenido del diálogo con opciones de tema
             Column {
                 ThemeOption.values().forEach { theme ->
                     Row(
@@ -230,6 +249,7 @@ fun ThemeSelectionDialog(
     )
 }
 
+// Extensión para convertir ThemeOption a una cadena de texto para mostrar
 fun ThemeOption.toDisplayString(): String {
     return when (this) {
         ThemeOption.LIGHT -> "Claro"

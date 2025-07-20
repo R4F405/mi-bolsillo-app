@@ -27,6 +27,12 @@ import com.rafa.mi_bolsillo_app.data.local.entity.RecurrenceFrequencyConverter
     TransactionTypeConverter::class,
     RecurrenceFrequencyConverter::class
 )
+
+/**
+ * Base de datos principal de la aplicación, que utiliza Room para manejar las entidades y sus relaciones.
+ * Contiene las definiciones de las tablas y las migraciones entre versiones.
+ */
+
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun categoryDao(): CategoryDao
@@ -96,7 +102,6 @@ abstract class AppDatabase : RoomDatabase() {
         // Definición de la Migración de la versión 4 a la 5
         val MIGRATION_4_5: Migration = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                // 1. Create new table without the icon_name column
                 db.execSQL("""
                     CREATE TABLE `categories_new` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -106,19 +111,15 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 """.trimIndent())
 
-                // Add unique index to the new table
                 db.execSQL("CREATE UNIQUE INDEX `index_categories_new_name` ON `categories_new` (`name`)")
 
-                // 2. Copy data from old table to new table
                 db.execSQL("""
                     INSERT INTO `categories_new` (id, name, color_hex, is_predefined)
                     SELECT id, name, color_hex, is_predefined FROM `categories`
                 """.trimIndent())
 
-                // 3. Drop the old table
                 db.execSQL("DROP TABLE `categories`")
 
-                // 4. Rename new table to original table name
                 db.execSQL("ALTER TABLE `categories_new` RENAME TO `categories`")
             }
         }

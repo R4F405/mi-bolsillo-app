@@ -6,6 +6,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Implementación del repositorio de transacciones recurrentes.
+ * Proporciona acceso a los datos de transacciones recurrentes a través de la capa de persistencia.
+ * Utiliza el DAO de transacciones recurrentes para realizar operaciones CRUD y consultas específicas.
+ */
+
 @Singleton
 class RecurringTransactionRepositoryImpl @Inject constructor(
     private val recurringTransactionDao: RecurringTransactionDao
@@ -21,12 +27,10 @@ class RecurringTransactionRepositoryImpl @Inject constructor(
         recurringTransactionDao.getRecurringTransactionById(id)
 
     override suspend fun insertRecurringTransaction(recurringTransaction: RecurringTransaction): Long {
-        // Aquí podrías añadir lógica para calcular la primera nextOccurrenceDate si no viene calculada
         return recurringTransactionDao.insertRecurringTransaction(recurringTransaction)
     }
 
     override suspend fun updateRecurringTransaction(recurringTransaction: RecurringTransaction) {
-        // Lógica similar para recalcular nextOccurrenceDate si es necesario al actualizar
         recurringTransactionDao.updateRecurringTransaction(recurringTransaction)
     }
 

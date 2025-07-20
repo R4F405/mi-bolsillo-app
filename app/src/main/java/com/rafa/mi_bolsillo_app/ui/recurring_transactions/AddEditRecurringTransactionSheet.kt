@@ -26,6 +26,17 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+/**
+ * Composable para mostrar un BottomSheet que permite agregar o editar una transacción recurrente.
+ * Permite al usuario ingresar detalles como nombre, monto, categoría, frecuencia, etc.
+ *
+ * @param sheetState Estado del BottomSheet
+ * @param categories Lista de categorías disponibles
+ * @param recurringTransactionToEdit Transacción recurrente a editar (null si es nueva)
+ * @param onSave Callback para guardar la transacción recurrente
+ * @param onDismiss Callback para cerrar el BottomSheet
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditRecurringTransactionSheet(
@@ -372,6 +383,7 @@ fun AddEditRecurringTransactionSheet(
     }
 }
 
+// Composable para mostrar un campo de fecha con un ícono de calendario
 @Composable
 private fun DateField(
     label: String,
@@ -389,6 +401,7 @@ private fun DateField(
     )
 }
 
+// Composable para mostrar el DatePickerDialog
 @Composable
 private fun ShowDatePicker(
     context: android.content.Context,

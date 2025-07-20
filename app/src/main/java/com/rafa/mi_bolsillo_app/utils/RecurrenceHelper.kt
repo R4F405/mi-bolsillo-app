@@ -4,6 +4,18 @@ import com.rafa.mi_bolsillo_app.data.local.entity.RecurrenceFrequency
 import java.util.Calendar
 import java.util.TimeZone
 
+/**
+ * Helper para calcular la próxima fecha de ocurrencia de una transacción recurrente.
+ * Utiliza la frecuencia, intervalo y opcionalmente el día del mes y mes del año.
+ *
+ * @param lastOccurrence La fecha base para el cálculo (startDate o la última nextOccurrenceDate).
+ * @param frequency La frecuencia de recurrencia (DIARIA, SEMANAL, MENSUAL, ANUAL).
+ * @param interval El intervalo de recurrencia (1 para cada unidad de tiempo, 2 para cada dos unidades, etc.).
+ * @param dayOfMonth Opcional: el día del mes (1-31) para MENSUAL y ANUAL.
+ * @param monthOfYear Opcional: el mes del año (0-11) para ANUAL.
+ * @return La próxima fecha de ocurrencia en milisegundos desde epoch.
+ */
+
 object RecurrenceHelper {
 
     fun calculateNextOccurrenceDate(
@@ -17,7 +29,6 @@ object RecurrenceHelper {
         calendar.timeInMillis = lastOccurrence
 
         // Normalizar la hora a medianoche para evitar problemas con cambios de hora o DST
-        // al comparar solo fechas. Esto es importante si las transacciones se generan "al inicio del día".
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
@@ -29,14 +40,11 @@ object RecurrenceHelper {
             }
             RecurrenceFrequency.WEEKLY -> {
                 calendar.add(Calendar.WEEK_OF_YEAR, interval)
-                // Si se quisiera un día específico de la semana, se ajustaría aquí.
-                // Por ahora, se basa en el día de la semana de 'lastOccurrence'.
             }
             RecurrenceFrequency.MONTHLY -> {
-                // Primero, avanzar el mes
                 calendar.add(Calendar.MONTH, interval)
 
-                // Si se especifica un día del mes, intentar ajustarlo
+                // Si se especifica un día del mes, lo ajusta
                 dayOfMonth?.let { targetDay ->
                     val currentMaxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
                     if (targetDay > currentMaxDay) {

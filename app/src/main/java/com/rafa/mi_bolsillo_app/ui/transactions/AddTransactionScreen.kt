@@ -1,9 +1,8 @@
-package com.rafa.mi_bolsillo_app.ui.add_transaction
+package com.rafa.mi_bolsillo_app.ui.transactions
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -42,7 +41,6 @@ import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
-import com.rafa.mi_bolsillo_app.ui.transactions.TransactionViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -62,7 +60,7 @@ import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
  *
  */
 
-@OptIn(ExperimentalMaterial3Api::class) // Necesario para TopAppBar, Scaffold y ExposedDropdownMenuBox
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionScreen(
     navController: NavController,
@@ -143,7 +141,6 @@ fun AddTransactionScreen(
                 MaterialTheme.colorScheme.onPrimary
             }
 
-            // Configurar la TopAppBar con el título correspondiente
             TopAppBar(
                 title = { Text(if (isEditMode) "Editar Transacción" else "Nueva Transacción") },
                 navigationIcon = {
@@ -252,8 +249,7 @@ fun AddTransactionScreen(
             ExposedDropdownMenuBox(
                 expanded = categoryMenuExpanded,
                 onExpandedChange = {
-                    // Solo expandir si hay categorías, o si se quiere mostrar un mensaje dentro
-                    if (categoriesFromVm.isNotEmpty()) { // Evitar toggle si no hay categorías y ya se mostró error
+                    if (categoriesFromVm.isNotEmpty()) { // Evitar toggle si no hay categorías
                         categoryMenuExpanded = !categoryMenuExpanded
                     } else {
                         categoryError = "No hay categorías disponibles. Añade alguna primero."
@@ -264,7 +260,7 @@ fun AddTransactionScreen(
             ) {
                 OutlinedTextField(
                     value = selectedCategory?.name ?: "",
-                    onValueChange = { /* No editable por texto */ },
+                    onValueChange = {},
                     label = { Text("Categoría") },
                     placeholder = { Text(if (categoriesFromVm.isEmpty()) "No hay categorías" else "Seleccionar categoría") },
                     readOnly = true,
@@ -299,7 +295,7 @@ fun AddTransactionScreen(
                 onClick = {
                     val amountDouble = amount.toDoubleOrNull()
                     var isValid = true
-                    amountError = null; categoryError = null // Resetear errores
+                    amountError = null; categoryError = null
 
                     if (amountDouble == null || amountDouble <= 0) {
                         amountError = "Monto inválido"
@@ -400,7 +396,7 @@ fun AddTransactionScreen(
             cal.get(Calendar.MONTH),
             cal.get(Calendar.DAY_OF_MONTH)
         ).apply {
-            setOnDismissListener { showDatePicker = false } // Asegurar que se oculte si se descarta
+            setOnDismissListener { showDatePicker = false }
             show()
         }
     }

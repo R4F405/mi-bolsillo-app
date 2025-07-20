@@ -20,6 +20,14 @@ import kotlinx.coroutines.launch
 import java.util.Currency
 import javax.inject.Inject
 
+/**
+ * ViewModel para la pantalla de transacciones recurrentes.
+ * Proporciona la lógica de negocio para manejar transacciones recurrentes, categorías y configuración de moneda.
+ * Incluye operaciones para crear, editar, eliminar y listar transacciones recurrentes,
+ * así como para manejar el estado de la UI y mensajes al usuario.
+ */
+
+// Modelo para el estado de la pantalla de transacciones recurrentes
 data class RecurringTransactionScreenUiState(
     val recurringTransactions: List<RecurringTransaction> = emptyList(),
     val categories: List<Category> = emptyList(),
@@ -33,7 +41,7 @@ data class RecurringTransactionScreenUiState(
 @HiltViewModel
 class RecurringTransactionViewModel @Inject constructor(
     private val recurringTransactionRepository: RecurringTransactionRepository,
-    private val categoryRepository: CategoryRepository, // Para el selector de categorías
+    private val categoryRepository: CategoryRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
@@ -44,6 +52,7 @@ class RecurringTransactionViewModel @Inject constructor(
         loadInitialData()
     }
 
+    // Carga inicial de datos
     private fun loadInitialData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -68,6 +77,7 @@ class RecurringTransactionViewModel @Inject constructor(
         }
     }
 
+    // Prepara el estado para editar una transacción recurrente
     fun prepareForEditing(template: RecurringTransaction?) {
         _uiState.update {
             it.copy(
@@ -78,10 +88,12 @@ class RecurringTransactionViewModel @Inject constructor(
         }
     }
 
+    // Cierra el diálogo de edición
     fun dismissEditSheet() {
         _uiState.update { it.copy(showEditSheet = false, recurringTransactionToEdit = null) }
     }
 
+    // Guarda una transacción recurrente, ya sea nueva o editada
     fun saveRecurringTransaction(
         id: Long?, // null si es nueva
         name: String,
@@ -111,14 +123,13 @@ class RecurringTransactionViewModel @Inject constructor(
                 return@launch
             }
 
-            // Calcular la primera 'nextOccurrenceDate'
-            // Si es una nueva plantilla, la primera nextOccurrenceDate es la startDate.
-            // Si se está editando, y la startDate ha cambiado y es futura a la actual nextOccurrenceDate,
-            // O si la frecuencia/intervalo cambian, se debería recalcular.
-            // Por simplicidad inicial: si es nueva, es startDate. Si se edita, se podría mantener la existente
-            // o recalcularla si la startDate cambió significativamente.
-            // Para esta versión, la primera nextOccurrenceDate será siempre la startDate si no se está editando o
-            // si se está editando y la start date es mayor que la actual nextOccurrenceDate
+            /*
+            Calcular la primera 'nextOccurrenceDate'
+            Si es una nueva plantilla, la primera nextOccurrenceDate es la startDate.
+            Si se está editando, y la startDate ha cambiado y es futura a la actual nextOccurrenceDate,
+            o si la frecuencia/intervalo cambian, se debería recalcular.
+             */
+
             var nextOccurrence = startDate
             if (id != null) { // Editando
                 val currentTemplate = _uiState.value.recurringTransactionToEdit
@@ -142,7 +153,7 @@ class RecurringTransactionViewModel @Inject constructor(
                         nextOccurrence = tempNextOccurrence
                     }
                 }
-            } else { // Nueva, o si no se encontró la plantilla a editar (no debería pasar)
+            } else { // Nueva, o si no se encontró la plantilla a editar
                 // Si startDate es en el pasado, calcular la primera ocurrencia futura o igual a hoy
                 var tempNextOccurrence = startDate
                 while (tempNextOccurrence < System.currentTimeMillis() && (endDate == null || tempNextOccurrence <= endDate)) {
@@ -184,6 +195,7 @@ class RecurringTransactionViewModel @Inject constructor(
         }
     }
 
+    // Elimina una transacción recurrente por su ID
     fun deleteRecurringTransaction(templateId: Long) {
         viewModelScope.launch {
             val template = recurringTransactionRepository.getRecurringTransactionById(templateId)
@@ -194,6 +206,7 @@ class RecurringTransactionViewModel @Inject constructor(
         }
     }
 
+    // Limpia el mensaje de usuario actual
     fun clearUserMessage() {
         _uiState.update { it.copy(userMessage = null) }
     }

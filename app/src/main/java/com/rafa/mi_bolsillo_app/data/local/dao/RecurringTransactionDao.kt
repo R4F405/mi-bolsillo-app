@@ -9,6 +9,11 @@ import androidx.room.Update
 import com.rafa.mi_bolsillo_app.data.local.entity.RecurringTransaction
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data Access Object (DAO) para manejar las operaciones de la tabla de transacciones recurrentes.
+ * Contiene métodos para insertar, actualizar, eliminar y consultar transacciones recurrentes.
+ */
+
 @Dao
 interface RecurringTransactionDao {
 
@@ -27,11 +32,12 @@ interface RecurringTransactionDao {
     @Query("SELECT * FROM recurring_transactions ORDER BY start_date DESC")
     fun getAllRecurringTransactions(): Flow<List<RecurringTransaction>>
 
-    // Obtener plantillas activas que están listas para generar una transacción
-    // y cuya próxima ocurrencia no haya superado la fecha de finalización (si existe)
+    /* Obtener plantillas activas que están listas para generar una transacción
+    y cuya próxima ocurrencia no haya superado la fecha de finalización (si existe) */
     @Query("SELECT * FROM recurring_transactions WHERE is_active = 1 AND next_occurrence_date <= :currentDate AND (end_date IS NULL OR next_occurrence_date <= end_date)")
     suspend fun getDueRecurringTransactions(currentDate: Long): List<RecurringTransaction>
 
+    // Obtener transacciones recurrentes activas ordenadas por la próxima fecha de ocurrencia
     @Query("SELECT * FROM recurring_transactions WHERE is_active = 1 ORDER BY next_occurrence_date ASC")
     fun getActiveRecurringTransactionsSortedByNextOccurrence(): Flow<List<RecurringTransaction>>
 }

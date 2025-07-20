@@ -6,6 +6,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Implementación del repositorio de presupuestos.
+ * Proporciona acceso a los datos de presupuestos a través de la capa de persistencia.
+ * Utiliza el DAO de presupuestos para realizar operaciones CRUD y consultas específicas.
+ */
+
 @Singleton
 class BudgetRepositoryImpl @Inject constructor(
     private val budgetDao: BudgetDao

@@ -23,7 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 
-// Using the same helper functions and color list from the old sheet content
+/**
+ * Diálogo para agregar o editar una categoría.
+ * Permite al usuario ingresar el nombre y seleccionar un color para la categoría.
+ * Si se edita una categoría existente, se cargan los datos actuales.
+ *
+ */
+
+// Colores sugeridos para las categorías
 val suggestedCategoryColors: List<Color> = listOf(
     Color(0xFFF44336), Color(0xFFE91E63), Color(0xFFFF5252), Color(0xFFFF4081), Color(0xFFAD1457),
     Color(0xFF9C27B0), Color(0xFF673AB7), Color(0xFF7E57C2), Color(0xFFBA68C8),
@@ -35,6 +42,7 @@ val suggestedCategoryColors: List<Color> = listOf(
     Color(0xFF9E9E9E), Color(0xFF757575), Color(0xFF424242), Color(0xFF607D8B), Color(0xFF37474F),
     Color(0xFFFFFFFF), Color(0xFF000000)
 )
+// Extensión para convertir Color a String en formato hexadecimal
 fun Color.toHexString(): String {
     return String.format("#%06X", 0xFFFFFF and this.toArgb())
 }
@@ -53,7 +61,7 @@ fun AddEditCategoryDialog(
         mutableStateOf(categoryToEdit?.colorHex ?: suggestedCategoryColors.first().toHexString())
     }
     var nameError by remember { mutableStateOf<String?>(null) }
-    var colorError by remember { mutableStateOf<String?>(null) } // Although not used for validation, good practice to keep it.
+    var colorError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(categoryToEdit) {
         name = categoryToEdit?.name ?: ""
@@ -62,11 +70,13 @@ fun AddEditCategoryDialog(
         colorError = null
     }
 
+    // Diálogo para agregar o editar una categoría
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth()
         ) {
+            // Selector de nombre
             Column(modifier = Modifier.padding(24.dp)) {
                 Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 20.dp))
 
@@ -82,6 +92,7 @@ fun AddEditCategoryDialog(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Selector de color
                 Text("Color de la Categoría", style = MaterialTheme.typography.labelMedium, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -98,6 +109,7 @@ fun AddEditCategoryDialog(
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // Botones de acción
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End

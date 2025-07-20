@@ -26,7 +26,7 @@ data class Category(
     val name: String,
 
     @ColumnInfo(name = "color_hex")
-    val colorHex: String, // Ejemplo: "#4CAF50" para verde, "#F44336" para rojo
+    val colorHex: String,
 
     @ColumnInfo(name = "is_predefined", defaultValue = "0")
     val isPredefined: Boolean = false
