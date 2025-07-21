@@ -74,10 +74,8 @@ fun DashboardScreen(
                     label = { Text(text = "Presupuestos") },
                     selected = false,
                     onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate(AppScreens.BudgetScreen.route)
-                        }
+                        navController.navigate(AppScreens.BudgetScreen.route)
+                        scope.launch { drawerState.close() }
                     },
                     icon = { Icon(Icons.Filled.PieChart, contentDescription = "Presupuestos") },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -86,10 +84,8 @@ fun DashboardScreen(
                     label = { Text(text = "Categorías") },
                     selected = false,
                     onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate(AppScreens.CategoryManagementScreen.route)
-                        }
+                        navController.navigate(AppScreens.CategoryManagementScreen.route)
+                        scope.launch { drawerState.close() }
                     },
                     icon = { Icon(Icons.Filled.List, contentDescription = "Categorías") },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -98,10 +94,8 @@ fun DashboardScreen(
                     label = { Text(text = "Plantillas Recurrentes") },
                     selected = false,
                     onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate(AppScreens.RecurringTransactionListScreen.route)
-                        }
+                        navController.navigate(AppScreens.RecurringTransactionListScreen.route)
+                        scope.launch { drawerState.close() }
                     },
                     icon = { Icon(Icons.Filled.Autorenew, contentDescription = "Plantillas Recurrentes") },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -117,10 +111,8 @@ fun DashboardScreen(
                     label = { Text(text = "Ajustes") },
                     selected = false,
                     onClick = {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate(AppScreens.SettingsScreen.route)
-                        }
+                        navController.navigate(AppScreens.SettingsScreen.route)
+                        scope.launch { drawerState.close() }
                     },
                     icon = { Icon(Icons.Filled.Settings, contentDescription = "Ajustes") },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -168,7 +160,7 @@ fun DashboardScreen(
                     Icon(Icons.Filled.Add, contentDescription = "Añadir transacción")
                 }
             }
-        // Selector de mes
+            // Selector de mes
         ) { innerPadding ->
             Column(
                 modifier = Modifier
