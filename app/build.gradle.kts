@@ -106,4 +106,7 @@ dependencies {
 
     // MPAndroidChart
     implementation(libs.mpandroidchart)
+
+    // Biometric Authentication
+    implementation(libs.androidx.biometric.ktx)
 }

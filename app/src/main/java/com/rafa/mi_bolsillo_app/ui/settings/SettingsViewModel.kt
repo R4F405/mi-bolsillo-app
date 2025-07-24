@@ -51,4 +51,17 @@ class SettingsViewModel @Inject constructor(
             settingsRepository.saveTheme(theme)
         }
     }
+
+    val appLockEnabled = settingsRepository.appLockEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
+    fun setAppLockEnabled(isEnabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setAppLockEnabled(isEnabled)
+        }
+    }
 }

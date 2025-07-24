@@ -15,4 +15,7 @@ interface SettingsRepository {
 
     val theme: Flow<ThemeOption>
     suspend fun saveTheme(theme: ThemeOption)
+
+    val appLockEnabled: Flow<Boolean>
+    suspend fun setAppLockEnabled(isEnabled: Boolean)
 }

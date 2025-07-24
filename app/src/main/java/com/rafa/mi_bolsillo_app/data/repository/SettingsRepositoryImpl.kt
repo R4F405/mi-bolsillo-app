@@ -2,6 +2,7 @@ package com.rafa.mi_bolsillo_app.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
@@ -22,6 +23,8 @@ class SettingsRepositoryImpl @Inject constructor(
     private object PreferencesKeys {
         val CURRENCY_CODE = stringPreferencesKey("currency_code")
         val THEME = stringPreferencesKey("theme_option")
+        val APP_LOCK_ENABLED = booleanPreferencesKey("app_lock_enabled")
+
     }
 
     override val currency: Flow<Currency> = dataStore.data.map { preferences ->
@@ -50,6 +53,16 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun saveTheme(theme: ThemeOption) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME] = theme.name
+        }
+    }
+
+    override val appLockEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.APP_LOCK_ENABLED] ?: false
+    }
+
+    override suspend fun setAppLockEnabled(isEnabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.APP_LOCK_ENABLED] = isEnabled
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.rafa.mi_bolsillo_app.ui.settings
 
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,11 +29,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
+import com.rafa.mi_bolsillo_app.ui.settings.authentication.launchBiometricAuth
 import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
@@ -49,6 +53,8 @@ fun SettingsScreen(
     val currentDarkTheme = LocalIsDarkTheme.current
     val currentTheme by viewModel.currentTheme.collectAsStateWithLifecycle()
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
+    val appLockEnabled by viewModel.appLockEnabled.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -112,11 +118,25 @@ fun SettingsScreen(
 
             SettingsCategory(title = "Seguridad")
             // Sección de bloqueo de la aplicación
-            SettingsItem(
+            SettingsSwitchItem(
                 title = "Bloqueo de la Aplicación",
                 subtitle = "Protege el acceso con PIN o huella",
                 icon = Icons.Default.Lock,
-                onClick = { /* TODO: Navegar a HU-AJT-6 */ }
+                checked = appLockEnabled,
+                onCheckedChange = { isEnabled ->
+                    // Llamamos al gestor biométrico
+                    launchBiometricAuth(
+                        activity = context as AppCompatActivity,
+                        onSuccess = {
+                            // Si la autenticación es correcta, guardamos el nuevo estado
+                            viewModel.setAppLockEnabled(isEnabled)
+                        },
+                        onError = { errorMessage ->
+                            // Si hay un error, lo mostramos y no cambiamos el estado
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
@@ -209,7 +229,7 @@ fun SettingsItem(
     }
 }
 
-//
+// Composable para el selector de tema
 @Composable
 fun ThemeSelectionDialog(
     currentTheme: ThemeOption,
@@ -255,5 +275,42 @@ fun ThemeOption.toDisplayString(): String {
         ThemeOption.LIGHT -> "Claro"
         ThemeOption.DARK -> "Oscuro"
         ThemeOption.SYSTEM -> "Predeterminado del sistema"
+    }
+}
+
+@Composable
+fun SettingsSwitchItem(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            modifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
     }
 }
