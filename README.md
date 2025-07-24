@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/R4F405/mi-bolsillo-app/releases/tag/v1.4.0"><img src="https://img.shields.io/badge/Version-1.4.0-blue" alt="Version 1.4.0"></a>
+  <a href="https://github.com/R4F405/mi-bolsillo-app/releases/tag/v1.5.0"><img src="https://img.shields.io/badge/Version-1.5.0-blue" alt="Version 1.5.0"></a>
   <a href="https://github.com/R4F405/mi-bolsillo-app/releases"><img src="https://img.shields.io/badge/Platform-Android%208.0%2B-brightgreen" alt="Platform Android 8.0+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-GNU%20GPL%20v3-orange" alt="License GNU GPLv3"></a>
   <a href="https://deepwiki.com/R4F405/mi-bolsillo-app"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>

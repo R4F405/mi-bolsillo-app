@@ -2,18 +2,11 @@ package com.rafa.mi_bolsillo_app.ui.settings
 
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
@@ -26,9 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,12 +27,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.settings.authentication.launchBiometricAuth
-import com.rafa.mi_bolsillo_app.ui.settings.theme.ThemeOption
+import com.rafa.mi_bolsillo_app.ui.settings.components.SettingsCategory
+import com.rafa.mi_bolsillo_app.ui.settings.components.SettingsItem
+import com.rafa.mi_bolsillo_app.ui.settings.components.ThemeSelectionDialog
+import com.rafa.mi_bolsillo_app.ui.settings.components.SettingsSwitchItem
 import com.rafa.mi_bolsillo_app.ui.theme.LocalIsDarkTheme
 
 /**
  * Pantalla de configuración de la aplicación.
  * Permite al usuario ajustar preferencias como moneda, tema, idioma y más.
+ *
  */
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -171,146 +166,6 @@ fun SettingsScreen(
                 viewModel.saveTheme(theme)
                 showThemeDialog = false
             }
-        )
-    }
-}
-
-// Composable para mostrar una categoría de configuración
-@Composable
-fun SettingsCategory(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .padding(top = 8.dp)
-    )
-}
-
-// Composable para un elemento de configuración
-@Composable
-fun SettingsItem(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Icono del elemento de configuración
-        Icon(
-            imageVector = icon,
-            contentDescription = title,
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            // Título y subtítulo del elemento de configuración
-            Text(text = title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        // Icono de flecha para indicar que se puede hacer clic
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-// Composable para el selector de tema
-@Composable
-fun ThemeSelectionDialog(
-    currentTheme: ThemeOption,
-    onDismiss: () -> Unit,
-    onThemeSelected: (ThemeOption) -> Unit
-) {
-    // Diálogo para seleccionar el tema de la aplicación
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Seleccionar Tema") },
-        text = {
-            // Contenido del diálogo con opciones de tema
-            Column {
-                ThemeOption.values().forEach { theme ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { onThemeSelected(theme) }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (theme == currentTheme),
-                            onClick = { onThemeSelected(theme) }
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(theme.toDisplayString())
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cerrar")
-            }
-        }
-    )
-}
-
-// Extensión para convertir ThemeOption a una cadena de texto para mostrar
-fun ThemeOption.toDisplayString(): String {
-    return when (this) {
-        ThemeOption.LIGHT -> "Claro"
-        ThemeOption.DARK -> "Oscuro"
-        ThemeOption.SYSTEM -> "Predeterminado del sistema"
-    }
-}
-
-@Composable
-fun SettingsSwitchItem(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCheckedChange(!checked) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = title,
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange
         )
     }
 }
