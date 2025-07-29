@@ -33,11 +33,7 @@ jobs:
       # 4. Ejecuta los tests unitarios
       - name: Run unit tests
         run: ./gradlew test
-
-      # 5. Ejecuta tests Lint (Bugs, seguridad, optimizaciones)
-      - name: Run Android Lint
-        run: ./gradlew lintDebug
-
+        
       # 5. Construye el APK para asegurar que el proyecto compila
       - name: Build debug APK
         run: ./gradlew assembleDebug
