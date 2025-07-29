@@ -1,7 +1,7 @@
 [versions]
 datastorePreferences = "1.1.7"
 kotlin = "2.0.21"
-kotlinxCoroutines = "1.8.1"
+kotlinxCoroutines = "1.10.2"
 ksp = "2.0.21-1.0.25"
 room = "2.6.1"
 agp = "8.9.2"
