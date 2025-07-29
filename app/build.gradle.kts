@@ -112,3 +112,50 @@ dependencies {
     // Biometric Authentication
     implementation(libs.androidx.biometric.ktx)
 }
+
+// --- Configuración de JaCoCo ---
+
+// Versión de JaCoCo que se usará
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+// Tarea para crear el reporte de cobertura para la variante "debug"
+tasks.create("jacocoTestReport", JacocoReport::class) {
+    dependsOn("testDebugUnitTest")
+
+    // Fuentes que se incluirán en el reporte
+    sourceDirectories.setFrom(files("$projectDir/src/main/java"))
+    classDirectories.setFrom(
+        fileTree("$buildDir/tmp/kotlin-classes/debug") {
+            exclude(
+                // Excluir clases generadas por Hilt, Dagger, Room, Compose, etc.
+                "**/di/**",
+                "**/*_HiltModules**",
+                "**/*_Factory.*",
+                "**/*_Impl.*",
+                "**/databinding/**",
+                "**/android/databinding/**",
+                "**/BR.*",
+                // Excluir UI (Composables) y Navegación
+                "**/ui/theme/**",
+                "**/ui/components/**",
+                "**/navigation/**",
+                "**/*Activity.*",
+                "**/*Screen.*",
+                "**/*Dialog.*",
+                "**/*Item.*",
+                "**/MiBolsilloApplication.*"
+            )
+        }
+    )
+
+    // Dónde se guardarán los resultados de los tests
+    executionData.setFrom(files("$buildDir/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"))
+
+    // Dónde se generarán los reportes
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
