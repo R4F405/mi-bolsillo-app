@@ -1,0 +1,8 @@
+# .github/dependabot.yml
+
+version: 2
+updates:
+  - package-ecosystem: "gradle" # Ecosistema para proyectos Android/Kotlin con Gradle
+    directory: "/" # Directorio raíz
+    schedule:
+      interval: "weekly" # Frecuencia con la que Dependabot buscará actualizaciones
