@@ -71,7 +71,8 @@ class RecurringTransactionViewModel @Inject constructor(
                 _uiState.value = combinedState.copy(
                     // Mantenemos el estado del diálogo de edición al refrescar los datos
                     showEditSheet = _uiState.value.showEditSheet,
-                    recurringTransactionToEdit = _uiState.value.recurringTransactionToEdit
+                    recurringTransactionToEdit = _uiState.value.recurringTransactionToEdit,
+                    userMessage = _uiState.value.userMessage
                 )
             }
         }
@@ -131,8 +132,8 @@ class RecurringTransactionViewModel @Inject constructor(
              */
 
             var nextOccurrence = startDate
-            if (id != null) { // Editando
-                val currentTemplate = _uiState.value.recurringTransactionToEdit
+            if (id != null) {
+                val currentTemplate = recurringTransactionRepository.getRecurringTransactionById(id)
                 if (currentTemplate != null) {
                     nextOccurrence = if(startDate > currentTemplate.nextOccurrenceDate) startDate else currentTemplate.nextOccurrenceDate
 
@@ -167,21 +168,13 @@ class RecurringTransactionViewModel @Inject constructor(
 
             val template = RecurringTransaction(
                 id = id ?: 0,
-                name = name,
-                amount = amount,
-                description = description,
-                categoryId = categoryId,
-                transactionType = transactionType,
-                startDate = startDate,
-                frequency = frequency,
-                interval = interval,
-                dayOfMonth = dayOfMonth,
-                monthOfYear = monthOfYear,
-                endDate = endDate,
-                nextOccurrenceDate = nextOccurrence, // Calculada
-                lastGeneratedDate = _uiState.value.recurringTransactionToEdit?.lastGeneratedDate, // Mantener si se edita
+                name = name, amount = amount, description = description, categoryId = categoryId,
+                transactionType = transactionType, startDate = startDate, frequency = frequency,
+                interval = interval, dayOfMonth = dayOfMonth, monthOfYear = monthOfYear,
+                endDate = endDate, nextOccurrenceDate = nextOccurrence,
+                lastGeneratedDate = if (id != null) recurringTransactionRepository.getRecurringTransactionById(id)?.lastGeneratedDate else null,
                 isActive = isActive,
-                creationDate = _uiState.value.recurringTransactionToEdit?.creationDate ?: System.currentTimeMillis()
+                creationDate = if (id != null) recurringTransactionRepository.getRecurringTransactionById(id)?.creationDate ?: System.currentTimeMillis() else System.currentTimeMillis()
             )
 
             if (id == null) {
