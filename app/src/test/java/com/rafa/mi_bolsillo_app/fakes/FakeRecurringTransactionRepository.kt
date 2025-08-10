@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Una implementación falsa de [RecurringTransactionRepository] para fines de prueba.
+ * Utiliza un MutableStateFlow para simular la base de datos y
+ * permite insertar, actualizar, eliminar y recuperar transacciones recurrentes.
+ */
+
 class FakeRecurringTransactionRepository: RecurringTransactionRepository {
     val templatesFlow = MutableStateFlow<List<RecurringTransaction>>(emptyList())
     private var nextId = 1L

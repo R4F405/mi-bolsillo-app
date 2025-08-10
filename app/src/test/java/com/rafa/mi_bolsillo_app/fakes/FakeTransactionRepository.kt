@@ -9,6 +9,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Una implementación falsa de [TransactionRepository] para fines de prueba.
+ * Utiliza un MutableStateFlow para simular la base de datos y
+ * permite insertar, actualizar, eliminar y recuperar transacciones.
+ */
+
 class FakeTransactionRepository : TransactionRepository {
 
     val transactionsFlow = MutableStateFlow<List<Transaction>>(emptyList())
