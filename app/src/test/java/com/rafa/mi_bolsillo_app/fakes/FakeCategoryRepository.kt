@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Una implementación falsa de [CategoryRepository] para fines de prueba.
+ * Utiliza un MutableStateFlow para simular la base de datos y
+ * permite insertar, actualizar, eliminar y recuperar categorías.
+ */
+
 class FakeCategoryRepository : CategoryRepository {
     val categoriesFlow = MutableStateFlow<List<Category>>(emptyList())
     private var nextId = 1L

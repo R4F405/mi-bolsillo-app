@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Currency
 
+/**
+ * Una implementación falsa de [SettingsRepository] para fines de prueba.
+ * Utiliza MutableStateFlow para simular el almacenamiento de la configuración
+ * y permite guardar y recuperar la configuración de moneda, tema y bloqueo de aplicaciones.
+ */
+
 class FakeSettingsRepository: SettingsRepository {
 
     private val currencyFlow = MutableStateFlow(Currency.getInstance("EUR"))

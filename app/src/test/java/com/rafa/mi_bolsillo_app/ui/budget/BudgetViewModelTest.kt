@@ -1,20 +1,15 @@
 package com.rafa.mi_bolsillo_app.ui.budget
 
-import com.rafa.mi_bolsillo_app.data.local.dao.ExpenseByCategory
 import com.rafa.mi_bolsillo_app.data.local.entity.Budget
 import com.rafa.mi_bolsillo_app.data.local.entity.Category
 import com.rafa.mi_bolsillo_app.data.local.entity.Transaction
 import com.rafa.mi_bolsillo_app.data.local.entity.TransactionType
-import com.rafa.mi_bolsillo_app.data.repository.BudgetRepository
-import com.rafa.mi_bolsillo_app.data.repository.CategoryRepository
-import com.rafa.mi_bolsillo_app.data.repository.SettingsRepository
-import com.rafa.mi_bolsillo_app.data.repository.TransactionRepository
-import com.rafa.mi_bolsillo_app.ui.dashboard.FakeSettingsRepository
+import com.rafa.mi_bolsillo_app.fakes.FakeBudgetRepository
+import com.rafa.mi_bolsillo_app.fakes.FakeCategoryRepository
+import com.rafa.mi_bolsillo_app.fakes.FakeSettingsRepository
+import com.rafa.mi_bolsillo_app.fakes.FakeTransactionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -58,7 +53,10 @@ class BudgetViewModelTest {
         fakeCategoryRepository = FakeCategoryRepository()
         fakeSettingsRepository = FakeSettingsRepository()
 
-        fakeCategoryRepository.addCategories(listOf(categoryComida, categoryOcio))
+        // Metodo del fake para poblar los datos
+        runTest {
+            fakeCategoryRepository.insertCategories(listOf(categoryComida, categoryOcio))
+        }
     }
 
     @After
@@ -80,10 +78,10 @@ class BudgetViewModelTest {
         // Preparación
         val (year, month) = getCurrentYearMonth()
         val budgetComida = Budget(id = 1, categoryId = 1, amount = 300.0, month = month + 1, year = year)
-        fakeBudgetRepository.addBudget(budgetComida)
+        fakeBudgetRepository.insertBudget(budgetComida)
 
         val gastoComida = Transaction(id = 1, amount = 75.5, date = getDate(year, month, 10), description = "Gasto comida", categoryId = 1, transactionType = TransactionType.EXPENSE)
-        fakeTransactionRepository.addTransaction(gastoComida)
+        fakeTransactionRepository.insertTransaction(gastoComida)
 
         // Acción
         createViewModel()
@@ -116,11 +114,27 @@ class BudgetViewModelTest {
     }
 
     @Test
+    fun `upsertBudget - con monto cero o negativo - debe mostrar mensaje de error`() = runTest {
+        // Preparación
+        createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+        val initialBudgetCount = fakeBudgetRepository.budgetsFlow.value.size
+
+        // Acción
+        viewModel.upsertBudget(categoryId = 1, amount = -50.0)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Verificación
+        assertEquals("El monto debe ser positivo.", viewModel.uiState.value.userMessage)
+        assertEquals(initialBudgetCount, fakeBudgetRepository.budgetsFlow.value.size) // No se debe añadir
+    }
+
+    @Test
     fun `upsertBudget - cuando el presupuesto ya existe - lo actualiza`() = runTest {
         // Preparación
         val (year, month) = getCurrentYearMonth()
         val budgetOcio = Budget(id = 1, categoryId = 2, amount = 50.0, month = month + 1, year = year)
-        fakeBudgetRepository.addBudget(budgetOcio)
+        fakeBudgetRepository.insertBudget(budgetOcio)
 
         createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -141,7 +155,7 @@ class BudgetViewModelTest {
         // Preparación
         val (year, month) = getCurrentYearMonth()
         val budgetToDelete = Budget(id = 1, categoryId = 1, amount = 100.0, month = month + 1, year = year)
-        fakeBudgetRepository.addBudget(budgetToDelete)
+        fakeBudgetRepository.insertBudget(budgetToDelete)
 
         createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -166,94 +180,4 @@ class BudgetViewModelTest {
     private fun getDate(year: Int, month: Int, day: Int): Long {
         return Calendar.getInstance().apply { set(year, month, day) }.timeInMillis
     }
-}
-
-// --- FAKE REPOSITORIES (Puedes moverlos a un archivo separado si los reutilizas mucho) ---
-
-class FakeBudgetRepository : BudgetRepository {
-    val budgetsFlow = MutableStateFlow<List<Budget>>(emptyList())
-
-    fun addBudget(budget: Budget) {
-        budgetsFlow.value += budget
-    }
-
-    override fun getBudgetsForMonth(year: Int, month: Int): Flow<List<Budget>> = flowOf(
-        budgetsFlow.value.filter { it.year == year && it.month == month }
-    )
-
-    override suspend fun getBudgetForCategory(year: Int, month: Int, categoryId: Long): Budget? {
-        return budgetsFlow.value.find { it.year == year && it.month == month && it.categoryId == categoryId }
-    }
-
-    override suspend fun insertBudget(budget: Budget) {
-        budgetsFlow.value += budget.copy(id = (budgetsFlow.value.maxOfOrNull { it.id } ?: 0L) + 1)
-    }
-
-    override suspend fun updateBudget(budget: Budget) {
-        val currentList = budgetsFlow.value.toMutableList()
-        val index = currentList.indexOfFirst { it.id == budget.id }
-        if (index != -1) {
-            currentList[index] = budget
-            budgetsFlow.value = currentList
-        }
-    }
-
-    override suspend fun deleteBudget(budget: Budget) {
-        budgetsFlow.value = budgetsFlow.value.filterNot { it.id == budget.id }
-    }
-
-    override fun getFavoriteBudgets(): Flow<List<Budget>> = flowOf(budgetsFlow.value.filter { it.isFavorite })
-
-    override suspend fun updateFavoriteStatus(budgetId: Long, isFavorite: Boolean) {
-        val currentList = budgetsFlow.value.toMutableList()
-        val index = currentList.indexOfFirst { it.id == budgetId }
-        if (index != -1) {
-            currentList[index] = currentList[index].copy(isFavorite = isFavorite)
-            budgetsFlow.value = currentList
-        }
-    }
-}
-
-class FakeTransactionRepository : TransactionRepository {
-    private val transactionsFlow = MutableStateFlow<List<Transaction>>(emptyList())
-
-    fun addTransaction(transaction: Transaction) {
-        transactionsFlow.value += transaction
-    }
-
-    override fun getTransactionsBetweenDates(startDate: Long, endDate: Long): Flow<List<Transaction>> = flowOf(
-        transactionsFlow.value.filter { it.date in startDate..endDate }
-    )
-
-    // Métodos no usados en este ViewModel, se pueden dejar vacíos o con valores por defecto
-    override fun getAllTransactions(): Flow<List<Transaction>> = transactionsFlow
-    override fun getTotalIncomeBetweenDates(startDate: Long, endDate: Long): Flow<Double?> = flowOf(0.0)
-    override fun getTotalExpensesBetweenDates(startDate: Long, endDate: Long): Flow<Double?> = flowOf(0.0)
-    override fun getExpensesByCategoryInRange(startDate: Long, endDate: Long): Flow<List<ExpenseByCategory>> = flowOf(emptyList())
-    override fun getTransactionsByType(transactionType: TransactionType): Flow<List<Transaction>> = flowOf(emptyList())
-    override fun getTransactionsByCategoryId(categoryId: Long): Flow<List<Transaction>> = flowOf(emptyList())
-    override fun getTransactionsByDateRange(startDate: Long, endDate: Long): Flow<List<Transaction>> = flowOf(emptyList())
-    override suspend fun getTransactionById(id: Long): Transaction? = null
-    override suspend fun insertTransaction(transaction: Transaction) {}
-    override suspend fun updateTransaction(transaction: Transaction) {}
-    override suspend fun deleteTransaction(transaction: Transaction) {}
-}
-
-class FakeCategoryRepository : CategoryRepository {
-    private val categoriesFlow = MutableStateFlow<List<Category>>(emptyList())
-
-    fun addCategories(categories: List<Category>) {
-        categoriesFlow.value += categories
-    }
-
-    override fun getAllCategories(): Flow<List<Category>> = categoriesFlow
-
-    // Métodos no usados
-    override fun getUserDefinedCategories(): Flow<List<Category>> = flowOf(emptyList())
-    override fun getPredefinedCategories(): Flow<List<Category>> = flowOf(emptyList())
-    override suspend fun getCategoryById(id: Long): Category? = null
-    override suspend fun insertCategory(category: Category): Long = 0
-    override suspend fun insertCategories(categories: List<Category>) {}
-    override suspend fun updateCategory(category: Category) {}
-    override suspend fun deleteCategory(category: Category) {}
 }
