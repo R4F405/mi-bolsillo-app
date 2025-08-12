@@ -75,7 +75,9 @@ class DataManagementViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 val lines = csvContent.lines().drop(1) // Omitir la cabecera
-                if (lines.isEmpty()) {
+
+                // Si no hay líneas después de la cabecera o todas están en blanco, no hay nada que importar.
+                if (lines.all { it.isBlank() }) {
                     _uiState.update { it.copy(isLoading = false, userMessage = "El archivo CSV está vacío o no tiene datos.") }
                     return@launch
                 }
