@@ -142,7 +142,7 @@ fun SettingsScreen(
                 title = "Exportar / Importar",
                 subtitle = "Guarda o recupera tus transacciones",
                 icon = Icons.Default.Storage,
-                onClick = { /* TODO: Navegar a HU-AJT-8 y 9 */ }
+                onClick = { navController.navigate(AppScreens.DataManagementScreen.route) }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))

@@ -45,6 +45,10 @@ class FakeTransactionRepository : TransactionRepository {
 
     override fun getAllTransactions(): Flow<List<Transaction>> = transactionsFlow.asStateFlow()
 
+    override suspend fun getAllTransactionsList(): List<Transaction> {
+        return transactionsFlow.value
+    }
+
     override fun getTransactionsByType(transactionType: TransactionType): Flow<List<Transaction>> {
         return transactionsFlow.map { list -> list.filter { it.transactionType == transactionType } }
     }
