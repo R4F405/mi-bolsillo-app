@@ -36,6 +36,8 @@ For more specific details on the application's design and planning, you can cons
 * **Full Transaction Management**: Easily log, modify, and delete income and expenses. The history screen allows you to search and filter all your movements.
 * **Intuitive Monthly Budgets**: Take control of your spending by setting **monthly budgets for different categories**. Track your progress in real-time and mark your most important budgets as favorites for quick access from the Dashboard.
 * **Customizable Categories**: Organize your finances with predefined and custom-made categories. Each one has a unique color for easy identification in lists and charts.
+* **Data Management**: **Export** your entire transaction history to a CSV file for external analysis or backup. **Import** transactions from a CSV file to easily migrate your data into the app.
+* **Enhanced Security**: Protect your financial data with an **app lock** feature that requires **biometric (fingerprint)** or device credential authentication to open the application.
 * **Personalized Settings**: Tailor the app to your needs by changing the **currency** and choosing your preferred **visual theme** (light, dark, or system default).
 * **Private & Local Storage**: All your financial data is stored securely on your device using the Room persistence library.
 * **Modern & Reactive UI**: A clean user interface built entirely with Jetpack Compose and Material Design 3, which reacts to state changes in real-time.
@@ -77,26 +79,27 @@ Mi Bolsillo is built with a modern Android architecture, following **MVVM** and 
 * **Language**: [Kotlin](https://kotlinlang.org/)
 * **UI**: [Jetpack Compose](https://developer.android.com/jetpack/compose) for a declarative and modern UI.
 * **Architecture**:
-    * [MVVM (Model-View-ViewModel)](https://developer.android.com/jetpack/guide)
-    * [Clean Architecture Principles](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+  * [MVVM (Model-View-ViewModel)](https://developer.android.com/jetpack/guide)
+  * [Clean Architecture Principles](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 * **Asynchronous Programming**:
-    * [Kotlin Coroutines & Flow](https://kotlinlang.org/docs/flow.html) for managing background threads and data streams.
+  * [Kotlin Coroutines & Flow](https://kotlinlang.org/docs/flow.html) for managing background threads and data streams.
 * **Dependency Injection**:
-    * [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) for robust dependency management.
+  * [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) for robust dependency management.
 * **Persistence**:
-    * [Room](https://developer.android.com/training/data-storage/room) for the local database.
-    * [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for storing user preferences (theme and currency).
+  * [Room](https://developer.android.com/training/data-storage/room) for the local database.
+  * [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for storing user preferences (theme and currency).
 * **Background Processing**:
-    * [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) for handling recurring transaction generation.
+  * [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) for handling recurring transaction generation.
 * **Navigation**:
-    * [Jetpack Navigation Compose](https://developer.android.com/jetpack/compose/navigation) for navigating between screens.
+  * [Jetpack Navigation Compose](https://developer.android.com/jetpack/compose/navigation) for navigating between screens.
+* **Security**:
+  * [Biometric Authentication](https://developer.android.com/training/sign-in/biometric-auth) for secure app access.
 * **Charting**:
-    * [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) for creating the expense distribution chart.
+  * [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart) for creating the expense distribution chart.
 * **State Management**:
-    * `StateFlow` and `collectAsStateWithLifecycle` for safe and efficient UI state management.
+  * `StateFlow` and `collectAsStateWithLifecycle` for safe and efficient UI state management.
 
 ## 📦 Project Structure
-
 ```
 app/
 ├─ src/main/
