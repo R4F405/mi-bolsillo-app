@@ -26,6 +26,7 @@ import com.rafa.mi_bolsillo_app.navigation.AppScreens
 import com.rafa.mi_bolsillo_app.ui.budget.BudgetScreen
 import com.rafa.mi_bolsillo_app.ui.category_management.CategoryManagementScreen
 import com.rafa.mi_bolsillo_app.ui.dashboard.DashboardScreen
+import com.rafa.mi_bolsillo_app.ui.data_management.DataManagementScreen
 import com.rafa.mi_bolsillo_app.ui.recurring_transactions.RecurringTransactionListScreen
 import com.rafa.mi_bolsillo_app.ui.settings.SettingsScreen
 import com.rafa.mi_bolsillo_app.ui.settings.currency.CurrencySelectionScreen
@@ -182,6 +183,10 @@ fun MainAppContent() {
         // Ruta para la pantalla de selección de moneda
         composable(route = AppScreens.CurrencySelectionScreen.route) {
             CurrencySelectionScreen(navController = navController)
+        }
+        // Ruta para la pantalla de gestión de datos
+        composable(route = AppScreens.DataManagementScreen.route) {
+            DataManagementScreen(navController = navController)
         }
     }
 }
