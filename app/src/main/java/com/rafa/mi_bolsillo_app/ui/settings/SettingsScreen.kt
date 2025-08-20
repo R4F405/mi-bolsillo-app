@@ -153,7 +153,7 @@ fun SettingsScreen(
                 title = "Información de la App",
                 subtitle = "Versión, licencia y más",
                 icon = Icons.Default.Info,
-                onClick = { /* TODO: Navegar a HU-AJT-12, 13, 14 */ }
+                onClick = { navController.navigate(AppScreens.AboutScreen.route) }
             )
         }
     }

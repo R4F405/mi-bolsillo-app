@@ -29,6 +29,7 @@ import com.rafa.mi_bolsillo_app.ui.dashboard.DashboardScreen
 import com.rafa.mi_bolsillo_app.ui.data_management.DataManagementScreen
 import com.rafa.mi_bolsillo_app.ui.recurring_transactions.RecurringTransactionListScreen
 import com.rafa.mi_bolsillo_app.ui.settings.SettingsScreen
+import com.rafa.mi_bolsillo_app.ui.settings.about.AboutScreen
 import com.rafa.mi_bolsillo_app.ui.settings.currency.CurrencySelectionScreen
 import com.rafa.mi_bolsillo_app.ui.settings.authentication.launchBiometricAuth
 import com.rafa.mi_bolsillo_app.ui.theme.MiBolsilloAppTheme
@@ -187,6 +188,10 @@ fun MainAppContent() {
         // Ruta para la pantalla de gestión de datos
         composable(route = AppScreens.DataManagementScreen.route) {
             DataManagementScreen(navController = navController)
+        }
+        // Ruta para la pantalla "Acerca de"
+        composable(route = AppScreens.AboutScreen.route) {
+            AboutScreen(navController = navController)
         }
     }
 }
